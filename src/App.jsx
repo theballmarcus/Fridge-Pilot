@@ -1,15 +1,22 @@
-import './App.css'
-import { Button } from "@material-tailwind/react";
-import MainPageProgress from './components/MainPageProgress/index.jsx';
+import './App.css';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LandingPage from './pages/Landing';
+import LoginPage from './pages/Login';
+import SignupPage from './pages/Signup';
+import NotFoundPage from './pages/NotFound';
 
 function App() {
   return (
-    <>
-      <MainPageProgress></MainPageProgress>
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <Button color="blue">This a button :)</Button>
-      </div>
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+
+        {/* 404 Route - this must be the LAST route */}
+        <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+    </Router>
   )
 }
 
