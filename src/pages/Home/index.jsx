@@ -1,7 +1,7 @@
 import { Button } from "@material-tailwind/react";
-import MainPageProgress from './components/MainPageProgress/index.jsx';
+import MainPageProgress from '../../components/MainPageProgress/index.jsx';
 
-export default function FrontPage() {
+export default function HomePage() {
   return (
     <>
       <MainPageProgress></MainPageProgress>
