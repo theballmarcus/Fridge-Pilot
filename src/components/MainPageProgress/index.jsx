@@ -1,21 +1,22 @@
 import React from 'react';
 import { CircularProgressbar, CircularProgressbarWithChildren } from 'react-circular-progressbar';
+import { Breadcrumbs } from "@material-tailwind/react";
 
 export default function MainPageProgress() {
     // Render calorie count out of desired daily calorie count
     // Within, render weight loss in kgs out of desired weight loss
     return <>
-        <div className="relative w-[300px] h-[300px] bg-gray-200 flex items-center justify-center">
+        <div className="relative w-[300px] h-[300px] flex items-center justify-center">
             <div className="absolute">
                 <CircularProgressbar value={66} strokeWidth="5" styles={{
                     root: {
                         width: '100%',
                         height: '100%'
                     },
-                    path:{
+                    path: {
                         stroke: `rgb(255 175 36 / 1.0)`
                     }
-                }}/>
+                }} />
             </div>
             <div className="absolute">
                 <CircularProgressbar value={66} strokeWidth="6" styles={{
@@ -23,10 +24,10 @@ export default function MainPageProgress() {
                         width: '86%',
                         height: '86%'
                     },
-                    path:{
+                    path: {
                         stroke: `rgb(48 120 186 / 1.0)`
                     }
-                }}/>
+                }} />
             </div>
             <div className="absolute">
                 <CircularProgressbarWithChildren strokeWidth="7" value={66} styles={{
@@ -34,13 +35,24 @@ export default function MainPageProgress() {
                         width: '72%',
                         height: '72%'
                     },
-                    path:{
+                    path: {
                         stroke: `rgb(248 70 67 / 1.0)`
                     }
                 }}>
                     <div>Hello</div>
                 </CircularProgressbarWithChildren>
             </div>
+        </div>
+        <div className=''>
+            <Breadcrumbs fullWidth>
+                <a href="#" className="opacity-60">
+                    Docs
+                </a>
+                <a href="#" className="opacity-60">
+                    Components
+                </a>
+                <a href="#">Breadcrumbs</a>
+            </Breadcrumbs>
         </div>
     </>
 }
