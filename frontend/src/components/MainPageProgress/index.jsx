@@ -7,6 +7,7 @@ export default function MainPageProgress() {
     // Render calorie count out of desired daily calorie count
     // Within, render weight loss in kgs out of desired weight loss
     return <>
+        <div className="flex flex-col items-center justify-center">
         <div className="relative w-[300px] h-[300px] flex items-center justify-center">
             <div className="absolute size-[300px]">
                 <CircularProgressbar value={Math.random()*100} strokeWidth="5" styles={{
@@ -83,7 +84,7 @@ export default function MainPageProgress() {
         </div>
         <div className="w-[500px]">
             <hr className="my-4 my-4 border-gray-400"/>
-            <Typography type="h3" className="mb-6">Mit fremskridt</Typography>
+            <Typography type="h3" className="mb-6">Mine fremskidt</Typography>
             <Progress size="lg" value={9/30*100}>
                 <Progress.Bar className="grid place-items-center">
                     <Typography type="small" color="secondary">
@@ -91,6 +92,7 @@ export default function MainPageProgress() {
                     </Typography>
                 </Progress.Bar>
             </Progress>
+        </div>
         </div>
     </>
 }

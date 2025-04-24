@@ -1,5 +1,5 @@
 import { Typography } from "@material-tailwind/react";
-import icon from '../../assets/icon.svg';
+import icon from '../../assets/icon-flat.png';
 
 const YEAR = new Date().getFullYear();
 
@@ -16,7 +16,7 @@ const LINKS = [
 
 export default function Footer() {
     return (
-        <footer className="w-full flex p-4">
+        <footer className="w-full flex justify-center items-center p-4">
             <div>
                 <img src={icon} alt="brand" className="w-16 mr-8" />
             </div>

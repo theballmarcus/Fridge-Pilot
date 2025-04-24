@@ -23,7 +23,7 @@
 }
 
 .CircularProgressbar .CircularProgressbar-trail {
-    stroke: #d6d6d6;
+    stroke: rgb(var(--color-surface));
     /* Used when trail is not full diameter, i.e. when props.circleRatio is set */
     stroke-linecap: round;
 }
