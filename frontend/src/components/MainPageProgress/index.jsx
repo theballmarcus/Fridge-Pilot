@@ -1,6 +1,6 @@
 import React from 'react';
 import { CircularProgressbar, CircularProgressbarWithChildren } from 'react-circular-progressbar';
-import { Breadcrumb } from "@material-tailwind/react";
+import { Typography, Breadcrumb } from "@material-tailwind/react";
 import { IconFlame, IconWheat, IconMeat, IconDroplet } from '@tabler/icons-react';
 
 export default function MainPageProgress() {
@@ -29,37 +29,60 @@ export default function MainPageProgress() {
                     }
                 }}>
                     <div>
-                        <IconFlame size={80}/>
+                        <IconFlame size={80} />
 
                     </div>
                 </CircularProgressbarWithChildren>
             </div>
         </div>
-        <div className=''>
+        <hr></hr>
+        <div>
             <Breadcrumb className="gap-0.5">
                 <Breadcrumb.Link className="rounded bg-secondary px-2 py-1 text-secondary-foreground">
-                    <IconWheat color={"rgb(255 175 36 / 1.0)"}/>
-                    Kulhydrater
-                    <br/>
-                    <span className='font-bold'>14</span> / 20g
+                    <div className="grid grid-rows-2 grid-cols-[auto_auto] items-center">
+                        <div className="w-fit col-span-1 row-span-1">
+                        <IconWheat color={"rgb(255 175 36 / 1.0)"} />
+                        </div>
+
+                        <div className="w-fit col-span-1 row-span-1">
+                            <Typography type="h6">Kulhydrater</Typography>
+                        </div>
+
+                        <div className="w-fit col-span-2 row-span-1">
+                            <span className='font-bold'>14</span> / 20g
+                        </div>
+                    </div>                    
                 </Breadcrumb.Link>
                 <Breadcrumb.Separator>·</Breadcrumb.Separator>
                 <Breadcrumb.Link className="rounded bg-secondary px-2 py-1 text-secondary-foreground">
-                    <IconMeat color={"rgb(48 120 186 / 1.0)"}/>
-                    Protein
-                    <br/>
-                    <span className='font-bold'>80</span> / 95g
-                </Breadcrumb.Link>
-                <Breadcrumb.Separator>·</Breadcrumb.Separator>
-                <Breadcrumb.Link className="rounded bg-secondary px-2 py-1 text-secondary-foreground">
-                    <div>
-                        <IconDroplet color={"rgb(248 70 67 / 1.0)"}/>
-                        Fedt
+                    <div className="grid grid-rows-2 grid-cols-[auto_auto] items-center">
+                        <div className="w-fit col-span-1 row-span-1">
+                        <IconMeat color={"rgb(48 120 186 / 1.0)"} />
+                        </div>
+
+                        <div className="w-fit col-span-1 row-span-1">
+                            <Typography type="h6">Protein</Typography>
+                        </div>
+
+                        <div className="w-fit col-span-2 row-span-1">
+                            <span className='font-bold'>80</span> / 95g
+                        </div>
                     </div>
-                    <div>
-                    <br/>
-                    <hr></hr>
-                    <span className='font-bold'>67</span> / 120g
+                </Breadcrumb.Link>
+                <Breadcrumb.Separator>·</Breadcrumb.Separator>
+                <Breadcrumb.Link className="rounded bg-secondary px-2 py-1 text-secondary-foreground">
+                    <div className="grid grid-rows-2 grid-cols-[auto_auto] items-center">
+                        <div className="w-fit col-span-1 row-span-1">
+                            <IconDroplet color={"rgb(248 70 67 / 1.0)"} />
+                        </div>
+
+                        <div className="w-fit col-span-1 row-span-1">
+                            <Typography type="h6">Fedt</Typography>
+                        </div>
+
+                        <div className="w-fit col-span-2 row-span-1">
+                            <span className='font-bold'>67</span> / 120g
+                        </div>
                     </div>
                 </Breadcrumb.Link>
             </Breadcrumb>
