@@ -5,6 +5,7 @@ import LoginPage from './pages/Login';
 import SignupPage from './pages/Signup';
 import HomePage from './pages/Home';
 import NotFoundPage from './pages/NotFound';
+import Footer from './components/Footer';
 
 function App() {
     return (
@@ -18,6 +19,7 @@ function App() {
                 {/* 404 Route */}
                 <Route path="*" element={<NotFoundPage />} />
             </Routes>
+            <Footer></Footer>
         </Router>
     )
 }
