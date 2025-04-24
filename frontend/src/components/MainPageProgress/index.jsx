@@ -1,6 +1,6 @@
 import React from 'react';
 import { CircularProgressbar, CircularProgressbarWithChildren } from 'react-circular-progressbar';
-import { Typography, Breadcrumb } from "@material-tailwind/react";
+import { Typography, Progress, Breadcrumb } from "@material-tailwind/react";
 import { IconFlame, IconWheat, IconMeat, IconDroplet } from '@tabler/icons-react';
 
 export default function MainPageProgress() {
@@ -37,11 +37,11 @@ export default function MainPageProgress() {
         </div>
         <hr></hr>
         <div>
-            <Breadcrumb className="gap-0.5">
+            <Breadcrumb className="gap-0.5 mt-10">
                 <Breadcrumb.Link className="rounded bg-secondary px-2 py-1 text-secondary-foreground">
                     <div className="grid grid-rows-2 grid-cols-[auto_auto] items-center">
                         <div className="w-fit col-span-1 row-span-1">
-                        <IconWheat color={"rgb(255 175 36 / 1.0)"} />
+                            <IconWheat color={"rgb(255 175 36 / 1.0)"} />
                         </div>
 
                         <div className="w-fit col-span-1 row-span-1">
@@ -51,13 +51,13 @@ export default function MainPageProgress() {
                         <div className="w-fit col-span-2 row-span-1">
                             <span className='font-bold'>14</span> / 20g
                         </div>
-                    </div>                    
+                    </div>
                 </Breadcrumb.Link>
                 <Breadcrumb.Separator>·</Breadcrumb.Separator>
                 <Breadcrumb.Link className="rounded bg-secondary px-2 py-1 text-secondary-foreground">
                     <div className="grid grid-rows-2 grid-cols-[auto_auto] items-center">
                         <div className="w-fit col-span-1 row-span-1">
-                        <IconMeat color={"rgb(48 120 186 / 1.0)"} />
+                            <IconMeat color={"rgb(48 120 186 / 1.0)"} />
                         </div>
 
                         <div className="w-fit col-span-1 row-span-1">
@@ -86,6 +86,17 @@ export default function MainPageProgress() {
                     </div>
                 </Breadcrumb.Link>
             </Breadcrumb>
+        </div>
+        <div className="w-[500px]">
+            <hr className="mt-6 mb-6"/>
+            <Typography type="h3" className="mb-6">Mit fremskridt</Typography>
+            <Progress size="lg" value={9/30*100}>
+                <Progress.Bar className="grid place-items-center">
+                    <Typography type="small" color="secondary">
+                        <b>9</b> / 30 kg tabt
+                    </Typography>
+                </Progress.Bar>
+            </Progress>
         </div>
     </>
 }
