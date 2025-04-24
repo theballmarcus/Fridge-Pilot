@@ -1,6 +1,7 @@
 import React from 'react';
 import { CircularProgressbar, CircularProgressbarWithChildren } from 'react-circular-progressbar';
 import { Breadcrumb } from "@material-tailwind/react";
+import { IconFlame, IconWheat, IconMeat, IconDroplet } from '@tabler/icons-react';
 
 export default function MainPageProgress() {
     // Render calorie count out of desired daily calorie count
@@ -27,31 +28,39 @@ export default function MainPageProgress() {
                         stroke: `rgb(248 70 67 / 1.0)`
                     }
                 }}>
-                    <div>Hello</div>
+                    <div>
+                        <IconFlame size={80}/>
+
+                    </div>
                 </CircularProgressbarWithChildren>
             </div>
         </div>
         <div className=''>
             <Breadcrumb className="gap-0.5">
-                <Breadcrumb.Link
-                    href="#"
-                    className="rounded bg-secondary px-2 py-1 text-secondary-foreground"
-                >
+                <Breadcrumb.Link className="rounded bg-secondary px-2 py-1 text-secondary-foreground">
+                    <IconWheat color={"rgb(255 175 36 / 1.0)"}/>
                     Kulhydrater
+                    <br/>
+                    <span className='font-bold'>14</span> / 20g
                 </Breadcrumb.Link>
                 <Breadcrumb.Separator>·</Breadcrumb.Separator>
-                <Breadcrumb.Link
-                    href="#"
-                    className="rounded bg-secondary px-2 py-1 text-secondary-foreground"
-                >
+                <Breadcrumb.Link className="rounded bg-secondary px-2 py-1 text-secondary-foreground">
+                    <IconMeat color={"rgb(48 120 186 / 1.0)"}/>
                     Protein
+                    <br/>
+                    <span className='font-bold'>80</span> / 95g
                 </Breadcrumb.Link>
                 <Breadcrumb.Separator>·</Breadcrumb.Separator>
-                <Breadcrumb.Link
-                    href="#"
-                    className="rounded bg-secondary px-2 py-1 text-secondary-foreground"
-                >
-                    Fedt
+                <Breadcrumb.Link className="rounded bg-secondary px-2 py-1 text-secondary-foreground">
+                    <div>
+                        <IconDroplet color={"rgb(248 70 67 / 1.0)"}/>
+                        Fedt
+                    </div>
+                    <div>
+                    <br/>
+                    <hr></hr>
+                    <span className='font-bold'>67</span> / 120g
+                    </div>
                 </Breadcrumb.Link>
             </Breadcrumb>
         </div>
