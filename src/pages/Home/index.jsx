@@ -4,9 +4,9 @@ import MainPageProgress from '../../components/MainPageProgress/index.jsx';
 export default function HomePage() {
     return (
         <>
-            <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+            <div className="flex flex-col items-center justify-center h-screen">
                 <MainPageProgress></MainPageProgress>
-                <Button color="blue">This a button :)</Button>
+                <Button color="blue">This is a button :)</Button>
             </div>
         </>
     )

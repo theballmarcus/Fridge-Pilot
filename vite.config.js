@@ -9,5 +9,10 @@ export default defineConfig({
         postcss: {
             plugins: [tailwindcss()],
         },
+    },
+    resolve: {
+        alias: {
+            '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs'
+        }
     }
 })
