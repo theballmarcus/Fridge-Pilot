@@ -9,33 +9,33 @@ export default function MainPageProgress() {
     return <>
         <div className="relative w-[300px] h-[300px] flex items-center justify-center">
             <div className="absolute size-[300px]">
-                <CircularProgressbar value={66} strokeWidth="5" styles={{
+                <CircularProgressbar value={Math.random()*100} strokeWidth="5" styles={{
                     path: {
                         stroke: `rgb(255 175 36 / 1.0)`
                     }
                 }} />
             </div>
             <div className="absolute size-[258px]">
-                <CircularProgressbar value={66} strokeWidth="6" styles={{
+                <CircularProgressbar value={Math.random()*100} strokeWidth="6" styles={{
                     path: {
                         stroke: `rgb(48 120 186 / 1.0)`
                     }
                 }} />
             </div>
             <div className="absolute size-[216px]">
-                <CircularProgressbarWithChildren strokeWidth="7" value={66} styles={{
+                <CircularProgressbarWithChildren strokeWidth="7" value={Math.random()*100} styles={{
                     path: {
                         stroke: `rgb(248 70 67 / 1.0)`
                     }
                 }}>
-                    <div>
-                        <IconFlame size={80} />
-
+                    <div className="flex justify-center items-center">
+                        <IconFlame size={50} />
+                        <Typography type="h5">953</Typography><span>/1200</span>
                     </div>
+                    <span>Kalorier i dag</span>
                 </CircularProgressbarWithChildren>
             </div>
         </div>
-        <hr></hr>
         <div>
             <Breadcrumb className="gap-0.5 mt-10">
                 <Breadcrumb.Link className="rounded bg-secondary px-2 py-1 text-secondary-foreground">
@@ -43,11 +43,9 @@ export default function MainPageProgress() {
                         <div className="w-fit col-span-1 row-span-1">
                             <IconWheat color={"rgb(255 175 36 / 1.0)"} />
                         </div>
-
                         <div className="w-fit col-span-1 row-span-1">
                             <Typography type="h6">Kulhydrater</Typography>
                         </div>
-
                         <div className="w-fit col-span-2 row-span-1">
                             <span className='font-bold'>14</span> / 20g
                         </div>
@@ -59,11 +57,9 @@ export default function MainPageProgress() {
                         <div className="w-fit col-span-1 row-span-1">
                             <IconMeat color={"rgb(48 120 186 / 1.0)"} />
                         </div>
-
                         <div className="w-fit col-span-1 row-span-1">
                             <Typography type="h6">Protein</Typography>
                         </div>
-
                         <div className="w-fit col-span-2 row-span-1">
                             <span className='font-bold'>80</span> / 95g
                         </div>
@@ -75,11 +71,9 @@ export default function MainPageProgress() {
                         <div className="w-fit col-span-1 row-span-1">
                             <IconDroplet color={"rgb(248 70 67 / 1.0)"} />
                         </div>
-
                         <div className="w-fit col-span-1 row-span-1">
                             <Typography type="h6">Fedt</Typography>
                         </div>
-
                         <div className="w-fit col-span-2 row-span-1">
                             <span className='font-bold'>67</span> / 120g
                         </div>
@@ -88,7 +82,7 @@ export default function MainPageProgress() {
             </Breadcrumb>
         </div>
         <div className="w-[500px]">
-            <hr className="mt-6 mb-6"/>
+            <hr className="my-4 my-4 border-gray-400"/>
             <Typography type="h3" className="mb-6">Mit fremskridt</Typography>
             <Progress size="lg" value={9/30*100}>
                 <Progress.Bar className="grid place-items-center">
