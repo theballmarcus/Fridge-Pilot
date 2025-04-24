@@ -7,6 +7,15 @@ const config = {
         "./src/**/*.{js,ts,jsx,tsx}",
         "./node_modules/@material-tailwind/react/**/*.{js,ts,jsx,tsx}",
     ],
-  plugins: [mtConfig],
+  plugins: [mtConfig({
+    colors: {
+      primary: {
+        default: "#86ae64",
+        dark: "#4f7c23",
+        light: "#96e25e",
+        foreground: "#030712"
+      }
+    },
+  })],
 };
 export default config;
