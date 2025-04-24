@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
     gender: Boolean,        // 0 for mand, 1 for kvinde
     height: Number,
     weight: Number,
-    activityLevel: Number,  // 1-7
+    activityLevel: Number,  // 1-5
     monthlyGoal: Number,    // kg. pr måned
 });
 
@@ -86,6 +86,32 @@ async function test() {
     catch (error) {
         // console.error('Error creating user:', error);
     }
+}
+
+function flush_database() {
+    User.deleteMany({}, (err) => {
+        if (err) {
+            console.error('Error deleting users:', err);
+        } else {
+            console.log('All users deleted');
+        }
+    });
+
+    Mealplan.deleteMany({}, (err) => {
+        if (err) {
+            console.error('Error deleting mealplans:', err);
+        } else {
+            console.log('All mealplans deleted');
+        }
+    });
+
+    Meal.deleteMany({}, (err) => {
+        if (err) {
+            console.error('Error deleting meals:', err);
+        } else {
+            console.log('All meals deleted');
+        }
+    });
 }
 
 module.exports = {
