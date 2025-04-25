@@ -79,6 +79,7 @@ function SignupAccountCard({ onNext }) {
                     </Typography>
                     <Input id="password" type="password" placeholder="************" />
                 </div>
+                <hr className="my-6 border-surface" />
                 <Button isFullWidth onClick={onNext}>Opret konto</Button>
             </Card.Body>
             <Card.Footer className="text-center">
@@ -447,7 +448,7 @@ function DetailsCard() {
                 className="grid h-24 place-items-center shadow-none"
             >
                 <Typography as="span" type="h4" className="text-primary-foreground">
-                    Lad skræddersy din keto!
+                    Lad os skræddersy din keto!
                 </Typography>
             </Card.Header>
             <Card.Body className="flex justify-center flex-col">
@@ -504,6 +505,7 @@ function DetailsCard() {
                     onChange={setActivityLevel}
                 />
                 <hr className="my-6 border-surface" />
+                <Button isFullWidth>Fortsæt</Button>
 
             </Card.Body>
         </Card>
