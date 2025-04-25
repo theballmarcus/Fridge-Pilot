@@ -21,7 +21,7 @@ register_details:
 	curl -s -X POST http://localhost:8080/api/auth/register_details \
 		-H "Content-Type: application/json" \
 		-H "Authorization: Bearer $$TOKEN" \
-		-d "{\"age\": 25, \"gender\": 0, \"height\": 180, \"weight\": 75, \"activityLevel\": 4, \"goal\": \"muscle gain\"}"
+		-d "{\"birthday\": 10000, \"gender\": 0, \"height\": 180, \"weight\": 75, \"activityLevel\": 4, \"monthlyGoal\": 1}"
 	@echo "\nUser details sent"
 
 post_groceries:
@@ -32,9 +32,35 @@ post_groceries:
 		-H "Authorization: Bearer $$TOKEN" \
 		-d "{\"groceries\": [\"apple\", \"cheese\", \"bread\"]}"
 	@echo "\nGroceries posted"
+
+post_mealplan:
+	@echo "Posting mealplan"
+	@TOKEN=$$(jq -r '.token' $(TOKEN_FILE)); \
+	curl -s -X POST http://localhost:8080/api/diet/mealplan \
+		-H "Content-Type: application/json" \
+		-H "Authorization: Bearer $$TOKEN" \
+		-d "{\"date\": 1745569512581}"
+	@echo "\nMealplan posted"
 	
+flush_database:
+	@echo "Flushing database"
+	@TOKEN=$$(jq -r '.token' $(TOKEN_FILE)); \
+	curl -s -X POST http://localhost:8080/api/flush \
+		-H "Content-Type: application/json" \
+		-H "Authorization: Bearer $$TOKEN"
+	@echo "\nDatabase flushed"
+
+get_mealplan:
+	@echo "Flushing database"
+	@TOKEN=$$(jq -r '.token' $(TOKEN_FILE)); \
+	curl -s -X GET http://localhost:8080/api/diet/mealplan/1745576260483 \
+		-H "Content-Type: application/json" \
+		-H "Authorization: Bearer $$TOKEN" 
+	@echo "\nDatabase flushed"
+
 test_flow:
 	@$(MAKE) register_user RANDOM_USER=$(RANDOM_USER)
 	@$(MAKE) login RANDOM_USER=$(RANDOM_USER)
 	@$(MAKE) register_details
+	@$(MAKE) post_groceries
 	cat .token.json
