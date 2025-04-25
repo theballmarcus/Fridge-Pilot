@@ -3,12 +3,13 @@ const mongoose = require("mongoose");
 const cors = require('cors');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { User, Mealplan, Meal, test } = require("./models/mongo");
+const { User, Mealplan, Meal, test, flush_database } = require("./models/mongo");
 require("dotenv").config();
 
-const { calculateDailyCalories } = require("./api");
+const { calculateDailyCalories, cleverMealplanPicker, getStatsFromMealplan } = require("./api");
 
 const TOKEN_EXPIRATION_TIME = '12h'; // 1 hour
+const oneDayMs = 100*60*60*24;
 
 const app = express();
 
@@ -84,12 +85,20 @@ app.post("/api/auth/register", async (req, res) => {
 });
 
 app.post("/api/auth/register_details", verifyToken, async (req, res) => {
-    const { age, gender, height, weight, activityLevel, monthlyGoal } = req.body;
-// Age, gender, height, weight, activity level, monthlyGoal (weight loss, maintenance, muscle gain)
+    const { birthday, gender, height, weight, activityLevel, monthlyGoal } = req.body;
+// birthday, gender, height, weight, activity level, monthlyGoal (weight loss, maintenance, muscle gain)
+/*
+birthday: Number        (timestamp (ms))
+height: Number          (cm)
+weight: Number          (kg)
+activityLevel: Number   (1-5)
+monthlyGoal: Number     (kg of fat pr. month)
+
+*/
     try {
         const user = await User.findById(req.user.id);
         if (!user) return res.status(400).json({ msg: "User not found" });
-        if (age) user.age = age;
+        if (birthday) user.birthday = birthday;
         if (gender) user.gender = gender;
         if (height) user.height = height;
         if (weight) user.weight = weight;
@@ -126,7 +135,7 @@ app.post("/api/auth/login", async (req, res) => {
             msg: "Invalid mail"
         });
         const isMatch = await bcrypt.compare(password, user.password);
-        console.log(password, user.password)
+
         if (!isMatch) return res.status(400).json({
             msg: "Invalid credentials"
         });
@@ -170,28 +179,65 @@ app.post("/api/diet/groceries", verifyToken, async (req, res) => {
 }); // Provide a list of groceries in fridge
 
 app.post("/api/diet/mealplan", verifyToken, async (req, res) => {
-    const { date } = req.body;
+    let { date } = req.body; // Timestamp in ms
+    const daysBeforeReset = 100*60*60*24*14;
+
     try {
+        date = date - (date % oneDayMs);
+
         const user = await User.findById(req.user.id);
         if (!user) return res.status(400).json({ msg: "User not found" });
-        const dailyCalories = calculateDailyCalories(user);
-        const mealplan = new Mealplan({
-            date,
-            userId: user._id
-        });
-        await mealplan.save();
-        const meals = [];
+        var age = new Date(new Date() - new Date(user.birthday)).getFullYear() - 1970;
+        const dailyBurnedCalories = calculateDailyCalories(user.gender, user.weight, user.height, age, user.activityLevel); 
+
+        const oldMealplans = await Mealplan.find({"date" : {$gte: date - daysBeforeReset}});
+        
+        let usedMeals = {}
+        for(let i = 0; i < oldMealplans.length; i++) {
+            const meals = await Meal.find({mealplanId : oldMealplans[i]._id});
+            for(let j = 0; j < meals.length; j++) {
+                if (Object.keys(usedMeals).includes(meals[j].mealId.toString())) {
+                    usedMeals[meals[j].mealId] = usedMeals[meals[j].mealId] + 1
+                } else {
+                    usedMeals[meals[j].mealId] = 1
+                }
+            }
+        }
+
+        let mealplan = await Mealplan.find({"date" : date });
+        if(mealplan.length == 0) {
+            mealplan = new Mealplan({
+                date,
+                userId: user._id
+            });
+            await mealplan.save();
+        } else {
+            mealplan = mealplan[0]
+        }
+
+
+        let dailyDesiredCalories;
+        if (user.monthlyGoal) {
+            dailyDesiredCalories = dailyBurnedCalories - user.monthlyGoal / 30.4 * 7700;
+        } else {
+            dailyDesiredCalories = dailyBurnedCalories;
+        }
+
+        // Avarage month: 30.4 days, 7700 calories in a kg of fat
+        const meals = cleverMealplanPicker(600, user.curGroceries, usedMeals);
         for (let i = 0; i < 3; i++) {
             const meal = new Meal({
                 mealplanId: mealplan._id,
-                mealId: i + 1
+                mealId: meals[i].id,
+                date : date,
+                factor: meals[i].factor
             });
-            meals.push(meal);
             await meal.save();
         }
+
+        console.log(getStatsFromMealplan(meals))
         res.status(200).json({
             msg: "Mealplan created successfully",
-            mealplan,
             meals
         });
     } catch (err) {
@@ -202,13 +248,40 @@ app.post("/api/diet/mealplan", verifyToken, async (req, res) => {
     }
 }); // Generates a mealplan + grocery list of need to buy + recipes
 
-// app.post("/api/diet/recipes"); // Get the generated recipes
+app.get("/api/diet/mealplan/:date", verifyToken, async (req, res) => {
+    let date = req.params.date;
+    date = date - (date % oneDayMs);
 
+    try {
+        let mealplan = Mealplan.find({"date" : date });
+        
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            msg: "Server error"
+        });
+    }
+    res.status(200).json({
+        msg: "Mealplan created successfully",
+    });
+})
+
+// app.post("/api/diet/snack")
+
+// app.post("/api/diet/recipes"); // Get the generated recipes
 
 // app.get("/api/stats/cur_intake"); // Get the daily status of a user
 
 // app.get("/api/stats/total_intake"); // Get the daily status of a user
 
+app.post("/api/flush", verifyToken, (req, res) => {
+    console.log('Flusing database.');
+    flush_database();
+    console.log('Flushed database succesfully.')
+    res.status(200).json({
+        msg: 'Flushed database'
+    })
+})
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

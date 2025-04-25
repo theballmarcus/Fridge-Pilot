@@ -72,6 +72,11 @@ function getRandom(min, max) {
     return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled); 
 }  
 
+function findMealCaloryFactor(meal, desiredCalories) {
+    const factor = Math.floor(desiredCalories / meal.calories)
+    return factor
+}
+
 function load_recipes() {
     const recipes = JSON.parse(fs.readFileSync('recipe_data/all_recipes.json', 'utf8'));
     return recipes;
@@ -119,7 +124,7 @@ function pickRandomRecipe() {
     return recipes[randomIndex];
 }
 
-function pickMeal(recipes, groceries, max_calories, catogory) {
+function pickMeal(recipes, groceries, max_calories, catogory, old_recipes) {
     /*
     This function picks a meal based on the user's groceries and calorie limit.
     It filters the recipes based on the groceries available and the calorie limit.
@@ -135,24 +140,27 @@ function pickMeal(recipes, groceries, max_calories, catogory) {
                 }
             }
         }
+        if (Object.keys(old_recipes).includes(recipe.id.toString())) { // If it has been eaten in the last 14 days, make the score lower.
+            score = score / old_recipes[recipe.id.toString()]
+        }
         return score;
     }
 
-    let meal_candidates = [];
+    let mealCandidates = [];
     const meals = recipes.filter(recipe => recipe.category.id === catogory && recipe.difficulty === "Easy");
     for(let i = 0; i < meals.length; i++) {
         if (meals[i].calories <= max_calories) {
-            meal_candidates.push(meals[i]);
+            mealCandidates.push(meals[i]);
         }
     }
-    let breakfast_scores = [];
-    for (let i = 0; i < meal_candidates.length; i++) {
-        breakfast_scores.push(scoreRecipe(meal_candidates[i], groceries));
+    let breakfastScores = [];
+    for (let i = 0; i < mealCandidates.length; i++) {
+        breakfastScores.push(scoreRecipe(mealCandidates[i], groceries));
     }
-    let meal_max_score = Math.max(...breakfast_scores);
-    let max_score_index = breakfast_scores.indexOf(meal_max_score);
-
-    return meal_candidates[max_score_index];
+    let mealMaxScore = Math.max(...breakfastScores);
+    let maxScoreIndex = breakfastScores.indexOf(mealMaxScore);
+    mealCandidates[maxScoreIndex].factor = findMealCaloryFactor(mealCandidates[maxScoreIndex], max_calories)
+    return mealCandidates[maxScoreIndex];
 }
 
 function cleverMealplanPicker(max_calories, groceries, old_recipes) { 
@@ -171,10 +179,9 @@ function cleverMealplanPicker(max_calories, groceries, old_recipes) {
     const dinner_category = getRandom(3,7);
 
     const recipes = load_recipes();
-    const breakfast = pickMeal(recipes, groceries, calories_morning, 1);
-    const lunch = pickMeal(recipes, groceries, calories_lunch, lunch_category);
-    const dinner = pickMeal(recipes, groceries, calories_dinner, dinner_category);
-
+    const breakfast = pickMeal(recipes, groceries, calories_morning, 1, old_recipes);
+    const lunch = pickMeal(recipes, groceries, calories_lunch, lunch_category, old_recipes);
+    const dinner = pickMeal(recipes, groceries, calories_dinner, dinner_category, old_recipes);
     return [breakfast, lunch, dinner];
 }
 
@@ -187,11 +194,13 @@ function getStatsFromMealplan(mealplan, groceries) {
 
     let groceries_needed = [];
 
+
     for (let i = 0; i < mealplan.length; i++) {
-        total_calories += mealplan[i].calories;
-        total_protein += mealplan[i].protein_in_grams;
-        total_fat += mealplan[i].fat_in_grams;
-        total_carbs += mealplan[i].carbohydrates_in_grams;
+        if(!mealplan[i].factor) mealplan[i].factor = 1;
+        total_calories += mealplan[i].calories * mealplan[i].factor;
+        total_protein += mealplan[i].protein_in_grams * mealplan[i].factor;
+        total_fat += mealplan[i].fat_in_grams * mealplan[i].factor;
+        total_carbs += mealplan[i].carbohydrates_in_grams * mealplan[i].factor;
     }
 
     return {
@@ -205,8 +214,7 @@ function getStatsFromMealplan(mealplan, groceries) {
 
 function calculateDailyCalories(gender, weight, height, age, activityLevel, ) {
     const activityFactors = [1.2, 1.375, 1.55, 1.725, 1.9];
-
-    if (!activityFactors[activityLevel]) {
+    if (!activityFactors[activityLevel - 1]) {
         throw new Error("Invalid activity level");
     }
 
@@ -217,17 +225,17 @@ function calculateDailyCalories(gender, weight, height, age, activityLevel, ) {
     return bmr * activityFactors[activityLevel - 1];
 }
 
-console.log(pickRandomRecipe());
+// console.log(pickRandomRecipe());
 
-const myGroceries = ["eggs", "milk", "chicken", "broccoli", "spinach"];
-const max_calories = 1600;
-const mealplan = cleverMealplanPicker(max_calories, myGroceries);
-console.log("Mealplan: ", mealplan);
-const stats = getStatsFromMealplan(mealplan, myGroceries);
-console.log("Stats: ", stats);
+// const myGroceries = ["eggs", "milk", "chicken", "broccoli", "spinach"];
+// const max_calories = 1600;
+// const mealplan = cleverMealplanPicker(max_calories, myGroceries);
+// console.log("Mealplan: ", mealplan);
+// const stats = getStatsFromMealplan(mealplan, myGroceries);
+// console.log("Stats: ", stats);
 
 module.exports = {
-    getAllRecipes,
     cleverMealplanPicker,
-    calculateDailyCalories
+    calculateDailyCalories,
+    getStatsFromMealplan
 };

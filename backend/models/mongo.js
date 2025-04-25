@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
         required: true
     },
     curGroceries: [String],
-    age: Number,
+    birthday: Number,       // timestamp
     gender: Boolean,        // 0 for mand, 1 for kvinde
     height: Number,
     weight: Number,
@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
 
 const mealplanSchema = new mongoose.Schema({
     date: {
-        type: Date,
+        type: Number,
         required: true
     },
     userId: {
@@ -40,7 +40,8 @@ const mealSchema = new mongoose.Schema({
     mealId: {
         type: Number,
         required: true
-    }
+    },
+    mealFactor: Number          // One meal might be too little calories, this factor is multiplied for calories
 });
 
 const User = mongoose.model('User', userSchema);
@@ -62,7 +63,7 @@ async function test() {
         });
 
         const mealplan = await Mealplan.create({
-            date: new Date(),
+            date: Date.now(),
             userId: user._id
         });
     
@@ -88,35 +89,16 @@ async function test() {
     }
 }
 
-function flush_database() {
-    User.deleteMany({}, (err) => {
-        if (err) {
-            console.error('Error deleting users:', err);
-        } else {
-            console.log('All users deleted');
-        }
-    });
-
-    Mealplan.deleteMany({}, (err) => {
-        if (err) {
-            console.error('Error deleting mealplans:', err);
-        } else {
-            console.log('All mealplans deleted');
-        }
-    });
-
-    Meal.deleteMany({}, (err) => {
-        if (err) {
-            console.error('Error deleting meals:', err);
-        } else {
-            console.log('All meals deleted');
-        }
-    });
+async function flush_database() {
+    await User.deleteMany({});
+    await Mealplan.deleteMany({});
+    await Meal.deleteMany({});
 }
 
 module.exports = {
     User,
     Mealplan,
     Meal,
-    test
+    test,
+    flush_database
 };
