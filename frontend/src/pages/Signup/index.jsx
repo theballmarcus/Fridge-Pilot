@@ -1,4 +1,5 @@
-import { Card, Button, Input, Checkbox, Timeline, Typography } from "@material-tailwind/react";
+import { useState, useEffect } from 'react';
+import { Card, Button, Input, Timeline, Typography } from "@material-tailwind/react";
 import { IconUser, IconAdjustmentsHorizontal } from '@tabler/icons-react';
 
 function SignupProgress(props) {
@@ -17,7 +18,7 @@ function SignupProgress(props) {
                         </Timeline.Icon>
                     </Timeline.Header>
                     <Timeline.Body className="text-center">
-                        <Typography type="h6" color={props.step === 0 ? "primary" : "inherit"}>
+                        <Typography type="h6" color="primary">
                             Trin 1
                         </Typography>
                         <Typography type="small">Kontodetaljer</Typography>
@@ -41,7 +42,7 @@ function SignupProgress(props) {
     );
 }
 
-function SignupAccountCard() {
+function SignupAccountCard({ onNext }) {
     return (
         <Card className="max-w-xs">
             <Card.Header
@@ -78,7 +79,7 @@ function SignupAccountCard() {
                     </Typography>
                     <Input id="password" type="password" placeholder="************" />
                 </div>
-                <Button isFullWidth>Opret konto</Button>
+                <Button isFullWidth onClick={onNext}>Opret konto</Button>
             </Card.Body>
             <Card.Footer className="text-center">
                 <Typography
@@ -101,14 +102,51 @@ function SignupAccountCard() {
     );
 }
 
+function DetailsCard() {
+    return (
+        <Card className="max-w-xs">
+            <Card.Header
+                as={Card}
+                color="primary"
+                className="grid h-24 place-items-center shadow-none"
+            >
+                <Typography as="span" type="h4" className="text-primary-foreground">
+                    Info om dig
+                </Typography>
+            </Card.Header>
+            <Card.Body>
+                <Typography>
+                    Her skal vi have noget info om personen på keto
+                </Typography>
+            </Card.Body>
+        </Card>
+    );
+}
 
 export default function Signup() {
+    const [currentStep, setCurrentStep] = useState(0);
+    const [showDetailsCard, setShowDetailsCard] = useState(false);
+
+    useEffect(() => {
+        if (currentStep === 0) window.location.hash = 'accountdetails';
+        else if (currentStep === 1) window.location.hash = 'userdetails';
+    }, [currentStep]);
+
+    const handleNextStep = () => {
+        setCurrentStep(1);
+        setShowDetailsCard(true);
+    };
+
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
-            <div className="flex flex-col items-center w-full max-w-md flex"> {/* Adjust max-w-md to your preferred width */}
-                <SignupAccountCard/>
+            <div className="flex flex-col items-center w-full max-w-md">
+                {showDetailsCard ? (
+                    <DetailsCard />
+                ) : (
+                    <SignupAccountCard onNext={handleNextStep} />
+                )}
                 <div className="mt-10 w-[300px]">
-                    <SignupProgress step={0}/>
+                    <SignupProgress step={currentStep} />
                 </div>
             </div>
         </div>
