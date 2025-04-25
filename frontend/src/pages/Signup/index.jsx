@@ -1,6 +1,6 @@
 import { useState, useEffect, forwardRef } from 'react';
-import { Menu, Card, Button, Input, Timeline, Typography } from "@material-tailwind/react";
-import { IconCircleArrowUp, IconUser, IconAdjustmentsHorizontal } from '@tabler/icons-react';
+import { Menu, Card, Select, IconButton, Button, Input, Timeline, Typography } from "@material-tailwind/react";
+import { IconPlus, IconMinus,IconCircleArrowUp, IconUser, IconAdjustmentsHorizontal } from '@tabler/icons-react';
 
 function SignupProgress(props) {
     return (
@@ -40,91 +40,6 @@ function SignupProgress(props) {
             </Timeline>
         </div>
     );
-}
-
-const ActivityItem = forwardRef(({ 
-  title, 
-  description,
-  onClick,
-  ...rest 
-}, ref) => {
-  return (
-    <Menu.Item 
-      ref={ref} 
-      {...rest} 
-      className="flex-col items-start p-3 hover:bg-gray-50"
-      onClick={onClick}
-    >
-      <Typography color="default" className="font-semibold">
-        {title}
-      </Typography>
-      <Typography type="small" className="text-gray-600 mt-1">
-        {description}
-      </Typography>
-    </Menu.Item>
-  );
-});
-
-function ActivityLevelDropdown({ value, onChange }) {
-  const activityLevels = [
-    {
-      id: 1,
-      title: "Stillesiddende",
-      description: "Lidt eller ingen motion, f.eks. et skrivebordsjob uden yderligere fysisk aktivitet"
-    },
-    {
-      id: 2,
-      title: "Let aktiv",
-      description: "Let motion 1-2 dage om ugen"
-    },
-    {
-      id: 3,
-      title: "Moderat aktiv",
-      description: "Moderat motion 3-5 dage/uge"
-    },
-    {
-      id: 4,
-      title: "Meget aktiv",
-      description: "Hård motion 6-7 dage/uge"
-    },
-    {
-      id: 5,
-      title: "Ekstremt aktiv",
-      description: "Hård daglig motion og fysisk arbejde eller træning to gange om dagen"
-    }
-  ];
-
-  const selectedLevel = activityLevels.find(level => level.id === value);
-  const buttonText = selectedLevel ? selectedLevel.title : "Vælg aktivitetsniveau";
-
-  const handleSelect = (levelId) => {
-    onChange(levelId);
-  };
-
-  return (
-    <Menu>
-      <Menu.Trigger
-        as={Button}
-        size="md"
-        className="flex items-center gap-2 border-gray-300 text-gray-700"
-      >
-        {buttonText}
-        <IconCircleArrowUp className="h-4 w-4 stroke-2 group-data-[open=true]:rotate-180" />
-      </Menu.Trigger>
-      <Menu.Content className="w-80 p-2 z-100">
-        <ul className="space-y-1">
-          {activityLevels.map((level) => (
-            <ActivityItem
-              key={level.id}
-              title={level.title}
-              description={level.description}
-              onClick={() => handleSelect(level.id)}
-            />
-          ))}
-        </ul>
-      </Menu.Content>
-    </Menu>
-  );
 }
 
 function SignupAccountCard({ onNext }) {
@@ -187,7 +102,186 @@ function SignupAccountCard({ onNext }) {
     );
 }
 
+function MonthDropdown({ selectedMonth, onSelect }) {
+    const months = [
+        { index: 0, name: "Januar" },
+        { index: 1, name: "Februar" },
+        { index: 2, name: "Marts" },
+        { index: 3, name: "April" },
+        { index: 4, name: "Maj" },
+        { index: 5, name: "Juni" },
+        { index: 6, name: "Juli" },
+        { index: 7, name: "August" },
+        { index: 8, name: "September" },
+        { index: 9, name: "Oktober" },
+        { index: 10, name: "November" },
+        { index: 11, name: "December" }
+    ];
+
+    const buttonText = typeof selectedMonth === 'number'
+        ? months.find(m => m.index === selectedMonth)?.name
+        : "Måned";
+
+    return (
+        <Menu>
+            <Menu.Trigger as={Button} className="w-[100px]">
+                {buttonText}
+            </Menu.Trigger>
+            <Menu.Content className="z-100">
+                {months.map((month) => (
+                    <Menu.Item
+                        key={month.index}
+                        onClick={() => onSelect(month.index)}
+                    >
+                        {month.name}
+                    </Menu.Item>
+                ))}
+            </Menu.Content>
+        </Menu>
+    );
+}
+
+function DaySelect({ selectedYear, selectedMonth, value, onChange }) {
+    const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
+
+    // Ensure the value stays within valid day range (1 to daysInMonth)
+    const handleDayChange = (newValue) => {
+        const clampedValue = Math.min(Math.max(newValue, 1), daysInMonth);
+        onChange(clampedValue);
+    };
+
+    return (
+        <div className="w-80">
+            <Typography>
+                Dag
+            </Typography>
+            <div className="relative w-[100px]">
+                <Input
+                    type="number"
+                    value={value || ""}
+                    onChange={(e) => handleDayChange(Number(e.target.value))}
+                    min={1}
+                    max={daysInMonth}
+                    className="placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    labelProps={{
+                        className: "before:content-none after:content-none",
+                    }}
+                    containerProps={{
+                        className: "min-w-0",
+                    }}
+                />
+                <div className="absolute right-1 top-1 flex gap-0.5">
+                    <IconButton
+                        size="s"
+                        className="rounded"
+                        onClick={() => handleDayChange((value || 1) - 1)}
+                        disabled={value <= 1}
+                    >
+                        <IconMinus/>
+                    </IconButton>
+                    <IconButton
+                        size="s"
+                        className="rounded"
+                        onClick={() => handleDayChange((value || 0) + 1)}
+                        disabled={value >= daysInMonth}
+                    >
+                        <IconPlus/>
+                    </IconButton>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+const ActivityItem = forwardRef(({
+    title,
+    description,
+    onClick,
+    ...rest
+}, ref) => {
+    return (
+        <Menu.Item
+            ref={ref}
+            {...rest}
+            className="flex-col items-start p-3 hover:bg-gray-50"
+            onClick={onClick}
+        >
+            <Typography color="default" className="font-semibold">
+                {title}
+            </Typography>
+            <Typography type="small" className="text-gray-600 mt-1">
+                {description}
+            </Typography>
+        </Menu.Item>
+    );
+});
+
+function ActivityLevelDropdown({ value, onChange }) {
+    const activityLevels = [
+        {
+            id: 1,
+            title: "Stillesiddende",
+            description: "Lidt eller ingen motion, f.eks. et skrivebordsjob uden yderligere fysisk aktivitet"
+        },
+        {
+            id: 2,
+            title: "Let aktiv",
+            description: "Let motion 1-2 dage om ugen"
+        },
+        {
+            id: 3,
+            title: "Moderat aktiv",
+            description: "Moderat motion 3-5 dage/uge"
+        },
+        {
+            id: 4,
+            title: "Meget aktiv",
+            description: "Hård motion 6-7 dage/uge"
+        },
+        {
+            id: 5,
+            title: "Ekstremt aktiv",
+            description: "Hård daglig motion og fysisk arbejde eller træning to gange om dagen"
+        }
+    ];
+
+    const selectedLevel = activityLevels.find(level => level.id === value);
+    const buttonText = selectedLevel ? selectedLevel.title : "Vælg aktivitetsniveau";
+
+    const handleSelect = (levelId) => {
+        onChange(levelId);
+    };
+
+    return (
+        <Menu>
+            <Menu.Trigger
+                as={Button}
+                size="md"
+                className="flex items-center gap-2 border-gray-300 text-gray-700"
+            >
+                {buttonText}
+                <IconCircleArrowUp className="h-4 w-4 stroke-2 group-data-[open=true]:rotate-180" />
+            </Menu.Trigger>
+            <Menu.Content className="w-80 p-2 z-100">
+                <ul className="space-y-1">
+                    {activityLevels.map((level) => (
+                        <ActivityItem
+                            key={level.id}
+                            title={level.title}
+                            description={level.description}
+                            onClick={() => handleSelect(level.id)}
+                        />
+                    ))}
+                </ul>
+            </Menu.Content>
+        </Menu>
+    );
+}
+
 function DetailsCard() {
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+    const [selectedDay, setSelectedDay] = useState(null);
     const [activityLevel, setActivityLevel] = useState(null);
 
     return (
@@ -203,11 +297,24 @@ function DetailsCard() {
             </Card.Header>
             <Card.Body className="flex justify-center flex-col">
                 <Typography>
+                    Fødselsdag
+                </Typography>
+                <MonthDropdown
+                    selectedMonth={selectedMonth}
+                    onSelect={setSelectedMonth}
+                />
+                <DaySelect
+                    selectedYear={selectedYear}
+                    selectedMonth={selectedMonth}
+                    value={selectedDay}
+                    onChange={setSelectedDay}
+                />
+                <Typography>
                     Hvor aktiv er du?
                 </Typography>
                 <ActivityLevelDropdown
-                      value={activityLevel} 
-                      onChange={setActivityLevel} 
+                    value={activityLevel}
+                    onChange={setActivityLevel}
                 />
             </Card.Body>
         </Card>
