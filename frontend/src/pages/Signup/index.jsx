@@ -33,7 +33,7 @@ function SignupProgress(props) {
                         <Typography type="h6" color={props.step === 1 ? "primary" : "inherit"}>
                             Trin 2
                         </Typography>
-                        <Typography type="small">Info om dig</Typography>
+                        <Typography type="small">Lidt om dig ...</Typography>
                     </Timeline.Body>
                 </Timeline.Item>
             </Timeline>
