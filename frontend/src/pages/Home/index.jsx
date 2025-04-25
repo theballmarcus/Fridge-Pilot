@@ -1,7 +1,7 @@
 import MainPageProgress from '../../components/MainPageProgress';
 import KetoGuidelines from '../../components/KetoGuidelines';
 import { Tabs } from "@material-tailwind/react";
-import { IconActivityHeartbeat } from '@tabler/icons-react';
+import { IconProgressCheck, IconCalendarWeek, IconFridge, IconActivityHeartbeat } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 
 function NavigationButton({ href, ...props }) {
@@ -21,6 +21,7 @@ export default function HomePage() {
     const pages = {
         DAILY_PROGRESS: 'dailyprogress',
         MEAL_PLAN: 'mealplan',
+        FRIDGE: 'fridge',
         HISTORY: 'history'
     };
 
@@ -34,14 +35,20 @@ export default function HomePage() {
             <Tabs defaultValue={defaultValue} className='mt-6'>
                 <Tabs.List className="w-full">
                     <NavigationButton href={'#' + pages.DAILY_PROGRESS} className="w-full" value={pages.DAILY_PROGRESS}>
+                        <IconProgressCheck></IconProgressCheck>
                         Dagens fremskridt
                     </NavigationButton>
                     <NavigationButton href={'#' + pages.MEAL_PLAN} className="w-full" value={pages.MEAL_PLAN}>
+                        <IconCalendarWeek></IconCalendarWeek>
                         Måltidsplan
+                    </NavigationButton>
+                    <NavigationButton href={'#' + pages.FRIDGE} className="w-full" value={pages.FRIDGE}>
+                        <IconFridge></IconFridge>
+                        Mit køleskab
                     </NavigationButton>
                     <NavigationButton href={'#' + pages.HISTORY} className="w-full" value={pages.HISTORY}>
                         <IconActivityHeartbeat></IconActivityHeartbeat>
-                        Historisk data
+                        Historik
                     </NavigationButton>
                     <Tabs.TriggerIndicator />
                 </Tabs.List>
@@ -52,13 +59,13 @@ export default function HomePage() {
                     </div>
                 </Tabs.Panel>
                 <Tabs.Panel value={pages.MEAL_PLAN}>
-                    Because it&apos;s about motivating the doers. Because I&apos;m here to
-                    follow my dreams and inspire other people to follow their dreams, too.
+                    Her kan du se de næste dages madplan
+                </Tabs.Panel>
+                <Tabs.Panel value={pages.FRIDGE}>
+                    Her kan du føje ting til dit digitale køleskab
                 </Tabs.Panel>
                 <Tabs.Panel value={pages.HISTORY}>
-                    We&apos;re not always in the position that we want to be at. We&apos;re
-                    constantly growing. We&apos;re constantly making mistakes. We&apos;re
-                    constantly trying to express ourselves and actualize our dreams.
+                    Her er historikken over dine måltider og statistik over vægttab
                 </Tabs.Panel>
             </Tabs>
         </>
