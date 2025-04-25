@@ -82,16 +82,8 @@ export default function MainPageProgress() {
                 </Breadcrumb.Link>
             </Breadcrumb>
         </div>
-        <div className="w-[500px]">
-            <hr className="my-4 my-4 border-gray-400"/>
-            <Typography type="h3" className="mb-6">Mine fremskidt</Typography>
-            <Progress size="lg" value={9/30*100}>
-                <Progress.Bar className="grid place-items-center">
-                    <Typography type="small" color="secondary">
-                        <b>9</b> / 30 kg tabt
-                    </Typography>
-                </Progress.Bar>
-            </Progress>
+        <div className="w-full mt-6">
+            <hr className="border-surface"/>
         </div>
         </div>
     </>

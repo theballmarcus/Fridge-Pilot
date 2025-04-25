@@ -32,42 +32,44 @@ export default function HomePage() {
 
     return (
         <>
-            <Tabs defaultValue={defaultValue} className='mt-6'>
-                <Tabs.List className="w-full">
-                    <NavigationButton href={'#' + pages.DAILY_PROGRESS} className="w-full" value={pages.DAILY_PROGRESS}>
-                        <IconProgressCheck></IconProgressCheck>
-                        Dagens fremskridt
-                    </NavigationButton>
-                    <NavigationButton href={'#' + pages.MEAL_PLAN} className="w-full" value={pages.MEAL_PLAN}>
-                        <IconCalendarWeek></IconCalendarWeek>
-                        Måltidsplan
-                    </NavigationButton>
-                    <NavigationButton href={'#' + pages.FRIDGE} className="w-full" value={pages.FRIDGE}>
-                        <IconFridge></IconFridge>
-                        Mit køleskab
-                    </NavigationButton>
-                    <NavigationButton href={'#' + pages.HISTORY} className="w-full" value={pages.HISTORY}>
-                        <IconActivityHeartbeat></IconActivityHeartbeat>
-                        Historik
-                    </NavigationButton>
-                    <Tabs.TriggerIndicator />
-                </Tabs.List>
-                <Tabs.Panel value={pages.DAILY_PROGRESS}>
-                    <div className="flex flex-row items-center justify-center h-screen">
-                        <div className="mx-8"><MainPageProgress></MainPageProgress></div>
-                        <div><KetoGuidelines></KetoGuidelines></div>
-                    </div>
-                </Tabs.Panel>
-                <Tabs.Panel value={pages.MEAL_PLAN}>
-                    Her kan du se de næste dages madplan
-                </Tabs.Panel>
-                <Tabs.Panel value={pages.FRIDGE}>
-                    Her kan du føje ting til dit digitale køleskab
-                </Tabs.Panel>
-                <Tabs.Panel value={pages.HISTORY}>
-                    Her er historikken over dine måltider og statistik over vægttab
-                </Tabs.Panel>
-            </Tabs>
+            <main className="grow">
+                <Tabs defaultValue={defaultValue} className='mt-6'>
+                    <Tabs.List className="w-full" id="header">
+                        <NavigationButton href={'#' + pages.DAILY_PROGRESS} className="w-full" value={pages.DAILY_PROGRESS}>
+                            <IconProgressCheck></IconProgressCheck>
+                            Dagens fremskridt
+                        </NavigationButton>
+                        <NavigationButton href={'#' + pages.MEAL_PLAN} className="w-full" value={pages.MEAL_PLAN}>
+                            <IconCalendarWeek></IconCalendarWeek>
+                            Måltidsplan
+                        </NavigationButton>
+                        <NavigationButton href={'#' + pages.FRIDGE} className="w-full" value={pages.FRIDGE}>
+                            <IconFridge></IconFridge>
+                            Mit køleskab
+                        </NavigationButton>
+                        <NavigationButton href={'#' + pages.HISTORY} className="w-full" value={pages.HISTORY}>
+                            <IconActivityHeartbeat></IconActivityHeartbeat>
+                            Historik
+                        </NavigationButton>
+                        <Tabs.TriggerIndicator />
+                    </Tabs.List>
+                    <Tabs.Panel value={pages.DAILY_PROGRESS}>
+                        <div className="flex flex-row items-center justify-between">
+                            <div className="mx-8"><MainPageProgress></MainPageProgress></div>
+                            <div><KetoGuidelines></KetoGuidelines></div>
+                        </div>
+                    </Tabs.Panel>
+                    <Tabs.Panel value={pages.MEAL_PLAN}>
+                        Her kan du se de næste dages madplan
+                    </Tabs.Panel>
+                    <Tabs.Panel value={pages.FRIDGE}>
+                        Her kan du føje ting til dit digitale køleskab
+                    </Tabs.Panel>
+                    <Tabs.Panel value={pages.HISTORY}>
+                        Her er historikken over dine måltider og statistik over vægttab
+                    </Tabs.Panel>
+                </Tabs>
+            </main>
         </>
     )
 }

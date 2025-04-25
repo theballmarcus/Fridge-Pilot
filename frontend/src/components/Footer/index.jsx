@@ -32,7 +32,7 @@ export default function Footer() {
                         ))}
                     </ul>
                 </div>
-                <hr className="my-4 text-foreground"/>
+                <hr className="my-4 border-surface"/>
                 <Typography className="text-center text-foreground">
                     &copy; {YEAR} FridgePilot co. FridgePilot og FridgePilot-logoet er blandt vores registrerede og uregistrerede varemærker i Danmark og andre lande.
                 </Typography>
