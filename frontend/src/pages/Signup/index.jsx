@@ -519,9 +519,9 @@ function ActivityLevelDropdown({ value, onChange }) {
     );
 }
 
-function handleDetailsSubmit(height, gender, year, month, day, activityLevel) {
+function handleDetailsSubmit(height, gender, year, month, day, weight, weightLossKgPrMonth, activityLevel) {
     const time = new Date(year, month, day).getTime();
-    console.log(height, time, activityLevel);
+    console.log(height, gender, time, weight, weightLossKgPrMonth, activityLevel);
 }
 
 function DetailsCard() {
