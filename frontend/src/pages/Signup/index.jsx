@@ -117,34 +117,30 @@ function HeightSelect({ value, onChange }) {
         <div>
             <div className="relative w-[116px]">
                 <Input
-                    type="number"
-                    value={value}
+                    value={value + ' cm'}
                     onChange={(e) => handleHeightChange(Number(e.target.value))}
                     min={1}
                     max={maxHeight}
                     className="border-gray-300 text-gray-700 placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    labelProps={{
-                        className: "before:content-none after:content-none",
-                    }}
                     containerProps={{
                         className: "min-w-0",
                     }}
                 />
                 <div className="absolute right-1 top-1 flex gap-0.5">
                     <IconButton
-                        size="sm"
+                        size="s"
                         variant="ghost"
                         className="rounded"
-                        onClick={() => handleHeightChange((value || 1) - 1)}
+                        onClick={() => handleHeightChange((value) - 1)}
                         disabled={value <= 0}
                     >
                         <IconMinus />
                     </IconButton>
                     <IconButton
-                        size="sm"
+                        size="s"
                         variant="ghost"
                         className="rounded"
-                        onClick={() => handleHeightChange((value || 0) + 1)}
+                        onClick={() => handleHeightChange((value) + 1)}
                         disabled={value >= maxHeight}
                     >
                         <IconPlus />
@@ -223,28 +219,25 @@ function YearSelect({ value, onChange }) {
                     min={1}
                     max={currentYear}
                     className="border-gray-300 text-gray-700 placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    labelProps={{
-                        className: "before:content-none after:content-none",
-                    }}
                     containerProps={{
                         className: "min-w-0",
                     }}
                 />
                 <div className="absolute right-1 top-1 flex gap-0.5">
                     <IconButton
-                        size="sm"
+                        size="s"
                         variant="ghost"
                         className="rounded"
-                        onClick={() => handleYearChange((value || 1) - 1)}
+                        onClick={() => handleYearChange((value) - 1)}
                         disabled={value <= 0}
                     >
                         <IconMinus />
                     </IconButton>
                     <IconButton
-                        size="sm"
+                        size="s"
                         variant="ghost"
                         className="rounded"
-                        onClick={() => handleYearChange((value || 0) + 1)}
+                        onClick={() => handleYearChange((value) + 1)}
                         disabled={value >= currentYear}
                     >
                         <IconPlus />
@@ -314,16 +307,13 @@ function DaySelect({ selectedYear, selectedMonth, value, onChange }) {
                     min={1}
                     max={daysInMonth}
                     className="border-gray-300 text-gray-700 placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    labelProps={{
-                        className: "before:content-none after:content-none",
-                    }}
                     containerProps={{
                         className: "min-w-0",
                     }}
                 />
                 <div className="absolute right-1 top-1 flex gap-0.5">
                     <IconButton
-                        size="sm"
+                        size="s"
                         variant="ghost"
                         className="rounded"
                         onClick={() => handleDayChange((value) - 1)}
@@ -332,11 +322,108 @@ function DaySelect({ selectedYear, selectedMonth, value, onChange }) {
                         <IconMinus />
                     </IconButton>
                     <IconButton
-                        size="sm"
+                        size="s"
                         variant="ghost"
                         className="rounded"
                         onClick={() => handleDayChange((value) + 1)}
                         disabled={value >= daysInMonth}
+                    >
+                        <IconPlus />
+                    </IconButton>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function WeightSelect({ value, onChange }) {
+    const maxWeight = 300; // kg
+    value ??= 110;
+
+    const handleWeightChange = (newValue) => {
+        const clampedValue = Math.min(Math.max(newValue, 0), maxWeight);
+        value = clampedValue
+        onChange(value);
+    };
+
+    return (
+        <div>
+            <div className="relative w-[140px]">
+                <Input
+                    value={value + " kg"}
+                    onChange={(e) => handleWeightChange(Number(e.target.value))}
+                    min={1}
+                    max={maxWeight}
+                    className="border-gray-300 text-gray-700 placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    containerProps={{
+                        className: "min-w-0",
+                    }}
+                />
+                <div className="absolute right-1 top-1 flex gap-0.5">
+                    <IconButton
+                        size="s"
+                        variant="ghost"
+                        className="rounded"
+                        onClick={() => handleWeightChange((value) - 1)}
+                        disabled={value <= 0}
+                    >
+                        <IconMinus />
+                    </IconButton>
+                    <IconButton
+                        size="s"
+                        variant="ghost"
+                        className="rounded"
+                        onClick={() => handleWeightChange((value) + 1)}
+                        disabled={value >= maxWeight}
+                    >
+                        <IconPlus />
+                    </IconButton>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function WeightLossSelect({ value, onChange }) {
+    const maxLoss = 4;
+    value ??= 1.5;
+
+    const handleWeightLossChange = (newValue) => {
+        const clampedValue = Math.min(Math.max(newValue, 0), maxLoss);
+        const floatFixedValue = Math.round(clampedValue * 10) / 10
+        value = floatFixedValue;
+        onChange(value);
+    };
+
+    return (
+        <div>
+            <div className="relative w-full">
+                <Input
+                    value={String(value).padEnd(3, '.0') + " kg/md."}
+                    onChange={(e) => handleWeightLossChange(Number(e.target.value))}
+                    min={1}
+                    max={maxLoss}
+                    className="border-gray-300 text-gray-700 placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    containerProps={{
+                        className: "min-w-0",
+                    }}
+                />
+                <div className="absolute right-1 top-1 flex gap-0.5">
+                    <IconButton
+                        size="s"
+                        variant="ghost"
+                        className="rounded"
+                        onClick={() => handleWeightLossChange((value) - 0.1)}
+                        disabled={value <= 0}
+                    >
+                        <IconMinus />
+                    </IconButton>
+                    <IconButton
+                        size="s"
+                        variant="ghost"
+                        className="rounded"
+                        onClick={() => handleWeightLossChange((value) + 0.1)}
+                        disabled={value >= maxLoss}
                     >
                         <IconPlus />
                     </IconButton>
@@ -432,12 +519,19 @@ function ActivityLevelDropdown({ value, onChange }) {
     );
 }
 
+function handleDetailsSubmit(height, gender, year, month, day, activityLevel) {
+    const time = new Date(year, month, day).getTime();
+    console.log(height, time, activityLevel);
+}
+
 function DetailsCard() {
     const [selectedHeight, setSelectedHeight] = useState(null);
     const [selectedGender, setSelectedGender] = useState('male');
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
     const [selectedDay, setSelectedDay] = useState(null);
+    const [selectedWeight, setSelectedWeight] = useState(null);
+    const [selectedWeightLoss, setSelectedWeightLoss] = useState(null);
     const [activityLevel, setActivityLevel] = useState(null);
 
     return (
@@ -477,8 +571,7 @@ function DetailsCard() {
                     </div>
                 </div>
 
-
-                <Typography className="mt-6">
+                <Typography className="mt-4">
                     Fødselsdag
                 </Typography>
                 <div className="flex flex-row justify-between w-full">
@@ -497,7 +590,32 @@ function DetailsCard() {
                         onChange={setSelectedDay}
                     />
                 </div>
-                <Typography className="mt-6">
+                <div className="grid grid-cols-[150px_1fr] mt-4">
+                    <div>
+                        <Typography className="mt6">
+                            Nuværende vægt
+                        </Typography>
+                    </div>
+                    <div>
+                        <Typography>
+                            Tab pr. måned
+                        </Typography>
+                    </div>
+                    <div>
+                        <WeightSelect
+                            value={selectedWeight}
+                            onChange={setSelectedWeight}
+                        />
+                    </div>
+                    <div className="flex items-center">
+                        <WeightLossSelect
+                            value={selectedWeightLoss}
+                            onChange={setSelectedWeightLoss}
+                        />
+                    </div>
+                </div>
+
+                <Typography className="mt-4">
                     Hvor aktiv er du?
                 </Typography>
                 <ActivityLevelDropdown
@@ -505,7 +623,7 @@ function DetailsCard() {
                     onChange={setActivityLevel}
                 />
                 <hr className="my-6 border-surface" />
-                <Button isFullWidth>Fortsæt</Button>
+                <Button isFullWidth onClick={() => handleDetailsSubmit(selectedHeight, selectedGender, selectedYear, selectedMonth, selectedDay, selectedWeight, selectedWeightLoss, activityLevel)}>Fortsæt</Button>
 
             </Card.Body>
         </Card>
