@@ -1,5 +1,5 @@
 import { useState, useEffect, forwardRef } from 'react';
-import { Menu, Card, Select, IconButton, Button, Input, Timeline, Typography } from "@material-tailwind/react";
+import { Menu, Card, Radio, IconButton, Button, Input, Timeline, Typography } from "@material-tailwind/react";
 import { IconPlus, IconMinus, IconCircleArrowUp, IconUser, IconAdjustmentsHorizontal } from '@tabler/icons-react';
 
 function SignupProgress(props) {
@@ -102,6 +102,106 @@ function SignupAccountCard({ onNext }) {
     );
 }
 
+function HeightSelect({ value, onChange }) {
+    const maxHeight = 250; // cm
+    value ??= 180;
+
+    const handleHeightChange = (newValue) => {
+        const clampedValue = Math.min(Math.max(newValue, 0), maxHeight);
+        value = clampedValue
+        onChange(value);
+    };
+
+    return (
+        <div>
+            <div className="relative w-[116px]">
+                <Input
+                    type="number"
+                    value={value}
+                    onChange={(e) => handleHeightChange(Number(e.target.value))}
+                    min={1}
+                    max={maxHeight}
+                    className="border-gray-300 text-gray-700 placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    labelProps={{
+                        className: "before:content-none after:content-none",
+                    }}
+                    containerProps={{
+                        className: "min-w-0",
+                    }}
+                />
+                <div className="absolute right-1 top-1 flex gap-0.5">
+                    <IconButton
+                        size="sm"
+                        variant="ghost"
+                        className="rounded"
+                        onClick={() => handleHeightChange((value || 1) - 1)}
+                        disabled={value <= 0}
+                    >
+                        <IconMinus />
+                    </IconButton>
+                    <IconButton
+                        size="sm"
+                        variant="ghost"
+                        className="rounded"
+                        onClick={() => handleHeightChange((value || 0) + 1)}
+                        disabled={value >= maxHeight}
+                    >
+                        <IconPlus />
+                    </IconButton>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function GenderSelect({ value, onChange }) {
+    const handleGenderChange = (gender) => {
+        onChange(gender);
+    };
+
+    return (
+        <div className="flex flex-col gap-2">
+            <Radio
+                value={value}
+                onChange={(e) => handleGenderChange(e.target.value)}
+                className="flex flex-col gap-2"
+            >
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                        <Radio.Item
+                            id="male"
+                            value="male"
+                            ripple="false"
+                        />
+                        <Typography
+                            as="label"
+                            htmlFor="male"
+                            className="cursor-pointer text-foreground"
+                        >
+                            Mand
+                        </Typography>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <Radio.Item
+                            id="female"
+                            value="female"
+                            ripple="false"
+                        />
+                        <Typography
+                            as="label"
+                            htmlFor="female"
+                            className="cursor-pointer text-foreground"
+                        >
+                            Kvinde
+                        </Typography>
+                    </div>
+                </div>
+            </Radio>
+        </div>
+    );
+}
+
 function YearSelect({ value, onChange }) {
     const currentYear = new Date().getFullYear();
     value ??= currentYear;
@@ -113,7 +213,7 @@ function YearSelect({ value, onChange }) {
     };
 
     return (
-        <div className="w-80">
+        <div>
             <div className="relative w-[116px]">
                 <Input
                     type="number"
@@ -204,7 +304,7 @@ function DaySelect({ selectedYear, selectedMonth, value, onChange }) {
     };
 
     return (
-        <div className="w-80">
+        <div>
             <div className="relative w-[94px]">
                 <Input
                     type="number"
@@ -332,6 +432,8 @@ function ActivityLevelDropdown({ value, onChange }) {
 }
 
 function DetailsCard() {
+    const [selectedHeight, setSelectedHeight] = useState(null);
+    const [selectedGender, setSelectedGender] = useState('male');
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
     const [selectedDay, setSelectedDay] = useState(null);
@@ -345,36 +447,64 @@ function DetailsCard() {
                 className="grid h-24 place-items-center shadow-none"
             >
                 <Typography as="span" type="h4" className="text-primary-foreground">
-                    Lad os skræddersy din keto!
+                    Lad skræddersy din keto!
                 </Typography>
             </Card.Header>
             <Card.Body className="flex justify-center flex-col">
-                <Typography>
+                <div className="grid grid-cols-[130px_1fr]">
+                    <div>
+                        <Typography>
+                            Højde
+                        </Typography>
+                    </div>
+                    <div>
+                        <Typography>
+                            Køn
+                        </Typography>
+                    </div>
+                    <div>
+                        <HeightSelect
+                            value={selectedHeight}
+                            onChange={setSelectedHeight}
+                        />
+                    </div>
+                    <div className="flex items-center">
+                        <GenderSelect
+                            value={selectedGender}
+                            onChange={setSelectedGender}
+                        />
+                    </div>
+                </div>
+
+
+                <Typography className="mt-6">
                     Fødselsdag
                 </Typography>
                 <div className="flex flex-row justify-between w-full">
                     <YearSelect
-                        onChange={setSelectedYear}
                         value={selectedYear}
+                        onChange={setSelectedYear}
                     />
                     <MonthDropdown
                         selectedMonth={selectedMonth}
                         onSelect={setSelectedMonth}
                     />
                     <DaySelect
+                        value={selectedDay}
                         selectedYear={selectedYear}
                         selectedMonth={selectedMonth}
-                        value={selectedDay}
                         onChange={setSelectedDay}
                     />
                 </div>
-                <Typography>
+                <Typography className="mt-6">
                     Hvor aktiv er du?
                 </Typography>
                 <ActivityLevelDropdown
                     value={activityLevel}
                     onChange={setActivityLevel}
                 />
+                <hr className="my-6 border-surface" />
+
             </Card.Body>
         </Card>
     );
