@@ -1,6 +1,6 @@
 import { useState, useEffect, forwardRef } from 'react';
 import { Menu, Card, Select, IconButton, Button, Input, Timeline, Typography } from "@material-tailwind/react";
-import { IconPlus, IconMinus,IconCircleArrowUp, IconUser, IconAdjustmentsHorizontal } from '@tabler/icons-react';
+import { IconPlus, IconMinus, IconCircleArrowUp, IconUser, IconAdjustmentsHorizontal } from '@tabler/icons-react';
 
 function SignupProgress(props) {
     return (
@@ -102,6 +102,58 @@ function SignupAccountCard({ onNext }) {
     );
 }
 
+function YearSelect({ value, onChange }) {
+    const currentYear = new Date().getFullYear();
+    value ??= currentYear;
+
+    const handleYearChange = (newValue) => {
+        const clampedValue = Math.min(Math.max(newValue, 0), currentYear);
+        value = clampedValue
+        onChange(value);
+    };
+
+    return (
+        <div className="w-80">
+            <div className="relative w-[116px]">
+                <Input
+                    type="number"
+                    value={value}
+                    onChange={(e) => handleYearChange(Number(e.target.value))}
+                    min={1}
+                    max={currentYear}
+                    className="border-gray-300 text-gray-700 placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    labelProps={{
+                        className: "before:content-none after:content-none",
+                    }}
+                    containerProps={{
+                        className: "min-w-0",
+                    }}
+                />
+                <div className="absolute right-1 top-1 flex gap-0.5">
+                    <IconButton
+                        size="sm"
+                        variant="ghost"
+                        className="rounded"
+                        onClick={() => handleYearChange((value || 1) - 1)}
+                        disabled={value <= 0}
+                    >
+                        <IconMinus />
+                    </IconButton>
+                    <IconButton
+                        size="sm"
+                        variant="ghost"
+                        className="rounded"
+                        onClick={() => handleYearChange((value || 0) + 1)}
+                        disabled={value >= currentYear}
+                    >
+                        <IconPlus />
+                    </IconButton>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 function MonthDropdown({ selectedMonth, onSelect }) {
     const months = [
         { index: 0, name: "Januar" },
@@ -124,7 +176,7 @@ function MonthDropdown({ selectedMonth, onSelect }) {
 
     return (
         <Menu>
-            <Menu.Trigger as={Button} className="w-[100px]">
+            <Menu.Trigger as={Button} className="w-[200px] rounded shadow-sm border-gray-300 text-gray-700" variant="ghost" size="sm">
                 {buttonText}
             </Menu.Trigger>
             <Menu.Content className="z-100">
@@ -143,6 +195,7 @@ function MonthDropdown({ selectedMonth, onSelect }) {
 
 function DaySelect({ selectedYear, selectedMonth, value, onChange }) {
     const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
+    value ??= new Date().getDate();
 
     // Ensure the value stays within valid day range (1 to daysInMonth)
     const handleDayChange = (newValue) => {
@@ -152,17 +205,14 @@ function DaySelect({ selectedYear, selectedMonth, value, onChange }) {
 
     return (
         <div className="w-80">
-            <Typography>
-                Dag
-            </Typography>
-            <div className="relative w-[100px]">
+            <div className="relative w-[94px]">
                 <Input
                     type="number"
-                    value={value || ""}
+                    value={value}
                     onChange={(e) => handleDayChange(Number(e.target.value))}
                     min={1}
                     max={daysInMonth}
-                    className="placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="border-gray-300 text-gray-700 placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     labelProps={{
                         className: "before:content-none after:content-none",
                     }}
@@ -172,20 +222,22 @@ function DaySelect({ selectedYear, selectedMonth, value, onChange }) {
                 />
                 <div className="absolute right-1 top-1 flex gap-0.5">
                     <IconButton
-                        size="s"
+                        size="sm"
+                        variant="ghost"
                         className="rounded"
-                        onClick={() => handleDayChange((value || 1) - 1)}
+                        onClick={() => handleDayChange((value) - 1)}
                         disabled={value <= 1}
                     >
-                        <IconMinus/>
+                        <IconMinus />
                     </IconButton>
                     <IconButton
-                        size="s"
+                        size="sm"
+                        variant="ghost"
                         className="rounded"
-                        onClick={() => handleDayChange((value || 0) + 1)}
+                        onClick={() => handleDayChange((value) + 1)}
                         disabled={value >= daysInMonth}
                     >
-                        <IconPlus/>
+                        <IconPlus />
                     </IconButton>
                 </div>
             </div>
@@ -257,7 +309,8 @@ function ActivityLevelDropdown({ value, onChange }) {
             <Menu.Trigger
                 as={Button}
                 size="md"
-                className="flex items-center gap-2 border-gray-300 text-gray-700"
+                variant="ghost"
+                className="flex items-center gap-2 shadow-sm border-gray-300 text-gray-700"
             >
                 {buttonText}
                 <IconCircleArrowUp className="h-4 w-4 stroke-2 group-data-[open=true]:rotate-180" />
@@ -299,16 +352,22 @@ function DetailsCard() {
                 <Typography>
                     Fødselsdag
                 </Typography>
-                <MonthDropdown
-                    selectedMonth={selectedMonth}
-                    onSelect={setSelectedMonth}
-                />
-                <DaySelect
-                    selectedYear={selectedYear}
-                    selectedMonth={selectedMonth}
-                    value={selectedDay}
-                    onChange={setSelectedDay}
-                />
+                <div className="flex flex-row justify-between w-full">
+                    <YearSelect
+                        onChange={setSelectedYear}
+                        value={selectedYear}
+                    />
+                    <MonthDropdown
+                        selectedMonth={selectedMonth}
+                        onSelect={setSelectedMonth}
+                    />
+                    <DaySelect
+                        selectedYear={selectedYear}
+                        selectedMonth={selectedMonth}
+                        value={selectedDay}
+                        onChange={setSelectedDay}
+                    />
+                </div>
                 <Typography>
                     Hvor aktiv er du?
                 </Typography>
