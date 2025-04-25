@@ -39,7 +39,7 @@ export default function MainPageProgress() {
         </div>
         <div>
             <Breadcrumb className="gap-0.5 mt-10">
-                <Breadcrumb.Link className="rounded bg-secondary px-2 py-1 text-secondary-foreground">
+                <Breadcrumb.Link className="flex justify-center w-[200px] rounded bg-secondary px-2 py-1 text-secondary-foreground">
                     <div className="grid grid-rows-2 grid-cols-[auto_auto] items-center">
                         <div className="w-fit col-span-1 row-span-1">
                             <IconWheat color={"rgb(255 175 36 / 1.0)"} />
@@ -53,7 +53,7 @@ export default function MainPageProgress() {
                     </div>
                 </Breadcrumb.Link>
                 <Breadcrumb.Separator>·</Breadcrumb.Separator>
-                <Breadcrumb.Link className="rounded bg-secondary px-2 py-1 text-secondary-foreground">
+                <Breadcrumb.Link className="flex justify-center w-[200px] rounded bg-secondary px-2 py-1 text-secondary-foreground">
                     <div className="grid grid-rows-2 grid-cols-[auto_auto] items-center">
                         <div className="w-fit col-span-1 row-span-1">
                             <IconMeat color={"rgb(48 120 186 / 1.0)"} />
@@ -67,7 +67,7 @@ export default function MainPageProgress() {
                     </div>
                 </Breadcrumb.Link>
                 <Breadcrumb.Separator>·</Breadcrumb.Separator>
-                <Breadcrumb.Link className="rounded bg-secondary px-2 py-1 text-secondary-foreground">
+                <Breadcrumb.Link className="flex justify-center w-[200px] rounded bg-secondary px-2 py-1 text-secondary-foreground">
                     <div className="grid grid-rows-2 grid-cols-[auto_auto] items-center">
                         <div className="w-fit col-span-1 row-span-1">
                             <IconDroplet color={"rgb(248 70 67 / 1.0)"} />

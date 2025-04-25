@@ -25,19 +25,19 @@ export default function Footer() {
                     <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
                         {LINKS.map(({ title, href }, key) => (
                             <li key={key}>
-                                <Typography as="a" href={href} className="hover:text-primary">
+                                <Typography as="a" href={href} className="text-foreground hover:text-primary">
                                     {title}
                                 </Typography>
                             </li>
                         ))}
                     </ul>
                 </div>
-                <hr className="my-4 my-4 border-gray-400" />
-                <Typography className="text-center">
-                    &copy; {YEAR} FridgePilot
+                <hr className="my-4 text-foreground"/>
+                <Typography className="text-center text-foreground">
+                    &copy; {YEAR} FridgePilot co. FridgePilot og FridgePilot-logoet er blandt vores registrerede og uregistrerede varemærker i Danmark og andre lande.
                 </Typography>
-
             </div>
+            <div className="w-16 ml-8"></div>
         </footer>
     );
 }
