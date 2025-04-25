@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Card, Button, Input, Timeline, Typography } from "@material-tailwind/react";
-import { IconUser, IconAdjustmentsHorizontal } from '@tabler/icons-react';
+import { useState, useEffect, forwardRef } from 'react';
+import { Menu, Card, Button, Input, Timeline, Typography } from "@material-tailwind/react";
+import { IconCircleArrowUp, IconUser, IconAdjustmentsHorizontal } from '@tabler/icons-react';
 
 function SignupProgress(props) {
     return (
@@ -40,6 +40,91 @@ function SignupProgress(props) {
             </Timeline>
         </div>
     );
+}
+
+const ActivityItem = forwardRef(({ 
+  title, 
+  description,
+  onClick,
+  ...rest 
+}, ref) => {
+  return (
+    <Menu.Item 
+      ref={ref} 
+      {...rest} 
+      className="flex-col items-start p-3 hover:bg-gray-50"
+      onClick={onClick}
+    >
+      <Typography color="default" className="font-semibold">
+        {title}
+      </Typography>
+      <Typography type="small" className="text-gray-600 mt-1">
+        {description}
+      </Typography>
+    </Menu.Item>
+  );
+});
+
+function ActivityLevelDropdown({ value, onChange }) {
+  const activityLevels = [
+    {
+      id: 1,
+      title: "Stillesiddende",
+      description: "Lidt eller ingen motion, f.eks. et skrivebordsjob uden yderligere fysisk aktivitet"
+    },
+    {
+      id: 2,
+      title: "Let aktiv",
+      description: "Let motion 1-2 dage om ugen"
+    },
+    {
+      id: 3,
+      title: "Moderat aktiv",
+      description: "Moderat motion 3-5 dage/uge"
+    },
+    {
+      id: 4,
+      title: "Meget aktiv",
+      description: "Hård motion 6-7 dage/uge"
+    },
+    {
+      id: 5,
+      title: "Ekstremt aktiv",
+      description: "Hård daglig motion og fysisk arbejde eller træning to gange om dagen"
+    }
+  ];
+
+  const selectedLevel = activityLevels.find(level => level.id === value);
+  const buttonText = selectedLevel ? selectedLevel.title : "Vælg aktivitetsniveau";
+
+  const handleSelect = (levelId) => {
+    onChange(levelId);
+  };
+
+  return (
+    <Menu>
+      <Menu.Trigger
+        as={Button}
+        size="md"
+        className="flex items-center gap-2 border-gray-300 text-gray-700"
+      >
+        {buttonText}
+        <IconCircleArrowUp className="h-4 w-4 stroke-2 group-data-[open=true]:rotate-180" />
+      </Menu.Trigger>
+      <Menu.Content className="w-80 p-2 z-100">
+        <ul className="space-y-1">
+          {activityLevels.map((level) => (
+            <ActivityItem
+              key={level.id}
+              title={level.title}
+              description={level.description}
+              onClick={() => handleSelect(level.id)}
+            />
+          ))}
+        </ul>
+      </Menu.Content>
+    </Menu>
+  );
 }
 
 function SignupAccountCard({ onNext }) {
@@ -103,6 +188,8 @@ function SignupAccountCard({ onNext }) {
 }
 
 function DetailsCard() {
+    const [activityLevel, setActivityLevel] = useState(null);
+
     return (
         <Card className="max-w-xs">
             <Card.Header
@@ -111,13 +198,17 @@ function DetailsCard() {
                 className="grid h-24 place-items-center shadow-none"
             >
                 <Typography as="span" type="h4" className="text-primary-foreground">
-                    Info om dig
+                    Lad os skræddersy din keto!
                 </Typography>
             </Card.Header>
-            <Card.Body>
+            <Card.Body className="flex justify-center flex-col">
                 <Typography>
-                    Her skal vi have noget info om personen på keto
+                    Hvor aktiv er du?
                 </Typography>
+                <ActivityLevelDropdown
+                      value={activityLevel} 
+                      onChange={setActivityLevel} 
+                />
             </Card.Body>
         </Card>
     );
