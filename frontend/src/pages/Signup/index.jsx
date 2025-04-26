@@ -117,7 +117,8 @@ function HeightSelect({ value, onChange }) {
         <div>
             <div className="relative w-[116px]">
                 <Input
-                    value={value + ' cm'}
+                    type='number'
+                    value={value}
                     onChange={(e) => handleHeightChange(Number(e.target.value))}
                     min={1}
                     max={maxHeight}
@@ -126,6 +127,7 @@ function HeightSelect({ value, onChange }) {
                         className: "min-w-0",
                     }}
                 />
+                <Typography className='absolute right-14 top-3 h-5 w-5 text-gray-700 text-xs'>cm</Typography>
                 <div className="absolute right-1 top-1 flex gap-0.5">
                     <IconButton
                         size="s"
@@ -350,7 +352,8 @@ function WeightSelect({ value, onChange }) {
         <div>
             <div className="relative w-[140px]">
                 <Input
-                    value={value + " kg"}
+                    type="number"
+                    value={value}
                     onChange={(e) => handleWeightChange(Number(e.target.value))}
                     min={1}
                     max={maxWeight}
@@ -359,6 +362,7 @@ function WeightSelect({ value, onChange }) {
                         className: "min-w-0",
                     }}
                 />
+                <Typography className='absolute right-14 top-3 h-5 w-5 text-gray-700 text-xs'>kg</Typography>
                 <div className="absolute right-1 top-1 flex gap-0.5">
                     <IconButton
                         size="s"
@@ -399,15 +403,17 @@ function WeightLossSelect({ value, onChange }) {
         <div>
             <div className="relative w-full">
                 <Input
-                    value={String(value).padEnd(3, '.0') + " kg/md."}
+                    type="number"
+                    value={value}
                     onChange={(e) => handleWeightLossChange(Number(e.target.value))}
                     min={1}
                     max={maxLoss}
-                    className="border-gray-300 text-gray-700 placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-[140px] border-gray-300 text-gray-700 placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     containerProps={{
                         className: "min-w-0",
                     }}
                 />
+                <Typography className='absolute right-19 top-3 h-5 w-5 text-gray-700 text-xs'>kg/md.</Typography>
                 <div className="absolute right-1 top-1 flex gap-0.5">
                     <IconButton
                         size="s"
