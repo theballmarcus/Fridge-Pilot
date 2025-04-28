@@ -39,7 +39,7 @@ post_mealplan:
 	curl -s -X POST http://localhost:8080/api/diet/mealplan \
 		-H "Content-Type: application/json" \
 		-H "Authorization: Bearer $$TOKEN" \
-		-d "{\"date\": 1745569512581}"
+		-d "{\"date\": 1745578986509}"
 	@echo "\nMealplan posted"
 	
 flush_database:
@@ -51,12 +51,20 @@ flush_database:
 	@echo "\nDatabase flushed"
 
 get_mealplan:
-	@echo "Flushing database"
+	@echo "Getting mealplan"
 	@TOKEN=$$(jq -r '.token' $(TOKEN_FILE)); \
-	curl -s -X GET http://localhost:8080/api/diet/mealplan/1745576260483 \
+	curl -s -X GET http://localhost:8080/api/diet/mealplan/1745578986509 \
 		-H "Content-Type: application/json" \
 		-H "Authorization: Bearer $$TOKEN" 
-	@echo "\nDatabase flushed"
+	@echo "\nGot mealplan"
+
+get_snack:
+	@echo "Getting snack"
+	@TOKEN=$$(jq -r '.token' $(TOKEN_FILE)); \
+	curl -s -X GET http://localhost:8080/api/diet/snack/200 \
+		-H "Content-Type: application/json" \
+		-H "Authorization: Bearer $$TOKEN" 
+	@echo "\nGot snack"
 
 test_flow:
 	@$(MAKE) register_user RANDOM_USER=$(RANDOM_USER)

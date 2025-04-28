@@ -225,6 +225,15 @@ function calculateDailyCalories(gender, weight, height, age, activityLevel, ) {
     return bmr * activityFactors[activityLevel - 1];
 }
 
+function getMealFromId(id) {
+    const recipes = load_recipes();
+    for(let i = 0; i < recipes.length; i++) {
+        if(recipes[i].id == id) {
+            return recipes[i]
+        }
+    }
+}
+
 // console.log(pickRandomRecipe());
 
 // const myGroceries = ["eggs", "milk", "chicken", "broccoli", "spinach"];
@@ -237,5 +246,8 @@ function calculateDailyCalories(gender, weight, height, age, activityLevel, ) {
 module.exports = {
     cleverMealplanPicker,
     calculateDailyCalories,
-    getStatsFromMealplan
+    getStatsFromMealplan,
+    getMealFromId,
+    pickMeal,
+    load_recipes
 };
