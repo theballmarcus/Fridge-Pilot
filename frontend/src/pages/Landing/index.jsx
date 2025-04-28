@@ -24,7 +24,7 @@ export default function LandingPage() {
 
                         {/* Centered Content */}
                         <h1 className="text-4xl md:text-6xl font-bold text-white">
-                            Nem keto-diæt med <span className="text-primary">FridgePilot</span>
+                            Nem keto diæt med <span className="text-primary">FridgePilot</span>
                         </h1>
                         <div className="flex gap-4 mt-6">
                             <Button size="lg" onClick={() => navigate('/signup')}>Sign Up</Button>
@@ -56,19 +56,19 @@ export default function LandingPage() {
                             <ul className="list-none space-y-2 text-left">
                                 <li className="flex items-start">
                                     <span className="text-success mr-2">✔</span>
-                                    Udarbejder en skræddersyet keto diæt baseret på dine fysiske data som vægt, højde og aktivitetsniveau.
+                                    Udarbejd en skræddersyet keto diæt baseret på dine fysiske datapunkter: vægt, højde & aktivitetsniveau
                                 </li>
                                 <li className="flex items-start">
                                     <span className="text-success mr-2">✔</span>
-                                    Tilpasser måltider automatisk efter de ingredienser, du allerede har i dit køleskab, så intet går til spilde.
+                                    Automatisk tilpassede måltider efter de ingredienser, du allerede har i dit køleskab, så intet går til spilde
                                 </li>
                                 <li className="flex items-start">
                                     <span className="text-success mr-2">✔</span>
-                                    Finder manglende ingredienser i Salling-supermarkeder og foreslår køb, så du hurtigt kan færdiggøre dine måltider uden forvirring
+                                    Find manglende ingredienser i supermarkeder og foreslå køb, så du hurtigt kan færdiggøre dine måltider uden problemer
                                 </li>
                                 <li className="flex items-start">
                                     <span className="text-success mr-2">✔</span>
-                                    Justerer dine keto-måltider løbende for at sikre optimal makro- og mikronæringsstofbalance uden manuel tracking, og tillader cheat days
+                                    Justér dine keto-måltider løbende for at sikre optimal makro- og mikronæringsstofbalance uden den manuelle tracking, og plads til cheat meals
                                 </li>
                             </ul>
                         </div>
