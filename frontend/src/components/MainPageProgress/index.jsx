@@ -5,6 +5,7 @@ import { IconFlame, IconWheat, IconMeat, IconDroplet } from '@tabler/icons-react
 import ChangeUserWeight from '../../components/ChangeUserWeight';
 import CalorieAddRemove from '../../components/CalorieAddRemove';
 import axios from 'axios';
+import { useTheme } from "next-themes";
 
 function addOrRemoveCalories(calorieCount) {
     console.log('Calories: ', calorieCount);
@@ -101,6 +102,20 @@ export default function MainPageProgress() {
         fetchData();
     }, []);
 
+    const { theme } = useTheme();
+    const [vars, setVars] = React.useState(null);
+
+    React.useEffect(() => {
+        const cssVarValue = window.getComputedStyle(document.documentElement);
+        setVars(cssVarValue);
+    }, [theme]);
+
+    const colorPrimary = vars ? vars.getPropertyValue("--color-primary") : '';
+    const colorInfo = vars ? vars.getPropertyValue("--color-info") : '';
+    const colorSuccess = vars ? vars.getPropertyValue("--color-success") : '';
+
+    console.log(colorPrimary, colorInfo, colorSuccess);
+
     
     // Render calorie count out of desired daily calorie count
     // Within, render weight loss in kgs out of desired weight loss
@@ -112,21 +127,21 @@ export default function MainPageProgress() {
                 <div className="absolute size-[300px]">
                     <CircularProgressbar value={carbs / dailyCarbs * 100} strokeWidth="5" styles={{
                         path: {
-                            stroke: 'rgb(248 70 67 / 1.0)'
+                            stroke: `rgb(${colorPrimary} / 1.0)`
                         }
                     }} />
                 </div>
                 <div className="absolute size-[258px]">
                     <CircularProgressbar value={protein / dailyProtein * 100} strokeWidth="6" styles={{
                         path: {
-                            stroke: 'rgb(48 120 186 / 1.0)'
+                            stroke: `rgb(${colorInfo} / 1.0)`
                         }
                     }} />
                 </div>
                 <div className="absolute size-[216px]">
                     <CircularProgressbarWithChildren strokeWidth="7" value={fat / dailyFat * 100} styles={{
                         path: {
-                            stroke: 'rgb(255 175 36 / 1.0)'
+                            stroke: `rgb(${colorSuccess} / 1.0)`
                         }
                     }}>
                         <div className="flex justify-center items-center">
@@ -144,7 +159,7 @@ export default function MainPageProgress() {
                     <Breadcrumb.Link className="flex justify-center rounded-lg border border-surface px-2 py-1 text-secondary-foreground">
                         <div className="grid grid-rows-2 grid-cols-[auto_auto] items-center p-2">
                             <div className="w-fit col-span-1 row-span-1">
-                                <IconWheat color={"rgb(248 70 67 / 1.0)"} />
+                                <IconWheat color={`rgb(${colorPrimary} / 1.0)`} />
                             </div>
                             <div className="w-fit col-span-1 row-span-1">
                                 <Typography type="h6">Kulhydrater</Typography>
@@ -158,7 +173,7 @@ export default function MainPageProgress() {
                     <Breadcrumb.Link className="flex justify-center rounded-lg border border-surface px-2 py-1 text-secondary-foreground">
                         <div className="grid grid-rows-2 grid-cols-[auto_auto] items-center p-2">
                             <div className="w-fit col-span-1 row-span-1">
-                                <IconMeat color={"rgb(48 120 186 / 1.0)"} />
+                                <IconMeat color={`rgb(${colorInfo} / 1.0)`} />
                             </div>
                             <div className="w-fit col-span-1 row-span-1">
                                 <Typography type="h6">Protein</Typography>
@@ -172,7 +187,7 @@ export default function MainPageProgress() {
                     <Breadcrumb.Link className="flex justify-center rounded-lg border border-surface px-2 py-1 text-secondary-foreground">
                         <div className="grid grid-rows-2 grid-cols-[auto_auto] items-center p-2">
                             <div className="w-fit col-span-1 row-span-1">
-                                <IconDroplet color={"rgb(255 175 36 / 1.0)"} />
+                                <IconDroplet color={`rgb(${colorSuccess} / 1.0)`} />
                             </div>
                             <div className="w-fit col-span-1 row-span-1">
                                 <Typography type="h6">Fedt</Typography>

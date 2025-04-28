@@ -1,4 +1,5 @@
 import Today from '../Today';
+import History from '../History';
 import { Tabs } from "@material-tailwind/react";
 import { IconProgressCheck, IconCalendarWeek, IconFridge, IconActivityHeartbeat } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
@@ -62,7 +63,7 @@ export default function HomePage() {
                         Her kan du føje ting til dit digitale køleskab
                     </Tabs.Panel>
                     <Tabs.Panel value={pages.HISTORY}>
-                        Her er historikken over dine måltider og statistik over vægttab
+                        <History/>
                     </Tabs.Panel>
                 </Tabs>
             </main>
