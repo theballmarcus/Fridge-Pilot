@@ -334,6 +334,45 @@ app.get("/api/diet/snack/:calories", verifyToken, async (req, res) => {
         });
     }
 });
+
+app.get("/api/diet/stats/:date", verifyToken, async (req, res) => {
+    let date = req.params.date;
+    date = date - (date % oneDayMs);
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(400).json({ msg: "User not found" });
+        const mealplans = await Mealplan.find({"date" : date, userId : req.user.id});
+        if(mealplans.length === 0) {
+            res.status(404).json({
+                msg: "No mealplan found with date"
+            });
+        }
+        let mealplan = mealplans[0];
+        for(let i = 0; i < mealplans.length; i++) {
+            if (mealplans[i].inactive == false) {
+                mealplan = mealplans[i];
+            }
+        }
+        const meals = await Meal.find({mealplanId : mealplan._id});
+        let mealObjects = []
+        for(let j = 0; j < meals.length; j++) {
+            const meal = getMealFromId(meals[j].mealId);
+            meal.factor = meals[j].mealFactor;
+            mealObjects.push(meal)
+        }
+        const stats = getStatsFromMealplan(mealObjects);
+        res.status(200).json({
+            msg: "Stats generated successfully",
+            stats
+        });
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            msg: "Server error"
+        });
+    }
+});
+
 // app.post("/api/diet/recipes"); // Get the generated recipes
 
 // app.get("/api/stats/cur_intake"); // Get the daily status of a user
