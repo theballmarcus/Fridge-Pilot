@@ -73,7 +73,7 @@ function LoginCard() {
                     e.preventDefault();
                     handleLoginSubmit(mail, password).then(() => {
                         console.log('Login successful');
-                        window.location.href = '/';
+                        window.location.href = '/home';
                     }).catch((error) => {
                         console.error('Login failed:', error);
                         setError(error)
