@@ -2,11 +2,16 @@ import React from 'react';
 import { CircularProgressbar, CircularProgressbarWithChildren } from 'react-circular-progressbar';
 import { Typography, Breadcrumb } from "@material-tailwind/react";
 import { IconFlame, IconWheat, IconMeat, IconDroplet } from '@tabler/icons-react';
+import ChangeUserWeight from '../../components/ChangeUserWeight';
 import CalorieAddRemove from '../../components/CalorieAddRemove';
 import axios from 'axios';
 
 function addOrRemoveCalories(calorieCount) {
     console.log('Calories: ', calorieCount);
+}
+
+function changeUserWeight(newWeight) {
+    console.log('Weight', newWeight)
 }
 
 export default function MainPageProgress() {
@@ -16,9 +21,13 @@ export default function MainPageProgress() {
     const [carbs, setCarbs] = React.useState(0);
     const [dailyCalories, setDailyCalories] = React.useState(0);
     const [addRemoveCalories, setAddRemoveCalories] = React.useState(0);
+
+    // FIXME: set component weight to user weight
+    const [userWeight, setUserWeight] = React.useState(0);
+
     const [dailyProtein, setDailyProtein] = React.useState(0);
     const [dailyFat, setDailyFat] = React.useState(0);
-    const [dailyCarbs, setDailyCarbs] = React.useState(0);    
+    const [dailyCarbs, setDailyCarbs] = React.useState(0);
     React.useEffect(() => {
         const date = Date.now();
         const token = localStorage.getItem('token');
@@ -107,7 +116,8 @@ export default function MainPageProgress() {
                     </CircularProgressbarWithChildren>
                 </div>
             </div>
-            <div>
+            <div className="w-[600px] flex flex-col justify-center items-center">
+                <ChangeUserWeight value={userWeight} onChange={setUserWeight} onSubmit={changeUserWeight} />
                 <CalorieAddRemove value={addRemoveCalories} onChange={setAddRemoveCalories} onSubmit={addOrRemoveCalories} />
                 <Breadcrumb className="gap-0.5 mt-6">
                     <Breadcrumb.Link className="flex justify-center rounded-lg border border-surface px-2 py-1 text-secondary-foreground">
