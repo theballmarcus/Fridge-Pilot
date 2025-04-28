@@ -47,29 +47,30 @@ function SignupProgress(props) {
 function handleSignupSubmit(email, password) {
     return new Promise((resolve, reject) => {
         try {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
-            if (!(emailRegex.test(email))) throw 'Indtast gyldig e-mail'
-            if (!(passwordRegex).test(password))
-                throw 'Adgangskoden skal indeholde et ciffer fra 1 til 9, et lille bogstav, et stort bogstav, et specialtegn, ingen mellemrum, og skal være mellem 8-16 tegn langt'
+            // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            // const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
+            // if (!(emailRegex.test(email))) throw 'Indtast gyldig e-mail'
+            // if (!(passwordRegex).test(password))
+            //     throw 'Adgangskoden skal indeholde et ciffer fra 1 til 9, et lille bogstav, et stort bogstav, et specialtegn, ingen mellemrum, og skal være mellem 8-16 tegn langt'
             
             axios.post('http://localhost:8080/api/auth/register', {
                 mail: email,
                 password: password
             }).then(response => {
+                if(response.status !== 201) throw 'Bruger eksisterer allerede';
                 localStorage.setItem('token', response.data.token);
+                return resolve({
+                    email,
+                    password
+                });
             }).catch(error => {
                 console.error('Error:', error);
+                throw 'Fejl ved at oprette konto';
             });
               
         } catch (err) {
             return reject(err);
         }
-
-        return resolve({
-            email,
-            password
-        });
     });
 }
 
@@ -580,7 +581,6 @@ function handleDetailsSubmit(height, gender, year, month, day, weight, weightLos
             if (!weight) throw 'Indtast din nuværende vægt';
             if (!weightLossKgPrMonth) throw 'Indtast ønsket vægttab pr. måned';
             if (!activityLevel) throw 'Vælg dit aktivitetsniveau';
-            console.log('Token:', token, 'Height:', height, 'gender', gender, 'year', year, 'month', month, 'day', day, 'weight', weight, 'weightLossKgPrMonth', weightLossKgPrMonth, 'activityLevel', activityLevel);
             const birthday = new Date(year, month, day).getTime();
             axios.post('http://localhost:8080/api/auth/register_details', {
                 birthday : birthday, 

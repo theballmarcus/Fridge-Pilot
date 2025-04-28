@@ -1,6 +1,37 @@
 import { Card, Button, Input, Typography } from "@material-tailwind/react";
+import { useState } from "react";
+import axios from 'axios';
+
+function handleLoginSubmit(mail, password) {
+    return new Promise((resolve, reject) => {
+        try {
+            axios.post('http://localhost:8080/api/auth/login', {
+                mail: mail,
+                password: password
+            }).then(response => {
+                if(response.status === 400) {
+                    throw 'Forkerte loginoplysninger'
+                }
+                localStorage.setItem('token', response.data.token);
+
+                resolve({ mail, password });
+            }).catch(error => {
+                console.error('Login error:', error);
+                throw 'Fejl i login'
+            });
+        } catch (error) {
+            console.error('Error:', error);
+            reject(error);
+        }
+    });
+}
 
 function LoginCard() {
+    const [mail, setMail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const [error, setError] = useState(null);
+
     return (
         <Card className="max-w-xs">
             <Card.Header
@@ -23,7 +54,7 @@ function LoginCard() {
                     >
                         E-mail
                     </Typography>
-                    <Input id="email" type="email" placeholder="din@e-mail.dk" />
+                    <Input id="email" type="email" placeholder="din@e-mail.dk" value={mail} onChange={(e) => setMail(e.target.value)}/>
                 </div>
                 <div className="mb-4 space-y-1.5">
                     <Typography
@@ -35,9 +66,19 @@ function LoginCard() {
                     >
                         Kodeord
                     </Typography>
-                    <Input id="password" type="password" placeholder="************" />
+                    <Input id="password" type="password" placeholder="************"  value={password} onChange={(e) => setPassword(e.target.value)} />
                 </div>
-                <Button isFullWidth>Log ind</Button>
+                <Button type="submit" isFullWidth onClick={(e) => {
+                    console.log('Login button clicked');
+                    e.preventDefault();
+                    handleLoginSubmit(mail, password).then(() => {
+                        console.log('Login successful');
+                        window.location.href = '/home';
+                    }).catch((error) => {
+                        console.error('Login failed:', error);
+                        setError(error)
+                    });
+                }}>Log ind</Button>
             </Card.Body>
             <Card.Footer className="text-center">
                 <Typography

@@ -1,10 +1,19 @@
 import { Button } from "@material-tailwind/react";
+import { useEffect, useState } from "react";
 import background from '../../assets/landing.jpg';
 import banner from '../../assets/banner.png';
 
 export default function LandingPage() {
     console.log(background);
-
+    const [_, setToken] = useState(null);
+    useEffect(() => {
+        const storedToken = localStorage.getItem('token');
+        if (storedToken) {
+            setToken(storedToken);
+            document.location.pathname = "/home";
+        }
+    }, []);
+    
     return (
         <>
             <style>{`
