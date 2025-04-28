@@ -2,8 +2,63 @@ import React from 'react';
 import { CircularProgressbar, CircularProgressbarWithChildren } from 'react-circular-progressbar';
 import { Typography, Breadcrumb } from "@material-tailwind/react";
 import { IconFlame, IconWheat, IconMeat, IconDroplet } from '@tabler/icons-react';
+import axios from 'axios';
 
 export default function MainPageProgress() {
+    const [calories, setCalories] = React.useState(0);
+    const [protein, setProtein] = React.useState(0);
+    const [fat, setFat] = React.useState(0);
+    const [carbs, setCarbs] = React.useState(0);
+    const [dailyCalories, setDailyCalories] = React.useState(0);
+    React.useEffect(() => {
+        const date = Date.now();
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            console.error('No token found in local storage');
+            return;
+        }
+        const fetchStats = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/diet/stats/${date}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                return response;
+            } catch (error) {
+                return error;
+            }
+        }
+        const fetchData = async () => {
+            let statsResponse = await fetchStats();
+            if (statsResponse.status === 200) {
+                console.log('Stats fetched successfully');
+                
+            } else if (statsResponse.status === 404) {
+                const mealplanResponse = await axios.post(`http://localhost:8080/api/diet/mealplan`, {
+                    date: date
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (mealplanResponse.status === 200) {
+                    console.log('Mealplan generated successfully');
+                    statsResponse = await fetchStats();
+                }
+            }            
+            console.log(statsResponse.data);
+            setCalories(statsResponse.data.stats.total_calories);
+            setProtein(statsResponse.data.stats.total_protein);
+            setFat(statsResponse.data.stats.total_fat);
+            setCarbs(statsResponse.data.stats.total_carbs);
+            setDailyCalories(statsResponse.data.dailyBurnedCalories);
+        }
+        fetchData();
+    }, []);
+
+    
     // Render calorie count out of desired daily calorie count
     // Within, render weight loss in kgs out of desired weight loss
     return <>
@@ -12,28 +67,28 @@ export default function MainPageProgress() {
             <hr className="w-full my-6 border-surface"/>
             <div className="relative w-[300px] h-[300px] flex items-center justify-center">
                 <div className="absolute size-[300px]">
-                    <CircularProgressbar value={Math.random() * 100} strokeWidth="5" styles={{
+                    <CircularProgressbar value={carbs} strokeWidth="5" styles={{
                         path: {
                             stroke: 'rgb(248 70 67 / 1.0)'
                         }
                     }} />
                 </div>
                 <div className="absolute size-[258px]">
-                    <CircularProgressbar value={Math.random() * 100} strokeWidth="6" styles={{
+                    <CircularProgressbar value={protein} strokeWidth="6" styles={{
                         path: {
                             stroke: 'rgb(48 120 186 / 1.0)'
                         }
                     }} />
                 </div>
                 <div className="absolute size-[216px]">
-                    <CircularProgressbarWithChildren strokeWidth="7" value={Math.random() * 100} styles={{
+                    <CircularProgressbarWithChildren strokeWidth="7" value={fat} styles={{
                         path: {
                             stroke: 'rgb(255 175 36 / 1.0)'
                         }
                     }}>
                         <div className="flex justify-center items-center">
                             <IconFlame size={50} />
-                            <Typography type="h5">953</Typography><span>/1200</span>
+                            <Typography type="h5">{ calories }</Typography><span>/{dailyCalories}</span>
                         </div>
                         <span>Kalorier i dag</span>
                     </CircularProgressbarWithChildren>

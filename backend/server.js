@@ -142,6 +142,10 @@ monthlyGoal: Number     (kg of fat pr. month)
         if (activityLevel) {
             if (activityLevel >= 1 && activityLevel <= 5) {
                 user.activityLevel = activityLevel
+            } else {
+                return res.status(400).json({
+                    msg: "Invalid activity level"
+                });
             }
         };
         if (monthlyGoal) user.monthlyGoal = monthlyGoal;
@@ -225,6 +229,7 @@ app.post("/api/diet/mealplan", verifyToken, async (req, res) => {
         const user = await User.findById(req.user.id);
         if (!user) return res.status(400).json({ msg: "User not found" });
         var age = new Date(new Date() - new Date(user.birthday)).getFullYear() - 1970;
+
         const dailyBurnedCalories = calculateDailyCalories(user.gender, user.weight, user.height, age, user.activityLevel); 
 
         const oldMealplans = await Mealplan.find({"date" : {$gte: date - daysBeforeReset}, userId : req.user.id});
@@ -341,11 +346,18 @@ app.get("/api/diet/stats/:date", verifyToken, async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
         if (!user) return res.status(400).json({ msg: "User not found" });
+
+        var age = new Date(new Date() - new Date(user.birthday)).getFullYear() - 1970;
+
+        const dailyBurnedCalories = Math.round(calculateDailyCalories(user.gender, user.weight, user.height, age, user.activityLevel)); 
+
         const mealplans = await Mealplan.find({"date" : date, userId : req.user.id});
+        console.log(mealplans)
         if(mealplans.length === 0) {
             res.status(404).json({
                 msg: "No mealplan found with date"
             });
+            return;
         }
         let mealplan = mealplans[0];
         for(let i = 0; i < mealplans.length; i++) {
@@ -353,6 +365,7 @@ app.get("/api/diet/stats/:date", verifyToken, async (req, res) => {
                 mealplan = mealplans[i];
             }
         }
+        console.log("GET:", mealplan)
         const meals = await Meal.find({mealplanId : mealplan._id});
         let mealObjects = []
         for(let j = 0; j < meals.length; j++) {
@@ -362,8 +375,9 @@ app.get("/api/diet/stats/:date", verifyToken, async (req, res) => {
         }
         const stats = getStatsFromMealplan(mealObjects);
         res.status(200).json({
-            msg: "Stats generated successfully",
-            stats
+            msg: "Stats get successfully",
+            stats,
+            dailyBurnedCalories,
         });
     } catch (err) {
         console.log(err)
