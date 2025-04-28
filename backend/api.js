@@ -242,76 +242,60 @@ if(process.env.OPENAI_ENABLED === 'true') {
     });
 }
 
-let searched_products = {};
-
 /* CHATGPT */
-async function getMealPrice(meal) {
-    // ASK CHATGPT FOR GENERAL PRODUCT NAMES FROM INGREDIENTS
-    // For example, if the ingredient is "chicken breast", you might want to search for "chicken" 
-    console.log(meal)
-    let products = ""
-    for (let i = 0; i < 10; i++) {
-        if(meal[`ingredient_${i+1}`] != null) {
-            products += meal[`measurement_${i+1}`] + ";" + meal[`ingredient_${i+1}`] + "\n"
+async function getMealTranslationAndGuess(meal, callback) {
+    try {
+        let products = ""
+        let instructions = "";
+        for (let i = 0; i < 10; i++) {
+            if(meal[`ingredient_${i+1}`] != null) {
+                products += meal[`measurement_${i+1}`] + ";" + meal[`ingredient_${i+1}`] + "\n"
+            }
+            if(meal[`directions_step_${i+1}`] != null) {
+                instructions += meal[`directions_step_${i+1}`] + "\n"
+            }
         }
-    }
-    if(openai !== null) {
-        const prompt  = `I have this list of ingredients: 
-        ${products}.
-        Make the names way more simple. For example, if the ingredient is "chicken breast", I want to search for "chicken". If the ingredient is parmesan cheese, I want to search for cheese. Also make the units metric and the product names danish.
-        Respond ONLY with following JSON format so it can be parsed:
-        [["product_name", "product_quantity", "product_unit"], ["product_name", "product_quantity", "product_unit"], ...]`;
+        if(openai !== null) {
+            const prompt  = `I have this list of ingredients: 
+            ${products}.
+            And I have instructions:
+            ${instructions}.
+            Translate the names to danish, make the units metric. Also translate the instructions to danish.
+            I need to know the estimated price of each ingredient in kr.
+            Respond ONLY with following JSON format so it can be parsed:
+            {"products" : [["product_name", "product_quantity", "product_unit", "estimated_price in kr"], ["product_name", "product_quantity", "product_unit", "estimated_price in kr"]], "instructions" : "instructions"}`;
 
-        const gptResponse = await openai.chat.completions.create({
-            model: 'gpt-4o-mini',
-            messages: [
-                {
-                    role: 'user',
-                    content: prompt
-                }
-            ],
-            max_tokens: 100,
-        });
-        
-        message = gptResponse.choices[0].message.content.trim();                
-        console.log(gptResponse.choices[0].message.content)
-        if (message.startsWith('```json')) {
-            message = message.slice(7, -3);
-        }
-        goods = JSON.parse(message);
-        console.log(goods)
-
-        let lowest_price_goods = []
-        // Now search api
-        try {
-            for(let i = 0; i < 1; i++) {
-                let response;
-                if(goods[i][0] in searched_products) {
-                    response = searched_products[goods[i][0]];
-                } else {
-                    response = await axios.get('https://api.sallinggroup.com/v1/product-suggestions/relevant-products', {
-                        params: {
-                            query: goods[i][0],
-                        },
-                        headers: {
-                            Authorization: 'Bearer ' + process.env.SALLING_GROUP_AUTH
-                        }
-                    });
-                    searched_products[goods[i][0]] = response.data.suggestions;
-                }
-                
-                let lowest_price = [0, ""];
-                for(let j = 0; j < response.data.suggestions.length; j++) {
-                    if(response.data.suggestions[j].price < lowest_price[0] || lowest_price[0] == 0) {
-                        lowest_price[0] = response.data.suggestions[j].price;
-                        lowest_price[1] = response.data.suggestions[j].name;
+            const gptResponse = await openai.chat.completions.create({
+                model: 'gpt-4o-mini',
+                messages: [
+                    {
+                        role: 'user',
+                        content: prompt
                     }
+                ],
+                max_tokens: 300,
+            });
+            
+            message = gptResponse.choices[0].message.content.trim();                
+            console.log(gptResponse.choices[0].message.content)
+            if (message.startsWith('```json')) {
+                message = message.slice(7, -3);
+            }
+            parsed = JSON.parse(message);
+            console.log(parsed)
+
+            let total_price = 0;
+            for (let i = 0; i < parsed.products.length; i++) {
+                if (parsed.products[i][3] != null) {
+                    total_price += parseFloat(parsed['products'][i][3]);
                 }
             }
-        
-        } catch (error) {
-            console.error('Error fetching products:', error.response?.data || error.message);
+            parsed['total_price'] = total_price;
+            callback(parsed); 
         }
+    } catch (error) {
+        console.error('Error in getMealTranslationAndGuess:', error);
+        callback(null);
     }
 }
 
@@ -322,5 +306,5 @@ module.exports = {
     getMealFromId,
     pickMeal,
     load_recipes,
-    getMealPrice
+    getMealTranslationAndGuess
 };
