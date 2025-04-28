@@ -52,7 +52,7 @@ function handleSignupSubmit(email, password) {
             // if (!(emailRegex.test(email))) throw 'Indtast gyldig e-mail'
             // if (!(passwordRegex).test(password))
             //     throw 'Adgangskoden skal indeholde et ciffer fra 1 til 9, et lille bogstav, et stort bogstav, et specialtegn, ingen mellemrum, og skal være mellem 8-16 tegn langt'
-            
+
             axios.post('http://localhost:8080/api/auth/register', {
                 mail: email,
                 password: password
@@ -133,11 +133,13 @@ function SignupAccountCard({ show, onNext, setDetails }) {
                 <hr className="my-6 border-surface" />
                 <Button isFullWidth onClick={(e) => {
                     e.preventDefault();
+                    setError(null);
                     handleSignupSubmit(email, password)
                         .then(result => {
                             setError(null);
                             onNext(result);
-                        }).catch(err => setError(err))}}>Fortsæt</Button>
+                        }).catch(err => setError(err))
+                }}>Fortsæt</Button>
                 <MissingInput errorMessage={error} />
             </Card.Body>
             <Card.Footer className="text-center">
@@ -149,7 +151,7 @@ function SignupAccountCard({ show, onNext, setDetails }) {
                     <Typography
                         type="small"
                         as="a"
-                        href="#"
+                        href="/login"
                         color="primary"
                         className="font-bold"
                     >
@@ -586,22 +588,22 @@ function handleDetailsSubmit(height, gender, year, month, day, weight, weightLos
             if (!activityLevel) throw 'Vælg dit aktivitetsniveau';
             const birthday = new Date(year, month, day).getTime();
             axios.post('http://localhost:8080/api/auth/register_details', {
-                birthday : birthday, 
-                gender: gender === 'male' ? 0 : 1, 
-                height : height, 
-                weight : weight, 
-                activityLevel : activityLevel, 
-                monthlyGoal : weightLossKgPrMonth
-            },  
-            {
-                headers: {
-                  Authorization: `Bearer ${token}`
-                }
-            }).then(response => {
-                console.log(response)
-            }).catch(error => {
-                console.error('Error:', error);
-            });
+                birthday: birthday,
+                gender: gender === 'male' ? 0 : 1,
+                height: height,
+                weight: weight,
+                activityLevel: activityLevel,
+                monthlyGoal: weightLossKgPrMonth
+            },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(response => {
+                    console.log(response)
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
 
         } catch (err) {
             return reject(err);
@@ -720,7 +722,8 @@ function DetailsCard({ show, onNext, setDetails }) {
                     onChange={setActivityLevel}
                 />
                 <hr className="my-6 border-surface" />
-                <Button isFullWidth onClick={() =>
+                <Button isFullWidth onClick={(e) => {
+                    e.preventDefault();
                     handleDetailsSubmit(
                         selectedHeight,
                         selectedGender,
@@ -734,7 +737,9 @@ function DetailsCard({ show, onNext, setDetails }) {
                         .then(result => {
                             setError(null);
                             onNext(result);
-                        }).catch(err => setError(err))}>Opret konto</Button>
+                        }).catch(err => setError(err))
+                }
+                }>Opret konto</Button>
                 <MissingInput errorMessage={error} />
             </Card.Body>
         </Card>
@@ -752,6 +757,7 @@ export default function Signup() {
     }, [signupStep]);
 
     const handleNextStep = (stepData) => {
+        console.log(stepData, signupStep);
         switch (signupStep) {
             case 0:
                 setLoginDetails(stepData);
@@ -759,8 +765,8 @@ export default function Signup() {
                 break;
             case 1:
                 setUserDetails(stepData);
-                console.log(loginDetails);
-                console.log(stepData);
+
+                window.location.pathname = '/home';
                 break;
             default:
                 throw new Error('Unhandled signup step');
