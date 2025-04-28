@@ -118,14 +118,11 @@ function SignupAccountCard({ show, onNext, setDetails }) {
                 </div>
                 <hr className="my-6 border-surface" />
                 <Button isFullWidth onClick={() =>
-                    handleSignupSubmit(
-                        email,
-                        password
-                    ).then(result => {
-                        setError(null);
-                        setDetails(result);
-                        onNext();
-                    }).catch(err => setError(err))}>Fortsæt</Button>
+                    handleSignupSubmit(email, password)
+                        .then(result => {
+                            setError(null);
+                            onNext(result);
+                        }).catch(err => setError(err))}>Fortsæt</Button>
                 <MissingInput errorMessage={error} />
             </Card.Body>
             <Card.Footer className="text-center">
@@ -697,11 +694,11 @@ function DetailsCard({ show, onNext, setDetails }) {
                         selectedWeight,
                         selectedWeightLoss,
                         activityLevel
-                    ).then(result => {
-                        setDetails(result);
-                        setError(null);
-                        onNext();
-                    }).catch(err => setError(err))}>Opret konto</Button>
+                    )
+                        .then(result => {
+                            setError(null);
+                            onNext(result);
+                        }).catch(err => setError(err))}>Opret konto</Button>
                 <MissingInput errorMessage={error} />
             </Card.Body>
         </Card>
@@ -718,14 +715,16 @@ export default function Signup() {
         else if (signupStep === 1) window.location.hash = 'userdetails';
     }, [signupStep]);
 
-    const handleNextStep = () => {
+    const handleNextStep = (stepData) => {
         switch (signupStep) {
             case 0:
+                setLoginDetails(stepData);
                 setSignupStep(signupStep + 1);
                 break;
             case 1:
+                setUserDetails(stepData);
                 console.log(loginDetails);
-                console.log(userDetails);
+                console.log(stepData);
                 break;
             default:
                 throw new Error('Unhandled signup step');
