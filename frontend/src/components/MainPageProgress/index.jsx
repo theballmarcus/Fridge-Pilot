@@ -2,7 +2,12 @@ import React from 'react';
 import { CircularProgressbar, CircularProgressbarWithChildren } from 'react-circular-progressbar';
 import { Typography, Breadcrumb } from "@material-tailwind/react";
 import { IconFlame, IconWheat, IconMeat, IconDroplet } from '@tabler/icons-react';
+import CalorieAddRemove from '../../components/CalorieAddRemove';
 import axios from 'axios';
+
+function addOrRemoveCalories(calorieCount) {
+    console.log('Calories: ', calorieCount);
+}
 
 export default function MainPageProgress() {
     const [calories, setCalories] = React.useState(0);
@@ -10,6 +15,7 @@ export default function MainPageProgress() {
     const [fat, setFat] = React.useState(0);
     const [carbs, setCarbs] = React.useState(0);
     const [dailyCalories, setDailyCalories] = React.useState(0);
+    const [addRemoveCalories, setAddRemoveCalories] = React.useState(0);
     React.useEffect(() => {
         const date = Date.now();
         const token = localStorage.getItem('token');
@@ -63,7 +69,7 @@ export default function MainPageProgress() {
     // Within, render weight loss in kgs out of desired weight loss
     return <>
         <div className="flex flex-col items-center justify-center">
-            <Typography type="h2">Dagens fremskridt</Typography>
+            <Typography type="h2" className="mt-4">Dagens fremskridt</Typography>
             <hr className="w-full my-6 border-surface"/>
             <div className="relative w-[300px] h-[300px] flex items-center justify-center">
                 <div className="absolute size-[300px]">
@@ -95,7 +101,8 @@ export default function MainPageProgress() {
                 </div>
             </div>
             <div>
-                <Breadcrumb className="gap-0.5 mt-10">
+                <CalorieAddRemove value={addRemoveCalories} onChange={setAddRemoveCalories} onSubmit={addOrRemoveCalories} />
+                <Breadcrumb className="gap-0.5 mt-6">
                     <Breadcrumb.Link className="flex justify-center rounded-lg border border-surface px-2 py-1 text-secondary-foreground">
                         <div className="grid grid-rows-2 grid-cols-[auto_auto] items-center p-2">
                             <div className="w-fit col-span-1 row-span-1">
@@ -138,9 +145,6 @@ export default function MainPageProgress() {
                         </div>
                     </Breadcrumb.Link>
                 </Breadcrumb>
-            </div>
-            <div className="w-full mt-6">
-                <hr className="border-surface" />
             </div>
         </div>
     </>
