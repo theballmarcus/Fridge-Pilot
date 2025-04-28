@@ -68,7 +68,7 @@ function handleSignupSubmit(email, password) {
             }).catch(error => {
                 console.error('Error:', error);
 
-                return reject('Fejl ved at oprette konto');
+                return reject('Bruger eksisterer allerede');
             });
         } catch (err) {
             return reject(err);
@@ -131,12 +131,13 @@ function SignupAccountCard({ show, onNext, setDetails }) {
                     />
                 </div>
                 <hr className="my-6 border-surface" />
-                <Button isFullWidth onClick={() =>
+                <Button isFullWidth onClick={(e) => {
+                    e.preventDefault();
                     handleSignupSubmit(email, password)
                         .then(result => {
                             setError(null);
                             onNext(result);
-                        }).catch(err => setError(err))}>Fortsæt</Button>
+                        }).catch(err => setError(err))}}>Fortsæt</Button>
                 <MissingInput errorMessage={error} />
             </Card.Body>
             <Card.Footer className="text-center">
@@ -597,7 +598,7 @@ function handleDetailsSubmit(height, gender, year, month, day, weight, weightLos
                   Authorization: `Bearer ${token}`
                 }
             }).then(response => {
-                localStorage.setItem('token', response.data.token);
+                console.log(response)
             }).catch(error => {
                 console.error('Error:', error);
             });
