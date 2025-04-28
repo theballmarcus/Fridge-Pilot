@@ -65,6 +65,9 @@ curl --request GET
 
 const http = require('https');
 const fs = require('fs');
+require("dotenv").config();
+const { OpenAI, OpenAIApi } = require('openai');
+const axios = require('axios');
 
 function getRandom(min, max) {
     const minCeiled = Math.ceil(min);
@@ -116,12 +119,6 @@ function getAllRecipes() {
     });
 
     req.end();
-}
-
-function pickRandomRecipe() {
-    const recipes = load_recipes();
-    const randomIndex = Math.floor(Math.random() * recipes.length);
-    return recipes[randomIndex];
 }
 
 function pickMeal(recipes, groceries, max_calories, catogory, old_recipes) {
@@ -238,14 +235,85 @@ function getMealFromId(id) {
     }
 }
 
-// console.log(pickRandomRecipe());
+let openai = null;
+if(process.env.OPENAI_ENABLED === 'true') {
+    openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY, 
+    });
+}
 
-// const myGroceries = ["eggs", "milk", "chicken", "broccoli", "spinach"];
-// const max_calories = 1600;
-// const mealplan = cleverMealplanPicker(max_calories, myGroceries);
-// console.log("Mealplan: ", mealplan);
-// const stats = getStatsFromMealplan(mealplan, myGroceries);
-// console.log("Stats: ", stats);
+let searched_products = {};
+
+/* CHATGPT */
+async function getMealPrice(meal) {
+    // ASK CHATGPT FOR GENERAL PRODUCT NAMES FROM INGREDIENTS
+    // For example, if the ingredient is "chicken breast", you might want to search for "chicken" 
+    console.log(meal)
+    let products = ""
+    for (let i = 0; i < 10; i++) {
+        if(meal[`ingredient_${i+1}`] != null) {
+            products += meal[`measurement_${i+1}`] + ";" + meal[`ingredient_${i+1}`] + "\n"
+        }
+    }
+    if(openai !== null) {
+        const prompt  = `I have this list of ingredients: 
+        ${products}.
+        Make the names way more simple. For example, if the ingredient is "chicken breast", I want to search for "chicken". If the ingredient is parmesan cheese, I want to search for cheese. Also make the units metric and the product names danish.
+        Respond ONLY with following JSON format so it can be parsed:
+        [["product_name", "product_quantity", "product_unit"], ["product_name", "product_quantity", "product_unit"], ...]`;
+
+        const gptResponse = await openai.chat.completions.create({
+            model: 'gpt-4o-mini',
+            messages: [
+                {
+                    role: 'user',
+                    content: prompt
+                }
+            ],
+            max_tokens: 100,
+        });
+        
+        message = gptResponse.choices[0].message.content.trim();                
+        console.log(gptResponse.choices[0].message.content)
+        if (message.startsWith('```json')) {
+            message = message.slice(7, -3);
+        }
+        goods = JSON.parse(message);
+        console.log(goods)
+
+        let lowest_price_goods = []
+        // Now search api
+        try {
+            for(let i = 0; i < 1; i++) {
+                let response;
+                if(goods[i][0] in searched_products) {
+                    response = searched_products[goods[i][0]];
+                } else {
+                    response = await axios.get('https://api.sallinggroup.com/v1/product-suggestions/relevant-products', {
+                        params: {
+                            query: goods[i][0],
+                        },
+                        headers: {
+                            Authorization: 'Bearer ' + process.env.SALLING_GROUP_AUTH
+                        }
+                    });
+                    searched_products[goods[i][0]] = response.data.suggestions;
+                }
+                
+                let lowest_price = [0, ""];
+                for(let j = 0; j < response.data.suggestions.length; j++) {
+                    if(response.data.suggestions[j].price < lowest_price[0] || lowest_price[0] == 0) {
+                        lowest_price[0] = response.data.suggestions[j].price;
+                        lowest_price[1] = response.data.suggestions[j].name;
+                    }
+                }
+            }
+        
+        } catch (error) {
+            console.error('Error fetching products:', error.response?.data || error.message);
+        }
+    }
+}
 
 module.exports = {
     cleverMealplanPicker,
@@ -253,5 +321,6 @@ module.exports = {
     getStatsFromMealplan,
     getMealFromId,
     pickMeal,
-    load_recipes
+    load_recipes,
+    getMealPrice
 };

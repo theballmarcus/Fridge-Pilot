@@ -6,9 +6,9 @@ const jwt = require("jsonwebtoken");
 const { User, Mealplan, Meal, test, flush_database } = require("./models/mongo");
 require("dotenv").config();
 
-const { calculateDailyCalories, cleverMealplanPicker, getStatsFromMealplan, getMealFromId, pickMeal, load_recipes } = require("./api");
+const { calculateDailyCalories, cleverMealplanPicker, getStatsFromMealplan, getMealFromId, pickMeal, load_recipes, getMealPrice } = require("./api");
 
-const TOKEN_EXPIRATION_TIME = '12h'; // 1 hour
+const TOKEN_EXPIRATION_TIME = '12h';
 const oneDayMs = 100*60*60*24;
 
 const app = express();
@@ -217,7 +217,7 @@ app.post("/api/diet/groceries", verifyToken, async (req, res) => {
             msg: "Server error"
         });
     }
-}); // Provide a list of groceries in fridge
+});
 
 app.post("/api/diet/mealplan", verifyToken, async (req, res) => {
     let { date } = req.body; // Timestamp in ms
@@ -265,14 +265,15 @@ app.post("/api/diet/mealplan", verifyToken, async (req, res) => {
 
         let dailyDesiredCalories;
         if (user.monthlyGoal) {
+            // Avarage month: 30.4 days, 7700 calories in a kg of fat
             dailyDesiredCalories = dailyBurnedCalories - user.monthlyGoal / 30.4 * 7700;
         } else {
             dailyDesiredCalories = dailyBurnedCalories;
         }
 
-        // Avarage month: 30.4 days, 7700 calories in a kg of fat
         const meals = cleverMealplanPicker(dailyDesiredCalories, user.curGroceries, usedMeals);
         for (let i = 0; i < 3; i++) {
+            getMealPrice(meals[i])
             const meal = new Meal({
                 mealplanId: mealplan._id,
                 mealId: meals[i].id,
@@ -293,7 +294,7 @@ app.post("/api/diet/mealplan", verifyToken, async (req, res) => {
             msg: "Server error"
         });
     }
-}); // Generates a mealplan + grocery list of need to buy + recipes
+});
 
 app.get("/api/diet/mealplan/:date", verifyToken, async (req, res) => {
     let date = req.params.date;
@@ -319,7 +320,7 @@ app.get("/api/diet/mealplan/:date", verifyToken, async (req, res) => {
             msg: "Server error"
         });
     }
-})
+});
 
 app.get("/api/diet/snack/:calories/:date", verifyToken, async (req, res) => {
     let calories = req.params.calories;
@@ -423,8 +424,6 @@ app.post("/api/diet/supply_calories/:date", verifyToken, async (req, res) => {
     }
 }); 
 
-// app.post("/api/diet/recipes"); // Get the generated recipes
-
 app.post("/api/flush", verifyToken, (req, res) => {
     console.log('Flusing database.');
     flush_database();
@@ -432,7 +431,7 @@ app.post("/api/flush", verifyToken, (req, res) => {
     res.status(200).json({
         msg: 'Flushed database'
     })
-})
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
