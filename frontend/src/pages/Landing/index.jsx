@@ -1,5 +1,5 @@
 import { Button } from "@material-tailwind/react";
-import background from '../../assets/keto.jpg';
+import background from '../../assets/landing.jpg';
 import banner from '../../assets/banner.png';
 
 export default function LandingPage() {

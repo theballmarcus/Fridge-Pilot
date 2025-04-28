@@ -1,5 +1,6 @@
-import MainPageProgress from '../../components/MainPageProgress';
 import KetoGuidelines from '../../components/KetoGuidelines';
+import MainPageProgress from '../../components/MainPageProgress';
+import CalorieBuffer from '../../components/CalorieBuffer';
 import { Tabs } from "@material-tailwind/react";
 import { IconProgressCheck, IconCalendarWeek, IconFridge, IconActivityHeartbeat } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
@@ -54,9 +55,10 @@ export default function HomePage() {
                         <Tabs.TriggerIndicator />
                     </Tabs.List>
                     <Tabs.Panel value={pages.DAILY_PROGRESS}>
-                        <div className="flex flex-row items-center justify-between">
-                            <div className="mx-8"><MainPageProgress></MainPageProgress></div>
+                        <div className="flex flex-row items-start justify-between">
                             <div><KetoGuidelines></KetoGuidelines></div>
+                            <div className="w-max"><MainPageProgress></MainPageProgress></div>
+                            <div><CalorieBuffer></CalorieBuffer></div>
                         </div>
                     </Tabs.Panel>
                     <Tabs.Panel value={pages.MEAL_PLAN}>

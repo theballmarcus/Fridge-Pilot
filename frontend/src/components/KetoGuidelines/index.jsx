@@ -1,11 +1,11 @@
-import { List, Card, Typography, Button } from "@material-tailwind/react";
+import { List, Card, Typography } from "@material-tailwind/react";
 import { IconDropletExclamation, IconWheatOff, IconMeat, IconCandyOff, IconSalt } from '@tabler/icons-react';
-import stockphoto from '../../assets/stockphoto.jpg';
+import header from '../../assets/guidelines-header.jpg';
 
 export default function KetoGuidelines() {
     return (
         <Card className="max-w-xs">
-            <Card.Header as="img" src={stockphoto} alt="billede af mad" />
+            <Card.Header as="img" src={header} alt="Foto af mad med mål" />
             <Card.Body>
                 <Typography type="h6">Retningslinjer for keto</Typography>
                 <List>
