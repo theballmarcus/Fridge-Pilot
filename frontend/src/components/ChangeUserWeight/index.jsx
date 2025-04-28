@@ -1,7 +1,7 @@
 import { Input, Typography, IconButton, Button } from "@material-tailwind/react";
 import { IconPlus, IconMinus } from '@tabler/icons-react';
 
-export default function ChangeUserWeight({ value, onChange, onSubmit }) {
+export default function ChangeUserWeight({ value, disabled, onChange, onSubmit }) {
     const maxWeight = 300; // kg
     const minWeight = 0; // kg
 
@@ -21,6 +21,7 @@ export default function ChangeUserWeight({ value, onChange, onSubmit }) {
                     <Input
                         type="number"
                         value={value}
+                        disabled={disabled}
                         onChange={(e) => handleCalorieChange(Number(e.target.value))}
                         min={minWeight}
                         max={maxWeight}
@@ -33,7 +34,7 @@ export default function ChangeUserWeight({ value, onChange, onSubmit }) {
                             variant="ghost"
                             className="rounded"
                             onClick={() => handleCalorieChange(value - 0.1)}
-                            disabled={value <= minWeight}
+                            disabled={value <= minWeight || disabled}
                         >
                             <IconMinus />
                         </IconButton>
@@ -42,13 +43,13 @@ export default function ChangeUserWeight({ value, onChange, onSubmit }) {
                             variant="ghost"
                             className="rounded"
                             onClick={() => handleCalorieChange(value + 0.1)}
-                            disabled={value >= maxWeight}
+                            disabled={value >= maxWeight || disabled}
                         >
                             <IconPlus />
                         </IconButton>
                     </div>
                 </div>
-                <Button className="ml-2" disabled={value === 0} variant="outline" onClick={() => onSubmit(value)}>Sæt ny vægt</Button>
+                <Button className="ml-2" disabled={value === 0 || disabled} variant="outline" onClick={() => onSubmit(value)}>Sæt ny vægt</Button>
             </div>
         </div>
     );

@@ -1,6 +1,8 @@
 import { useState, useEffect, forwardRef } from 'react';
-import { Menu, Card, Radio, IconButton, Button, Input, Timeline, Typography } from "@material-tailwind/react";
+import { useNavigate } from 'react-router-dom';
+import { Menu, Card, Radio, IconButton, Button, Input, Timeline, Typography } from '@material-tailwind/react';
 import { IconPlus, IconMinus, IconCircleArrowUp, IconUser, IconAdjustmentsHorizontal } from '@tabler/icons-react';
+import { getToken } from '../../utils/Session.jsx';
 import MissingInput from '../../components/MissingInput';
 import axios from 'axios';
 
@@ -76,7 +78,7 @@ function handleSignupSubmit(email, password) {
     });
 }
 
-function SignupAccountCard({ show, onNext, setDetails }) {
+function SignupAccountCard({ show, onNext }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -578,7 +580,7 @@ function ActivityLevelDropdown({ value, onChange }) {
 function handleDetailsSubmit(height, gender, year, month, day, weight, weightLossKgPrMonth, activityLevel) {
     return new Promise((resolve, reject) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = getToken();
             if (!token) throw 'Ingen token fundet';
             if (!height) throw 'Indtast din højde';
             if (!gender) throw 'Vælg køn';
@@ -621,7 +623,7 @@ function handleDetailsSubmit(height, gender, year, month, day, weight, weightLos
     });
 }
 
-function DetailsCard({ show, onNext, setDetails }) {
+function DetailsCard({ show, onNext }) {
     const [selectedHeight, setSelectedHeight] = useState(null);
     const [selectedGender, setSelectedGender] = useState(null);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -748,8 +750,9 @@ function DetailsCard({ show, onNext, setDetails }) {
 
 export default function Signup() {
     const [signupStep, setSignupStep] = useState(0);
-    const [loginDetails, setLoginDetails] = useState({});
-    const [userDetails, setUserDetails] = useState({});
+    const [_loginDetails, setLoginDetails] = useState({});
+    const [_userDetails, setUserDetails] = useState({});
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (signupStep === 0) window.location.hash = 'accountdetails';
@@ -765,8 +768,7 @@ export default function Signup() {
                 break;
             case 1:
                 setUserDetails(stepData);
-
-                window.location.pathname = '/home';
+                navigate('/home', { replace: true });
                 break;
             default:
                 throw new Error('Unhandled signup step');
@@ -776,8 +778,8 @@ export default function Signup() {
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
             <div className="flex flex-col items-center w-full max-w-md">
-                <SignupAccountCard show={signupStep === 0} onNext={handleNextStep} setDetails={setLoginDetails} />
-                <DetailsCard show={signupStep === 1} onNext={handleNextStep} setDetails={setUserDetails} />
+                <SignupAccountCard show={signupStep === 0} onNext={handleNextStep} />
+                <DetailsCard show={signupStep === 1} onNext={handleNextStep} />
                 <div className="mt-10 w-[300px]">
                     <SignupProgress step={signupStep} />
                 </div>

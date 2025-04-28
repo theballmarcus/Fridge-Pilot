@@ -1,5 +1,6 @@
-import './App.css';
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// App.jsx
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthProvider';
 import LandingPage from './pages/Landing';
 import LoginPage from './pages/Login';
 import SignupPage from './pages/Signup';
@@ -9,28 +10,66 @@ import Layout from './components/Layout';
 
 function App() {
     return (
-        <Router>
-            <Routes>
-                <Route path="/" element={<Layout useFooter={true}>
-                    <LandingPage />
-                </Layout>} />
-                <Route path="/login" element={<Layout useFooter={false}>
-                    <LoginPage />
-                </Layout>} />
-                <Route path="/signup" element={<Layout useFooter={false}>
-                    <SignupPage />
-                </Layout>} />
-                <Route path="/home" element={<Layout useFooter={true}>
-                    <HomePage />
-                </Layout>} />
-
-                {/* 404 Route */}
-                <Route path="*" element={<Layout useFooter={true}>
-                    <NotFoundPage />
-                </Layout>} />
-            </Routes>
-        </Router>
-    )
+        <AuthProvider>
+            <Router>
+                <AppRoutes/>
+            </Router>
+        </AuthProvider>
+    );
 }
 
-export default App
+const AuthRedirector = ({ children, requireAuth }) => {
+    const loggedIn = localStorage.getItem('token') !== null;
+
+    if (requireAuth && !loggedIn) {
+        return <Navigate to="/" replace />;
+    }
+    return children;
+};
+
+function AppRoutes() {
+    return (
+        <Routes>
+            <Route path='/' element={
+                <AuthRedirector requireAuth={false}>
+                    <Layout useFooter={true}>
+                        <LandingPage />
+                    </Layout>
+                </AuthRedirector>
+            } />
+
+            <Route path='/login' element={
+                <AuthRedirector requireAuth={false}>
+                    <Layout useFooter={false}>
+                        <LoginPage />
+                    </Layout>
+                </AuthRedirector>
+            } />
+
+            <Route path='/signup' element={
+                <AuthRedirector requireAuth={false}>
+                    <Layout useFooter={false}>
+                        <SignupPage />
+                    </Layout>
+                </AuthRedirector>
+            } />
+
+            <Route path='/home' element={
+                <AuthRedirector requireAuth={true}>
+                    <Layout useFooter={true}>
+                        <HomePage />
+                    </Layout>
+                </AuthRedirector>
+            } />
+
+            {/* 404 Route */}
+            <Route path='*' element={
+                <Layout useFooter={true}>
+                    <NotFoundPage />
+                </Layout>
+            } />
+        </Routes>
+    );
+}
+
+export default App;

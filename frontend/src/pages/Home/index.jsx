@@ -1,72 +1,82 @@
+import { useEffect } from 'react';
 import Today from '../Today';
 import History from '../History';
-import { Tabs } from "@material-tailwind/react";
+import { Tabs } from '@material-tailwind/react';
 import { IconProgressCheck, IconCalendarWeek, IconFridge, IconActivityHeartbeat } from '@tabler/icons-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-function NavigationButton({ href, ...props }) {
+const NavigationButton = ({ href, children, ...props }) => {
     const navigate = useNavigate();
 
     const handleClick = (e) => {
-        if (props.onClick) {
-            props.onClick(e);
-        }
+        props.onClick?.(e);
         navigate(href);
     };
 
-    return <Tabs.Trigger {...props} onClick={handleClick} />;
-}
+    return (
+        <Tabs.Trigger {...props} onClick={handleClick} className="w-full">
+            {children}
+        </Tabs.Trigger>
+    );
+};
+
+const PAGES = {
+    DAILY_PROGRESS: {
+        id: 'dailyprogress',
+        icon: <IconProgressCheck />,
+        label: 'Dagens fremskridt',
+        content: <Today />
+    },
+    MEAL_PLAN: {
+        id: 'mealplan',
+        icon: <IconCalendarWeek />,
+        label: 'Måltidsplan',
+        content: 'Her kan du se de næste dages madplan'
+    },
+    FRIDGE: {
+        id: 'fridge',
+        icon: <IconFridge />,
+        label: 'Mit køleskab',
+        content: 'Her kan du føje ting til dit digitale køleskab'
+    },
+    HISTORY: {
+        id: 'history',
+        icon: <IconActivityHeartbeat />,
+        label: 'Historik',
+        content: <History />
+    }
+};
 
 export default function HomePage() {
-    const pages = {
-        DAILY_PROGRESS: 'dailyprogress',
-        MEAL_PLAN: 'mealplan',
-        FRIDGE: 'fridge',
-        HISTORY: 'history'
-    };
+    const { hash } = useLocation();
 
-    const page = window.location.hash.replace('#', '');
-    const defaultValue = Object.values(pages)
-        .find(pageId => pageId === page)
-        ?? pages.DAILY_PROGRESS;
+    const currentPage = hash.replace('#', '');
+    const defaultValue = Object.values(PAGES).find(page => page.id === currentPage)?.id
+        || PAGES.DAILY_PROGRESS.id;
 
     return (
-        <>
-            <main className="grow">
-                <Tabs defaultValue={defaultValue} className='mt-6'>
-                    <Tabs.List className="w-full" id="header">
-                        <NavigationButton href={'#' + pages.DAILY_PROGRESS} className="w-full" value={pages.DAILY_PROGRESS}>
-                            <IconProgressCheck></IconProgressCheck>
-                            Dagens fremskridt
+        <main className="grow">
+            <Tabs defaultValue={defaultValue} className="mt-6">
+                <Tabs.List className="w-full" id="header">
+                    {Object.values(PAGES).map(({ id, icon, label }) => (
+                        <NavigationButton
+                            key={id}
+                            href={`#${id}`}
+                            value={id}
+                        >
+                            {icon}
+                            {label}
                         </NavigationButton>
-                        <NavigationButton href={'#' + pages.MEAL_PLAN} className="w-full" value={pages.MEAL_PLAN}>
-                            <IconCalendarWeek></IconCalendarWeek>
-                            Måltidsplan
-                        </NavigationButton>
-                        <NavigationButton href={'#' + pages.FRIDGE} className="w-full" value={pages.FRIDGE}>
-                            <IconFridge></IconFridge>
-                            Mit køleskab
-                        </NavigationButton>
-                        <NavigationButton href={'#' + pages.HISTORY} className="w-full" value={pages.HISTORY}>
-                            <IconActivityHeartbeat></IconActivityHeartbeat>
-                            Historik
-                        </NavigationButton>
-                        <Tabs.TriggerIndicator />
-                    </Tabs.List>
-                    <Tabs.Panel value={pages.DAILY_PROGRESS}>
-                        <Today/>
+                    ))}
+                    <Tabs.TriggerIndicator />
+                </Tabs.List>
+
+                {Object.values(PAGES).map(({ id, content }) => (
+                    <Tabs.Panel key={id} value={id}>
+                        {content}
                     </Tabs.Panel>
-                    <Tabs.Panel value={pages.MEAL_PLAN}>
-                        Her kan du se de næste dages madplan
-                    </Tabs.Panel>
-                    <Tabs.Panel value={pages.FRIDGE}>
-                        Her kan du føje ting til dit digitale køleskab
-                    </Tabs.Panel>
-                    <Tabs.Panel value={pages.HISTORY}>
-                        <History/>
-                    </Tabs.Panel>
-                </Tabs>
-            </main>
-        </>
-    )
+                ))}
+            </Tabs>
+        </main>
+    );
 }

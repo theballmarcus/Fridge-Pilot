@@ -1,19 +1,11 @@
-import { Button } from "@material-tailwind/react";
-import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@material-tailwind/react';
 import background from '../../assets/landing.jpg';
 import banner from '../../assets/banner.png';
 
 export default function LandingPage() {
-    console.log(background);
-    const [_, setToken] = useState(null);
-    useEffect(() => {
-        const storedToken = localStorage.getItem('token');
-        if (storedToken) {
-            setToken(storedToken);
-            document.location.pathname = "/home";
-        }
-    }, []);
-    
+    const navigate = useNavigate();
+
     return (
         <>
             <style>{`
@@ -35,8 +27,8 @@ export default function LandingPage() {
                             Nem keto-diæt med <span className="text-primary">FridgePilot</span>
                         </h1>
                         <div className="flex gap-4 mt-6">
-                            <Button size="lg" onClick={() => document.location.pathname = "/signup"}>Sign Up</Button>
-                            <Button size="lg" onClick={() => document.location.pathname = "/login"}>Log In</Button>
+                            <Button size="lg" onClick={() => navigate('/signup')}>Sign Up</Button>
+                            <Button size="lg" onClick={() => navigate('/login')}>Log In</Button>
                         </div>
 
                         {/* Wave SVG */}

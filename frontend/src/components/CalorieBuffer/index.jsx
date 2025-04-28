@@ -8,13 +8,14 @@ export default function CalorieBuffer() {
             <Card.Header as="img" src={header} alt="Foto af bestik med skriften keto diet" />
             <Card.Body>
                 <Typography type="h6">Cheat Meals</Typography>
-                <Typography>I dag har du et kalorieoverskud på {300} kcal! Du har buffer til ekstra snacks i dag.</Typography>
+                <Typography>I dag har du et kalorieoverskud på <i>{ 300 }</i> kcal! Du har buffer til ekstra snacks i dag.</Typography>
                 <List>
                     <List.Item>
                         <List.ItemStart>
                             <IconBrandPeanut size={16} />
                         </List.ItemStart>
-                        Jordnødder: Kalorietætte, moderate i kulhydrater, højt fedt- og proteinindhold, ideelle til hurtig mæthed i små portioner.                    </List.Item>
+                        Jordnødder: Kalorietætte, moderate i kulhydrater, højt fedt- og proteinindhold
+                    </List.Item>
                     <List.Item>
                         <List.ItemStart>
                             <IconMilk size={16} />

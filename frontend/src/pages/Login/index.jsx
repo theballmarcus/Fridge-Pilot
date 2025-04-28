@@ -1,93 +1,88 @@
-import { Card, Button, Input, Typography } from "@material-tailwind/react";
-import { useState } from "react";
+import { Card, Button, Input, Typography } from '@material-tailwind/react';
+import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-function handleLoginSubmit(mail, password) {
-    return new Promise((resolve, reject) => {
-        try {
-            axios.post('http://localhost:8080/api/auth/login', {
-                mail: mail,
-                password: password
-            }).then(response => {
-                if(response.status === 400) {
-                    throw 'Forkerte loginoplysninger'
-                }
-                localStorage.setItem('token', response.data.token);
+const loginUser = async({ email, password }) => {
+    try {
+        const response = await axios.post('http://localhost:8080/api/auth/login', {
+            mail: email,
+            password
+        });
 
-                resolve({ mail, password });
-            }).catch(error => {
-                console.error('Login error:', error);
-                throw 'Fejl i login'
-            });
-        } catch (error) {
-            console.error('Error:', error);
-            reject(error);
+        if (response.status === 400) {
+            throw new Error('Invalid credentials');
         }
-    });
-}
 
-function LoginCard() {
-    const [mail, setMail] = useState('');
+        localStorage.setItem('token', response.data.token);
+        return response.data;
+    } catch (error) {
+        console.error('Login error:', error);
+        throw new Error(error.response?.data?.msg || 'Login failed');
+    }
+};
+
+const LoginForm = ({ onSubmit, error }) => {
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const [error, setError] = useState(null);
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSubmit({ email, password });
+    };
 
     return (
-        <Card className="max-w-xs">
-            <Card.Header
-                as={Card}
-                color="primary"
-                className="grid h-24 place-items-center shadow-none"
-            >
+        <Card className="max-w-xs w-full">
+            <Card.Header className="grid h-24 place-items-center bg-primary shadow-none">
                 <Typography as="span" type="h4" className="text-primary-foreground">
                     Log ind
                 </Typography>
             </Card.Header>
-            <Card.Body as="form">
-                <div className="mb-4 mt-2 space-y-1.5">
-                    <Typography
-                        as="label"
-                        htmlFor="email"
-                        type="small"
-                        color="default"
-                        className="font-semibold"
-                    >
-                        E-mail
-                    </Typography>
-                    <Input id="email" type="email" placeholder="din@e-mail.dk" value={mail} onChange={(e) => setMail(e.target.value)}/>
+
+            <Card.Body as="form" onSubmit={handleSubmit}>
+                <div className="space-y-4">
+                    <div className="space-y-1.5">
+                        <Typography as="label" variant="small" className="font-semibold block">
+                            E-mail
+                        </Typography>
+                        <Input
+                            type="email"
+                            placeholder="din@e-mail.dk"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <Typography as="label" variant="small" className="font-semibold block">
+                            Kodeord
+                        </Typography>
+                        <Input
+                            type="password"
+                            placeholder="************"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+
+                    {error && (
+                        <Typography variant="small" color="red">
+                            {error}
+                        </Typography>
+                    )}
+
+                    <Button type="submit" isFullWidth>
+                        Log ind
+                    </Button>
                 </div>
-                <div className="mb-4 space-y-1.5">
-                    <Typography
-                        as="label"
-                        htmlFor="password"
-                        type="small"
-                        color="default"
-                        className="font-semibold"
-                    >
-                        Kodeord
-                    </Typography>
-                    <Input id="password" type="password" placeholder="************"  value={password} onChange={(e) => setPassword(e.target.value)} />
-                </div>
-                <Button type="submit" isFullWidth onClick={(e) => {
-                    console.log('Login button clicked');
-                    e.preventDefault();
-                    handleLoginSubmit(mail, password).then(() => {
-                        console.log('Login successful');
-                        window.location.href = '/home';
-                    }).catch((error) => {
-                        console.error('Login failed:', error);
-                        setError(error)
-                    });
-                }}>Log ind</Button>
             </Card.Body>
+
             <Card.Footer className="text-center">
-                <Typography
-                    type="small"
-                    className="my-1 flex items-center justify-center gap-1 text-foreground"
-                >
+                <Typography variant="small" className="flex justify-center gap-1">
                     Har du ikke en konto?
                     <Typography
-                        type="small"
                         as="a"
                         href="/signup"
                         color="primary"
@@ -99,13 +94,25 @@ function LoginCard() {
             </Card.Footer>
         </Card>
     );
-}
+};
 
-export default function Login() {
+export default function LoginPage() {
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
+
+    const handleLogin = async (credentials) => {
+        try {
+            await loginUser(credentials);
+            navigate('/home');
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
-            <div className="flex flex-col items-center w-full max-w-md flex"> {/* Adjust max-w-md to your preferred width */}
-                <LoginCard/>
+            <div className="w-full max-w-md">
+                <LoginForm onSubmit={handleLogin} error={error} />
             </div>
         </div>
     );

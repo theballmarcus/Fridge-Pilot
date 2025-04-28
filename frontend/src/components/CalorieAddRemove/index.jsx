@@ -1,7 +1,7 @@
 import { Input, Typography, IconButton, Button } from "@material-tailwind/react";
 import { IconPlus, IconMinus } from '@tabler/icons-react';
 
-export default function CalorieAddRemove({ value, onChange, onSubmit }) {
+export default function CalorieAddRemove({ value, disabled, onChange, onSubmit }) {
     const maxCalorie = 2 ** 31; // kcal
     const minCalorie = -(2 ** 31); // kcal
     const isValueSet = value !== null;
@@ -20,6 +20,7 @@ export default function CalorieAddRemove({ value, onChange, onSubmit }) {
                     <Input
                         type="number"
                         value={isValueSet ? value : ''}
+                        disabled={disabled}
                         onChange={(e) => handleCalorieChange(Number(e.target.value))}
                         min={minCalorie}
                         max={maxCalorie}
@@ -32,7 +33,7 @@ export default function CalorieAddRemove({ value, onChange, onSubmit }) {
                             variant="ghost"
                             className="rounded"
                             onClick={() => handleCalorieChange(value - 10)}
-                            disabled={value <= minCalorie}
+                            disabled={value <= minCalorie || disabled}
                         >
                             <IconMinus />
                         </IconButton>
@@ -41,13 +42,13 @@ export default function CalorieAddRemove({ value, onChange, onSubmit }) {
                             variant="ghost"
                             className="rounded"
                             onClick={() => handleCalorieChange(value + 10)}
-                            disabled={value >= maxCalorie}
+                            disabled={value >= maxCalorie || disabled}
                         >
                             <IconPlus />
                         </IconButton>
                     </div>
                 </div>
-                <Button className="ml-2" disabled={value === 0} variant="outline" onClick={() => onSubmit(value)}>{value < 0 ? 'Fjern kcal' : 'Tilføj kcal'}</Button>
+                <Button className="ml-2" disabled={value === 0 || disabled} variant="outline" onClick={() => onSubmit(value)}>{value < 0 ? 'Fjern kcal' : 'Tilføj kcal'}</Button>
             </div>
         </div>
     );

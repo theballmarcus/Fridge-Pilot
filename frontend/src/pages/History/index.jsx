@@ -1,43 +1,16 @@
-import * as React from "react";
+import { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
-import { Card, Typography } from "@material-tailwind/react";
-import { useTheme } from "next-themes";
-import { IconShoppingCart, IconWeight, IconChartPie } from "@tabler/icons-react";
+import { Card, Typography } from '@material-tailwind/react';
+import { IconShoppingCart, IconWeight, IconChartPie } from '@tabler/icons-react';
 import axios from 'axios';
-
-function rgbToHex(rgb) {
-    return (
-        "#" +
-        rgb
-            .map((x) => {
-                const hex = parseInt(x, 10).toString(16);
-                return hex.length === 1 ? "0" + hex : hex;
-            })
-            .join("")
-    );
-}
+import { useThemeColors } from '../../hooks/useThemeColors.jsx';
+import { getToken } from '../../utils/Session.jsx';
 
 function LineChartCard({ title, description, data, categories, unit, children: icon }) {
-    const { theme } = useTheme();
-    const [vars, setVars] = React.useState(null);
-
-    React.useEffect(() => {
-        const cssVarValue = window.getComputedStyle(document.documentElement);
-        setVars(cssVarValue);
-    }, [theme]);
-
-    const chartColor = vars
-        ? rgbToHex(vars.getPropertyValue("--color-primary").split(" "))
-        : "";
-    const textColor = vars
-        ? rgbToHex(vars.getPropertyValue("--color-foreground").split(" "))
-        : "";
-    const lineColor = vars
-        ? rgbToHex(vars.getPropertyValue("--color-surface").split(" "))
-        : "";
+    const { firstColor: chartColor, secondaryColor: textColor, tertiaryColor: lineColor } = useThemeColors();
 
     const chartConfig = {
-        type: "line",
+        type: 'line',
         height: 240,
         series: [
             {
@@ -52,15 +25,15 @@ function LineChartCard({ title, description, data, categories, unit, children: i
                 },
             },
             title: {
-                show: "",
+                show: '',
             },
             dataLabels: {
                 enabled: false,
             },
             colors: [chartColor],
             stroke: {
-                curve: "smooth",
-                lineCap: "round",
+                curve: 'smooth',
+                lineCap: 'round',
             },
             markers: {
                 size: 0,
@@ -76,8 +49,8 @@ function LineChartCard({ title, description, data, categories, unit, children: i
                 labels: {
                     style: {
                         colors: textColor,
-                        fontSize: "12px",
-                        fontFamily: "inherit",
+                        fontSize: '12px',
+                        fontFamily: 'inherit',
                         fontWeight: 400,
                     },
                 },
@@ -87,8 +60,8 @@ function LineChartCard({ title, description, data, categories, unit, children: i
                 labels: {
                     style: {
                         colors: textColor,
-                        fontSize: "12px",
-                        fontFamily: "inherit",
+                        fontSize: '12px',
+                        fontFamily: 'inherit',
                         fontWeight: 400,
                     },
                     formatter: function (value) {
@@ -114,7 +87,7 @@ function LineChartCard({ title, description, data, categories, unit, children: i
                 opacity: 0.8,
             },
             tooltip: {
-                theme: theme === "dark" ? "dark" : "light",
+                theme: 'light',
                 y: {
                     formatter: function (value) {
                         return value + unit;
@@ -148,24 +121,12 @@ function LineChartCard({ title, description, data, categories, unit, children: i
 }
 
 function NutritionPieChart() {
-    const { theme } = useTheme();
-    const [colors, setColors] = React.useState(["#3B82F6", "#06B6D4", "#10B981"]); // Default colors (blue, cyan, emerald)
-
-    React.useEffect(() => {
-        // Get computed styles after component mounts to ensure CSS variables are available
-        const cssVarValue = window.getComputedStyle(document.documentElement);
-
-        const colorPrimary = rgbToHex(cssVarValue.getPropertyValue("--color-primary").split(" ")) || "#3B82F6";
-        const colorInfo = rgbToHex(cssVarValue.getPropertyValue("--color-info").split(" ")) || "#06B6D4";
-        const colorSuccess = rgbToHex(cssVarValue.getPropertyValue("--color-success").split(" ")) || "#10B981";
-
-        setColors([colorPrimary, colorInfo, colorSuccess]);
-    }, [theme]);
+    const { firstColor: carbohydrateColor, secondaryColor: proteinColor, tertiaryColor: fatColor } = useThemeColors();
 
     const chartConfig = {
-        type: "pie",
+        type: 'pie',
         height: 240,
-        width: "100%",
+        width: '100%',
         series: [65, 25, 10],
         options: {
             responsive: [
@@ -173,7 +134,7 @@ function NutritionPieChart() {
                     breakpoint: 600,
                     options: {
                         chart: {
-                            width: "100%",
+                            width: '100%',
                         },
                     },
                 },
@@ -184,19 +145,19 @@ function NutritionPieChart() {
                 },
             },
             title: {
-                show: "",
+                show: '',
             },
             dataLabels: {
                 enabled: true,
                 formatter: function (val, opts) {
-                    return opts.w.config.series[opts.seriesIndex] + "g";
+                    return opts.w.config.series[opts.seriesIndex] + 'g';
                 },
             },
             legend: {
-                position: "bottom",
+                position: 'bottom',
             },
-            labels: ["Kulhydrat", "Fedt", "Protein"],
-            colors: colors
+            labels: ['Kulhydrat', 'Protein', 'Fedt'],
+            colors: [carbohydrateColor, proteinColor, fatColor]
         },
     };
 
@@ -217,22 +178,18 @@ function NutritionPieChart() {
                 </div>
             </Card.Header>
             <Card.Body className="grid place-items-center">
-                {colors.length > 0 && <Chart {...chartConfig} />}
+                <Chart {...chartConfig} />
             </Card.Body>
         </Card>
     );
 }
 
 export default function History() {
-    const [weightTimes, setWeightTimes] = React.useState([]);
-    const [weightData, setWeightData] = React.useState([]);
+    const [weightTimes, setWeightTimes] = useState([]);
+    const [weightData, setWeightData] = useState([]);
 
-    React.useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            console.error('No token found in local storage');
-            return;
-        }
+    useEffect(() => {
+        const token = getToken();
 
         axios.get('http://localhost:8080/api/user', {
             headers: {

@@ -1,105 +1,85 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { CircularProgressbar, CircularProgressbarWithChildren } from 'react-circular-progressbar';
-import { Typography, Breadcrumb } from "@material-tailwind/react";
+import { Typography, Breadcrumb } from '@material-tailwind/react';
 import { IconFlame, IconWheat, IconMeat, IconDroplet } from '@tabler/icons-react';
 import ChangeUserWeight from '../../components/ChangeUserWeight';
 import CalorieAddRemove from '../../components/CalorieAddRemove';
 import axios from 'axios';
-import { useTheme } from "next-themes";
+import { getToken } from '../../utils/Session.jsx';
+import { useThemeColors } from '../../hooks/useThemeColors.jsx';
 
-function addOrRemoveCalories(calorieCount) {
-    console.log('Calories: ', calorieCount);
-    const token = localStorage.getItem('token');
-    if (!token) {
-        console.error('No token found in local storage');
-        return;
-    }
+const addOrRemoveCalories = async (calorieCount) => {
+    console.log('Changing calories: ', calorieCount);
+
+    const token = getToken();
     const date = Date.now();
-    const postCalories = async () => {
-        try {
-            const response = await axios.post(`http://localhost:8080/api/diet/supply_calories/${date}`, {
-                calories: calorieCount
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            return response;
-        } catch (error) {
-            return error;
+    return await axios.post(`http://localhost:8080/api/diet/supply_calories/${date}`, {
+        calories: calorieCount
+    }, {
+        headers: {
+            'Authorization': `Bearer ${token}`
         }
-    }
-    postCalories()
+    }).then(result => {
+        if (result.statusText !== 'OK') console.error(result.data.msg);
+    });
 }
 
-function changeUserWeight(newWeight) {
+const changeUserWeight = async (newWeight) => {
     console.log('New weight set: ', newWeight)
 
-    const token = localStorage.getItem('token');
-    if (!token) {
-        console.error('No token found in local storage');
-        return;
-    }
-
-    axios.post('http://localhost:8080/api/auth/register_details', {
+    const token = getToken();
+    return await axios.post('http://localhost:8080/api/auth/register_details', {
         weight: newWeight
     }, {
         headers: {
             Authorization: `Bearer ${token}`
         }
     }).then(response => {
-        console.log(response)
+        console.log(response);
     }).catch(error => {
         console.error('Error:', error);
     });
 }
 
 export default function MainPageProgress() {
-    const [calories, setCalories] = React.useState(0);
-    const [protein, setProtein] = React.useState(0);
-    const [fat, setFat] = React.useState(0);
-    const [carbs, setCarbs] = React.useState(0);
-    const [dailyCalories, setDailyCalories] = React.useState(0);
-    const [addRemoveCalories, setAddRemoveCalories] = React.useState(0);
+    const [calories, setCalories] = useState(0);
+    const [protein, setProtein] = useState(0);
+    const [fat, setFat] = useState(0);
+    const [carbs, setCarbs] = useState(0);
 
-    // FIXME: set component weight to user weight
-    const [userWeight, setUserWeight] = React.useState(0);
+    const [dailyCalories, setDailyCalories] = useState(0);
+    const [dailyProtein, setDailyProtein] = useState(0);
+    const [dailyFat, setDailyFat] = useState(0);
+    const [dailyCarbs, setDailyCarbs] = useState(0);
 
-    const [dailyProtein, setDailyProtein] = React.useState(0);
-    const [dailyFat, setDailyFat] = React.useState(0);
-    const [dailyCarbs, setDailyCarbs] = React.useState(0);
+    const [addRemoveCalories, setAddRemoveCalories] = useState(0);
+    const [newUserWeight, setNewUserWeight] = useState(0);
+    const [caloriesChanging, setCaloriesChanging] = useState(false);
+    const [weightChanging, setWeightChanging] = useState(false);
 
-    React.useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            console.error('No token found in local storage');
-            return;
-        }
+    useEffect(() => {
+        const token = getToken();
 
-        axios.get('http://localhost:8080/api/user', {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }).then(response => {
-            if (response.status === 200) {
-                console.log('User fetched successfully');
+        const fetchUserWeight = () => {
+            return axios.get('http://localhost:8080/api/user', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }).then(response => {
+                if (response.status === 200) {
+                    console.log('User fetched successfully');
 
-                setUserWeight(response.data.weight);
-            }
-        }).catch(error => {
-            console.error('Error:', error);
-        });
-    }, []);
+                    return response.data.weight;
+                }
 
-    React.useEffect(() => {
-        const date = Date.now();
-        const token = localStorage.getItem('token');
-        if (!token) {
-            console.error('No token found in local storage');
-            return;
+                return null;
+            }).catch(error => {
+                console.error('Error:', error);
+            });
         }
 
         const fetchStats = async () => {
+            const date = Date.now();
             try {
                 const response = await axios.get(`http://localhost:8080/api/diet/stats/${date}`, {
                     headers: {
@@ -113,11 +93,14 @@ export default function MainPageProgress() {
         }
 
         const fetchData = async () => {
+            const date = Date.now();
             let statsResponse = await fetchStats();
             if (statsResponse.status === 200) {
                 console.log('Stats fetched successfully');
 
-            } else if (statsResponse.status === 404) {
+                return statsResponse.data;
+            } else {
+                // Generate new meal plan and fetch stats
                 const mealplanResponse = await axios.post(`http://localhost:8080/api/diet/mealplan`, {
                     date: date
                 }, {
@@ -129,33 +112,29 @@ export default function MainPageProgress() {
                     console.log('Mealplan generated successfully');
                     statsResponse = await fetchStats();
                 }
-            }
-            console.log(statsResponse.data);
-            setCalories(statsResponse.data.stats.total_calories);
-            setProtein(statsResponse.data.stats.total_protein);
-            setFat(statsResponse.data.stats.total_fat);
-            setCarbs(statsResponse.data.stats.total_carbs);
 
-            setDailyCalories(statsResponse.data.dailyBurnedCalories);
-            setDailyCarbs(Math.round(statsResponse.data.dailyBurnedCalories * 0.05 / 4));
-            setDailyProtein(Math.round(statsResponse.data.dailyBurnedCalories * 0.2 / 4));
-            setDailyFat(Math.round(statsResponse.data.dailyBurnedCalories * 0.75 / 9));
+                return statsResponse.data;
+            }
         }
 
-        fetchData();
-    }, []);
+        fetchData().then(data => {
+            console.log(data);
 
-    const { theme } = useTheme();
-    const [vars, setVars] = React.useState(null);
+            setCalories(data.stats.total_calories);
+            setProtein(data.stats.total_protein);
+            setFat(data.stats.total_fat);
+            setCarbs(data.stats.total_carbs);
 
-    React.useEffect(() => {
-        const cssVarValue = window.getComputedStyle(document.documentElement);
-        setVars(cssVarValue);
-    }, [theme]);
+            setDailyCalories(data.dailyBurnedCalories);
+            setDailyCarbs(Math.round(data.dailyBurnedCalories * 0.05 / 4));
+            setDailyProtein(Math.round(data.dailyBurnedCalories * 0.2 / 4));
+            setDailyFat(Math.round(data.dailyBurnedCalories * 0.75 / 9));
+        });
 
-    const colorPrimary = vars ? vars.getPropertyValue("--color-primary") : '';
-    const colorInfo = vars ? vars.getPropertyValue("--color-info") : '';
-    const colorSuccess = vars ? vars.getPropertyValue("--color-success") : '';
+        fetchUserWeight().then(weight => setNewUserWeight(weight))
+    }, [caloriesChanging, weightChanging]);
+
+    const { firstColor, secondaryColor, tertiaryColor } = useThemeColors();
 
     // Render calorie count out of desired daily calorie count
     // Within, render weight loss in kgs out of desired weight loss
@@ -167,21 +146,21 @@ export default function MainPageProgress() {
                 <div className="absolute size-[300px]">
                     <CircularProgressbar value={carbs / dailyCarbs * 100} strokeWidth="5" styles={{
                         path: {
-                            stroke: `rgb(${colorPrimary} / 1.0)`
+                            stroke: firstColor
                         }
                     }} />
                 </div>
                 <div className="absolute size-[258px]">
                     <CircularProgressbar value={protein / dailyProtein * 100} strokeWidth="6" styles={{
                         path: {
-                            stroke: `rgb(${colorInfo} / 1.0)`
+                            stroke: secondaryColor
                         }
                     }} />
                 </div>
                 <div className="absolute size-[216px]">
                     <CircularProgressbarWithChildren strokeWidth="7" value={fat / dailyFat * 100} styles={{
                         path: {
-                            stroke: `rgb(${colorSuccess} / 1.0)`
+                            stroke: tertiaryColor
                         }
                     }}>
                         <div className="flex justify-center items-center">
@@ -193,13 +172,19 @@ export default function MainPageProgress() {
                 </div>
             </div>
             <div className="w-[600px] flex flex-col justify-center items-center">
-                <ChangeUserWeight value={userWeight} onChange={setUserWeight} onSubmit={changeUserWeight} />
-                <CalorieAddRemove value={addRemoveCalories} onChange={setAddRemoveCalories} onSubmit={addOrRemoveCalories} />
+                <ChangeUserWeight value={newUserWeight} disabled={weightChanging} onChange={setNewUserWeight} onSubmit={() => {
+                    setWeightChanging(true);
+                    changeUserWeight(newUserWeight).then(() => setWeightChanging(false))
+                }} />
+                <CalorieAddRemove value={addRemoveCalories} disabled={caloriesChanging} onChange={setAddRemoveCalories} onSubmit={() => {
+                    setCaloriesChanging(true);
+                    addOrRemoveCalories(addRemoveCalories).then(() => setCaloriesChanging(false));
+                }} />
                 <Breadcrumb className="gap-0.5 mt-6">
-                    <Breadcrumb.Link className="flex justify-center rounded-lg border border-surface px-2 py-1 text-secondary-foreground">
+                    <Breadcrumb.Link className="flex justify-center rounded-lg border border-surface px-2 py-1 text-secondary-foreground hover:text-secondary-foreground">
                         <div className="grid grid-rows-2 grid-cols-[auto_auto] items-center p-2">
                             <div className="w-fit col-span-1 row-span-1">
-                                <IconWheat color={`rgb(${colorPrimary} / 1.0)`} />
+                                <IconWheat color={firstColor} />
                             </div>
                             <div className="w-fit col-span-1 row-span-1">
                                 <Typography type="h6">Kulhydrater</Typography>
@@ -210,10 +195,10 @@ export default function MainPageProgress() {
                         </div>
                     </Breadcrumb.Link>
                     <Breadcrumb.Separator>·</Breadcrumb.Separator>
-                    <Breadcrumb.Link className="flex justify-center rounded-lg border border-surface px-2 py-1 text-secondary-foreground">
+                    <Breadcrumb.Link className="flex justify-center rounded-lg border border-surface px-2 py-1 text-secondary-foreground hover:text-secondary-foreground">
                         <div className="grid grid-rows-2 grid-cols-[auto_auto] items-center p-2">
                             <div className="w-fit col-span-1 row-span-1">
-                                <IconMeat color={`rgb(${colorInfo} / 1.0)`} />
+                                <IconMeat color={secondaryColor} />
                             </div>
                             <div className="w-fit col-span-1 row-span-1">
                                 <Typography type="h6">Protein</Typography>
@@ -224,10 +209,10 @@ export default function MainPageProgress() {
                         </div>
                     </Breadcrumb.Link>
                     <Breadcrumb.Separator>·</Breadcrumb.Separator>
-                    <Breadcrumb.Link className="flex justify-center rounded-lg border border-surface px-2 py-1 text-secondary-foreground">
+                    <Breadcrumb.Link className="flex justify-center rounded-lg border border-surface px-2 py-1 text-secondary-foreground hover:text-secondary-foreground">
                         <div className="grid grid-rows-2 grid-cols-[auto_auto] items-center p-2">
                             <div className="w-fit col-span-1 row-span-1">
-                                <IconDroplet color={`rgb(${colorSuccess} / 1.0)`} />
+                                <IconDroplet color={tertiaryColor} />
                             </div>
                             <div className="w-fit col-span-1 row-span-1">
                                 <Typography type="h6">Fedt</Typography>
