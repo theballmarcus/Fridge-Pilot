@@ -21,9 +21,9 @@ function LoginCard() {
                         color="default"
                         className="font-semibold"
                     >
-                        Email
+                        E-mail
                     </Typography>
-                    <Input id="email" type="email" placeholder="din@email.dk" />
+                    <Input id="email" type="email" placeholder="din@e-mail.dk" />
                 </div>
                 <div className="mb-4 space-y-1.5">
                     <Typography

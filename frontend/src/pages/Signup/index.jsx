@@ -1,7 +1,7 @@
 import { useState, useEffect, forwardRef } from 'react';
-import { Popover, Menu, Card, Radio, IconButton, Button, Input, Timeline, Typography } from "@material-tailwind/react";
-import { IconAlertCircle, IconPlus, IconMinus, IconCircleArrowUp, IconUser, IconAdjustmentsHorizontal } from '@tabler/icons-react';
-import { Alert } from "@material-tailwind/react";
+import { Menu, Card, Radio, IconButton, Button, Input, Timeline, Typography } from "@material-tailwind/react";
+import { IconPlus, IconMinus, IconCircleArrowUp, IconUser, IconAdjustmentsHorizontal } from '@tabler/icons-react';
+import MissingInput from '../../components/MissingInput';
 
 function SignupProgress(props) {
     return (
@@ -43,9 +43,33 @@ function SignupProgress(props) {
     );
 }
 
-function SignupAccountCard({ onNext }) {
+function handleSignupSubmit(email, password) {
+    return new Promise((resolve, reject) => {
+        try {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
+            if (!(emailRegex.test(email))) throw 'Indtast gyldig e-mail'
+            if (!(passwordRegex).test(password))
+                throw 'Adgangskoden skal indeholde et ciffer fra 1 til 9, et lille bogstav, et stort bogstav, et specialtegn, ingen mellemrum, og skal være mellem 8-16 tegn langt'
+        } catch (err) {
+            return reject(err);
+        }
+
+        return resolve({
+            email,
+            password
+        });
+    });
+}
+
+function SignupAccountCard({ show, onNext, setDetails }) {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const [error, setError] = useState(null);
+
     return (
-        <Card className="max-w-xs">
+        <Card className={(show ? "block" : "hidden") + " max-w-xs"}>
             <Card.Header
                 as={Card}
                 color="primary"
@@ -64,9 +88,15 @@ function SignupAccountCard({ onNext }) {
                         color="default"
                         className="font-semibold"
                     >
-                        Email
+                        E-mail
                     </Typography>
-                    <Input id="email" type="email" placeholder="din@email.dk" />
+                    <Input
+                        id="email"
+                        type="email"
+                        placeholder="dig@e-mail.dk"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
                 </div>
                 <div className="mb-4 space-y-1.5">
                     <Typography
@@ -78,10 +108,25 @@ function SignupAccountCard({ onNext }) {
                     >
                         Kodeord
                     </Typography>
-                    <Input id="password" type="password" placeholder="************" />
+                    <Input
+                        id="password"
+                        type="password"
+                        placeholder="************"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
                 </div>
                 <hr className="my-6 border-surface" />
-                <Button isFullWidth onClick={onNext}>Opret konto</Button>
+                <Button isFullWidth onClick={() =>
+                    handleSignupSubmit(
+                        email,
+                        password
+                    ).then(result => {
+                        setError(null);
+                        setDetails(result);
+                        onNext();
+                    }).catch(err => setError(err))}>Fortsæt</Button>
+                <MissingInput errorMessage={error} />
             </Card.Body>
             <Card.Footer className="text-center">
                 <Typography
@@ -125,9 +170,6 @@ function HeightSelect({ value, onChange }) {
                     min={1}
                     max={maxHeight}
                     className="border-gray-300 text-gray-700 placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    containerProps={{
-                        className: "min-w-0",
-                    }}
                 />
                 <Typography className='absolute right-14 top-3 h-5 w-5 text-gray-700 text-xs'>cm</Typography>
                 <div className="absolute right-1 top-1 flex gap-0.5">
@@ -224,9 +266,6 @@ function YearSelect({ value, onChange }) {
                     min={1}
                     max={currentYear}
                     className="border-gray-300 text-gray-700 placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    containerProps={{
-                        className: "min-w-0",
-                    }}
                 />
                 <div className="absolute right-1 top-1 flex gap-0.5">
                     <IconButton
@@ -313,9 +352,6 @@ function DaySelect({ selectedYear, selectedMonth, value, onChange }) {
                     min={1}
                     max={daysInMonth}
                     className="border-gray-300 text-gray-700 placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    containerProps={{
-                        className: "min-w-0",
-                    }}
                 />
                 <div className="absolute right-1 top-1 flex gap-0.5">
                     <IconButton
@@ -363,9 +399,6 @@ function WeightSelect({ value, onChange }) {
                     min={1}
                     max={maxWeight}
                     className="border-gray-300 text-gray-700 placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    containerProps={{
-                        className: "min-w-0",
-                    }}
                 />
                 <Typography className='absolute right-14 top-3 h-5 w-5 text-gray-700 text-xs'>kg</Typography>
                 <div className="absolute right-1 top-1 flex gap-0.5">
@@ -415,9 +448,6 @@ function WeightLossSelect({ value, onChange }) {
                     min={1}
                     max={maxLoss}
                     className="w-[140px] border-gray-300 text-gray-700 placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    containerProps={{
-                        className: "min-w-0",
-                    }}
                 />
                 <Typography className='absolute right-19 top-3 h-5 w-5 text-gray-700 text-xs'>kg/md.</Typography>
                 <div className="absolute right-1 top-1 flex gap-0.5">
@@ -531,34 +561,32 @@ function ActivityLevelDropdown({ value, onChange }) {
     );
 }
 
-function MissingInput({ errorMessage }) {
-    return (
-        <Alert className={errorMessage === null ? 'hidden' : 'inherit' + ' mt-5'}
-            size="s"
-            variant="ghost">
-            <Alert.Icon>
-                <IconAlertCircle className="h-5 w-5" />
-            </Alert.Icon>
-            <Alert.Content>{errorMessage}</Alert.Content>
-        </Alert>
-    );
+function handleDetailsSubmit(height, gender, year, month, day, weight, weightLossKgPrMonth, activityLevel) {
+    return new Promise((resolve, reject) => {
+        try {
+            if (!height) throw 'Indtast din højde';
+            if (!gender) throw 'Vælg køn';
+            if (!year || !month || !day) throw 'Sæt fødselsdato';
+            if (!weight) throw 'Indtast din nuværende vægt';
+            if (!weightLossKgPrMonth) throw 'Indtast ønsket vægttab pr. måned';
+            if (!activityLevel) throw 'Vælg dit aktivitetsniveau';
+        } catch (err) {
+            return reject(err);
+        }
+
+        const time = new Date(year, month, day).getTime();
+        return resolve({
+            height,
+            gender,
+            time,
+            weight,
+            weightLossKgPrMonth,
+            activityLevel
+        });
+    });
 }
 
-function handleDetailsSubmit(setError, height, gender, year, month, day, weight, weightLossKgPrMonth, activityLevel) {
-    const time = new Date(year, month, day).getTime();
-    console.log(height, gender, time, weight, weightLossKgPrMonth, activityLevel);
-
-    if (!height) return setError('Indtast din højde');
-    if (!gender) return setError('Vælg køn');
-    if (!year || !month || !day) return setError('Sæt fødselsdato');
-    if (!weight) return setError('Indtast din nuværende vægt');
-    if (!weightLossKgPrMonth) return setError('Indtast ønsket vægttab pr. måned');
-    if (!activityLevel) return setError('Vælg dit aktivitetsniveau');
-
-    setError(null);
-}
-
-function DetailsCard() {
+function DetailsCard({ show, onNext, setDetails }) {
     const [selectedHeight, setSelectedHeight] = useState(null);
     const [selectedGender, setSelectedGender] = useState(null);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -571,7 +599,7 @@ function DetailsCard() {
     const [error, setError] = useState(null);
 
     return (
-        <Card className="max-w-xs">
+        <Card className={(show ? "block" : "hidden") + " max-w-xs"}>
             <Card.Header
                 as={Card}
                 color="primary"
@@ -659,7 +687,21 @@ function DetailsCard() {
                     onChange={setActivityLevel}
                 />
                 <hr className="my-6 border-surface" />
-                <Button isFullWidth onClick={() => handleDetailsSubmit(setError, selectedHeight, selectedGender, selectedYear, selectedMonth, selectedDay, selectedWeight, selectedWeightLoss, activityLevel)}>Fortsæt</Button>
+                <Button isFullWidth onClick={() =>
+                    handleDetailsSubmit(
+                        selectedHeight,
+                        selectedGender,
+                        selectedYear,
+                        selectedMonth,
+                        selectedDay,
+                        selectedWeight,
+                        selectedWeightLoss,
+                        activityLevel
+                    ).then(result => {
+                        setDetails(result);
+                        setError(null);
+                        onNext();
+                    }).catch(err => setError(err))}>Opret konto</Button>
                 <MissingInput errorMessage={error} />
             </Card.Body>
         </Card>
@@ -667,29 +709,36 @@ function DetailsCard() {
 }
 
 export default function Signup() {
-    const [currentStep, setCurrentStep] = useState(0);
-    const [showDetailsCard, setShowDetailsCard] = useState(false);
+    const [signupStep, setSignupStep] = useState(0);
+    const [loginDetails, setLoginDetails] = useState({});
+    const [userDetails, setUserDetails] = useState({});
 
     useEffect(() => {
-        if (currentStep === 0) window.location.hash = 'accountdetails';
-        else if (currentStep === 1) window.location.hash = 'userdetails';
-    }, [currentStep]);
+        if (signupStep === 0) window.location.hash = 'accountdetails';
+        else if (signupStep === 1) window.location.hash = 'userdetails';
+    }, [signupStep]);
 
     const handleNextStep = () => {
-        setCurrentStep(1);
-        setShowDetailsCard(true);
+        switch (signupStep) {
+            case 0:
+                setSignupStep(signupStep + 1);
+                break;
+            case 1:
+                console.log(loginDetails);
+                console.log(userDetails);
+                break;
+            default:
+                throw new Error('Unhandled signup step');
+        }
     };
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
             <div className="flex flex-col items-center w-full max-w-md">
-                {showDetailsCard ? (
-                    <DetailsCard />
-                ) : (
-                    <SignupAccountCard onNext={handleNextStep} />
-                )}
+                <SignupAccountCard show={signupStep === 0} onNext={handleNextStep} setDetails={setLoginDetails} />
+                <DetailsCard show={signupStep === 1} onNext={handleNextStep} setDetails={setUserDetails} />
                 <div className="mt-10 w-[300px]">
-                    <SignupProgress step={currentStep} />
+                    <SignupProgress step={signupStep} />
                 </div>
             </div>
         </div>
