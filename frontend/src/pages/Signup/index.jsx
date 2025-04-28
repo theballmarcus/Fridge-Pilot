@@ -1,6 +1,7 @@
 import { useState, useEffect, forwardRef } from 'react';
-import { Menu, Card, Radio, IconButton, Button, Input, Timeline, Typography } from "@material-tailwind/react";
-import { IconPlus, IconMinus, IconCircleArrowUp, IconUser, IconAdjustmentsHorizontal } from '@tabler/icons-react';
+import { Popover, Menu, Card, Radio, IconButton, Button, Input, Timeline, Typography } from "@material-tailwind/react";
+import { IconAlertCircle, IconPlus, IconMinus, IconCircleArrowUp, IconUser, IconAdjustmentsHorizontal } from '@tabler/icons-react';
+import { Alert } from "@material-tailwind/react";
 
 function SignupProgress(props) {
     return (
@@ -105,6 +106,7 @@ function SignupAccountCard({ onNext }) {
 
 function HeightSelect({ value, onChange }) {
     const maxHeight = 250; // cm
+    const isValueSet = value !== null;
     value ??= 180;
 
     const handleHeightChange = (newValue) => {
@@ -118,7 +120,7 @@ function HeightSelect({ value, onChange }) {
             <div className="relative w-[116px]">
                 <Input
                     type='number'
-                    value={value}
+                    value={isValueSet ? value : ''}
                     onChange={(e) => handleHeightChange(Number(e.target.value))}
                     min={1}
                     max={maxHeight}
@@ -203,6 +205,7 @@ function GenderSelect({ value, onChange }) {
 
 function YearSelect({ value, onChange }) {
     const currentYear = new Date().getFullYear();
+    const isValueSet = value !== null;
     value ??= currentYear;
 
     const handleYearChange = (newValue) => {
@@ -216,7 +219,7 @@ function YearSelect({ value, onChange }) {
             <div className="relative w-[116px]">
                 <Input
                     type="number"
-                    value={value}
+                    value={isValueSet ? value : ''}
                     onChange={(e) => handleYearChange(Number(e.target.value))}
                     min={1}
                     max={currentYear}
@@ -291,6 +294,7 @@ function MonthDropdown({ selectedMonth, onSelect }) {
 
 function DaySelect({ selectedYear, selectedMonth, value, onChange }) {
     const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
+    const isValueSet = value !== null;
     value ??= new Date().getDate();
 
     // Ensure the value stays within valid day range (1 to daysInMonth)
@@ -304,7 +308,7 @@ function DaySelect({ selectedYear, selectedMonth, value, onChange }) {
             <div className="relative w-[94px]">
                 <Input
                     type="number"
-                    value={value}
+                    value={isValueSet ? value : ''}
                     onChange={(e) => handleDayChange(Number(e.target.value))}
                     min={1}
                     max={daysInMonth}
@@ -340,6 +344,7 @@ function DaySelect({ selectedYear, selectedMonth, value, onChange }) {
 
 function WeightSelect({ value, onChange }) {
     const maxWeight = 300; // kg
+    const isValueSet = value !== null;
     value ??= 110;
 
     const handleWeightChange = (newValue) => {
@@ -353,7 +358,7 @@ function WeightSelect({ value, onChange }) {
             <div className="relative w-[140px]">
                 <Input
                     type="number"
-                    value={value}
+                    value={isValueSet ? value : ''}
                     onChange={(e) => handleWeightChange(Number(e.target.value))}
                     min={1}
                     max={maxWeight}
@@ -390,6 +395,7 @@ function WeightSelect({ value, onChange }) {
 
 function WeightLossSelect({ value, onChange }) {
     const maxLoss = 4;
+    const isValueSet = value !== null;
     value ??= 1.5;
 
     const handleWeightLossChange = (newValue) => {
@@ -404,7 +410,7 @@ function WeightLossSelect({ value, onChange }) {
             <div className="relative w-full">
                 <Input
                     type="number"
-                    value={value}
+                    value={isValueSet ? value : ''}
                     onChange={(e) => handleWeightLossChange(Number(e.target.value))}
                     min={1}
                     max={maxLoss}
@@ -525,20 +531,44 @@ function ActivityLevelDropdown({ value, onChange }) {
     );
 }
 
-function handleDetailsSubmit(height, gender, year, month, day, weight, weightLossKgPrMonth, activityLevel) {
+function MissingInput({ errorMessage }) {
+    return (
+        <Alert className={errorMessage === null ? 'hidden' : 'inherit' + ' mt-5'}
+            size="s"
+            variant="ghost">
+            <Alert.Icon>
+                <IconAlertCircle className="h-5 w-5" />
+            </Alert.Icon>
+            <Alert.Content>{errorMessage}</Alert.Content>
+        </Alert>
+    );
+}
+
+function handleDetailsSubmit(setError, height, gender, year, month, day, weight, weightLossKgPrMonth, activityLevel) {
     const time = new Date(year, month, day).getTime();
     console.log(height, gender, time, weight, weightLossKgPrMonth, activityLevel);
+
+    if (!height) return setError('Indtast din højde');
+    if (!gender) return setError('Vælg køn');
+    if (!year || !month || !day) return setError('Sæt fødselsdato');
+    if (!weight) return setError('Indtast din nuværende vægt');
+    if (!weightLossKgPrMonth) return setError('Indtast ønsket vægttab pr. måned');
+    if (!activityLevel) return setError('Vælg dit aktivitetsniveau');
+
+    setError(null);
 }
 
 function DetailsCard() {
     const [selectedHeight, setSelectedHeight] = useState(null);
-    const [selectedGender, setSelectedGender] = useState('male');
+    const [selectedGender, setSelectedGender] = useState(null);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-    const [selectedDay, setSelectedDay] = useState(null);
+    const [selectedMonth, setSelectedMonth] = useState(null);
+    const [selectedDay, setSelectedDay] = useState(1);
     const [selectedWeight, setSelectedWeight] = useState(null);
     const [selectedWeightLoss, setSelectedWeightLoss] = useState(null);
     const [activityLevel, setActivityLevel] = useState(null);
+
+    const [error, setError] = useState(null);
 
     return (
         <Card className="max-w-xs">
@@ -629,8 +659,8 @@ function DetailsCard() {
                     onChange={setActivityLevel}
                 />
                 <hr className="my-6 border-surface" />
-                <Button isFullWidth onClick={() => handleDetailsSubmit(selectedHeight, selectedGender, selectedYear, selectedMonth, selectedDay, selectedWeight, selectedWeightLoss, activityLevel)}>Fortsæt</Button>
-
+                <Button isFullWidth onClick={() => handleDetailsSubmit(setError, selectedHeight, selectedGender, selectedYear, selectedMonth, selectedDay, selectedWeight, selectedWeightLoss, activityLevel)}>Fortsæt</Button>
+                <MissingInput errorMessage={error} />
             </Card.Body>
         </Card>
     );
