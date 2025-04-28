@@ -387,6 +387,28 @@ app.get("/api/diet/stats/:date", verifyToken, async (req, res) => {
     }
 });
 
+app.post("/api/diet/supply_calories/:date", verifyToken, async (req, res) => {
+    const { calories } = req.body;
+    let date = req.params.date;
+    date = date - (date % oneDayMs);
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(400).json({ msg: "User not found" });
+        const mealplan = await Mealplan.findOne({"date" : date, userId : req.user.id});
+        if (!mealplan) return res.status(400).json({ msg: "Mealplan not found" });
+        mealplan.suppliedCalories = calories;
+        await mealplan.save();
+        res.status(200).json({
+            msg: "Calories supplied successfully"
+        });
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            msg: "Server error"
+        });
+    }
+}); 
+
 // app.post("/api/diet/recipes"); // Get the generated recipes
 
 // app.get("/api/stats/cur_intake"); // Get the daily status of a user

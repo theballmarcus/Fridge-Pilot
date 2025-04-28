@@ -16,6 +16,9 @@ export default function MainPageProgress() {
     const [carbs, setCarbs] = React.useState(0);
     const [dailyCalories, setDailyCalories] = React.useState(0);
     const [addRemoveCalories, setAddRemoveCalories] = React.useState(0);
+    const [dailyProtein, setDailyProtein] = React.useState(0);
+    const [dailyFat, setDailyFat] = React.useState(0);
+    const [dailyCarbs, setDailyCarbs] = React.useState(0);    
     React.useEffect(() => {
         const date = Date.now();
         const token = localStorage.getItem('token');
@@ -59,7 +62,11 @@ export default function MainPageProgress() {
             setProtein(statsResponse.data.stats.total_protein);
             setFat(statsResponse.data.stats.total_fat);
             setCarbs(statsResponse.data.stats.total_carbs);
+
             setDailyCalories(statsResponse.data.dailyBurnedCalories);
+            setDailyCarbs(Math.round(statsResponse.data.dailyBurnedCalories * 0.05 / 4));
+            setDailyProtein(Math.round(statsResponse.data.dailyBurnedCalories * 0.2 / 4));
+            setDailyFat(Math.round(statsResponse.data.dailyBurnedCalories * 0.75 / 9));
         }
         fetchData();
     }, []);
@@ -73,21 +80,21 @@ export default function MainPageProgress() {
             <hr className="w-full my-6 border-surface"/>
             <div className="relative w-[300px] h-[300px] flex items-center justify-center">
                 <div className="absolute size-[300px]">
-                    <CircularProgressbar value={carbs} strokeWidth="5" styles={{
+                    <CircularProgressbar value={carbs / dailyCarbs * 100} strokeWidth="5" styles={{
                         path: {
                             stroke: 'rgb(248 70 67 / 1.0)'
                         }
                     }} />
                 </div>
                 <div className="absolute size-[258px]">
-                    <CircularProgressbar value={protein} strokeWidth="6" styles={{
+                    <CircularProgressbar value={protein / dailyProtein * 100} strokeWidth="6" styles={{
                         path: {
                             stroke: 'rgb(48 120 186 / 1.0)'
                         }
                     }} />
                 </div>
                 <div className="absolute size-[216px]">
-                    <CircularProgressbarWithChildren strokeWidth="7" value={fat} styles={{
+                    <CircularProgressbarWithChildren strokeWidth="7" value={fat / dailyFat * 100} styles={{
                         path: {
                             stroke: 'rgb(255 175 36 / 1.0)'
                         }
@@ -112,7 +119,7 @@ export default function MainPageProgress() {
                                 <Typography type="h6">Kulhydrater</Typography>
                             </div>
                             <div className="w-fit col-span-2 row-span-1">
-                                <span className='font-bold'>14</span> / 20g
+                                <span className='font-bold'>{carbs}</span> / {dailyCarbs}g
                             </div>
                         </div>
                     </Breadcrumb.Link>
@@ -126,7 +133,7 @@ export default function MainPageProgress() {
                                 <Typography type="h6">Protein</Typography>
                             </div>
                             <div className="w-fit col-span-2 row-span-1">
-                                <span className='font-bold'>80</span> / 95g
+                                <span className='font-bold'>{protein}</span> / {dailyProtein}g
                             </div>
                         </div>
                     </Breadcrumb.Link>
@@ -140,7 +147,7 @@ export default function MainPageProgress() {
                                 <Typography type="h6">Fedt</Typography>
                             </div>
                             <div className="w-fit col-span-2 row-span-1">
-                                <span className='font-bold'>67</span> / 120g
+                                <span className='font-bold'>{fat}</span> / {dailyFat}g
                             </div>
                         </div>
                     </Breadcrumb.Link>

@@ -143,6 +143,10 @@ function pickMeal(recipes, groceries, max_calories, catogory, old_recipes) {
         if (Object.keys(old_recipes).includes(recipe.id.toString())) { // If it has been eaten in the last 14 days, make the score lower.
             score = score / old_recipes[recipe.id.toString()]
         }
+        // Remove score if the recipe has too little calories
+        factor = findMealCaloryFactor(recipe, max_calories);
+        c = recipe.calories * factor;
+        score = score * (c / max_calories);
         return score;
     }
 
