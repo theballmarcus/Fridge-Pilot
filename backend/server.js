@@ -257,7 +257,8 @@ app.post("/api/diet/mealplan", verifyToken, async (req, res) => {
         mealplan = new Mealplan({
             date,
             userId: user._id,
-            inactive: false
+            inactive: false,
+            suppliedCalories: 0
         });
 
         await mealplan.save();
@@ -320,14 +321,24 @@ app.get("/api/diet/mealplan/:date", verifyToken, async (req, res) => {
     }
 })
 
-app.get("/api/diet/snack/:calories", verifyToken, async (req, res) => {
+app.get("/api/diet/snack/:calories/:date", verifyToken, async (req, res) => {
     let calories = req.params.calories;
+    let date = req.params.date;
+    date = date - (date % oneDayMs);
     try {
         const user = await User.findById(req.user.id);
         if (!user) return res.status(400).json({ msg: "User not found" });
+        const mealplan = await Mealplan.findOne({"date" : date, userId : req.user.id});
+        if (!mealplan) return res.status(400).json({ msg: "Mealplan not found" });
+        if (calories < 0) return res.status(400).json({ msg: "Invalid calories" });
         const recipes = load_recipes();
         const meal = pickMeal(recipes, user.curGroceries, calories, 2, 0);
-
+        const mealObject = new Meal({
+            mealplanId: mealplan._id,
+            mealId: meal.id,
+            mealFactor: 1
+        });
+        await mealObject.save();
         return res.status(200).json({
             msg: "Snack generated successfully",
             meal
@@ -352,7 +363,6 @@ app.get("/api/diet/stats/:date", verifyToken, async (req, res) => {
         const dailyBurnedCalories = Math.round(calculateDailyCalories(user.gender, user.weight, user.height, age, user.activityLevel)); 
 
         const mealplans = await Mealplan.find({"date" : date, userId : req.user.id});
-        console.log(mealplans)
         if(mealplans.length === 0) {
             res.status(404).json({
                 msg: "No mealplan found with date"
@@ -365,7 +375,6 @@ app.get("/api/diet/stats/:date", verifyToken, async (req, res) => {
                 mealplan = mealplans[i];
             }
         }
-        console.log("GET:", mealplan)
         const meals = await Meal.find({mealplanId : mealplan._id});
         let mealObjects = []
         for(let j = 0; j < meals.length; j++) {
@@ -374,6 +383,11 @@ app.get("/api/diet/stats/:date", verifyToken, async (req, res) => {
             mealObjects.push(meal)
         }
         const stats = getStatsFromMealplan(mealObjects);
+        console.log(mealplan)
+        if(mealplan.suppliedCalories) {
+            console.log('HEHREJRE')
+            stats.total_calories = stats.total_calories + mealplan.suppliedCalories;
+        }
         res.status(200).json({
             msg: "Stats get successfully",
             stats,
@@ -394,9 +408,9 @@ app.post("/api/diet/supply_calories/:date", verifyToken, async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
         if (!user) return res.status(400).json({ msg: "User not found" });
-        const mealplan = await Mealplan.findOne({"date" : date, userId : req.user.id});
+        const mealplan = await Mealplan.findOne({"date" : date, userId : req.user.id, inactive : false});
         if (!mealplan) return res.status(400).json({ msg: "Mealplan not found" });
-        mealplan.suppliedCalories = calories;
+        mealplan.suppliedCalories = mealplan.suppliedCalories + calories;
         await mealplan.save();
         res.status(200).json({
             msg: "Calories supplied successfully"
@@ -410,10 +424,6 @@ app.post("/api/diet/supply_calories/:date", verifyToken, async (req, res) => {
 }); 
 
 // app.post("/api/diet/recipes"); // Get the generated recipes
-
-// app.get("/api/stats/cur_intake"); // Get the daily status of a user
-
-// app.get("/api/stats/total_intake"); // Get the daily status of a user
 
 app.post("/api/flush", verifyToken, (req, res) => {
     console.log('Flusing database.');

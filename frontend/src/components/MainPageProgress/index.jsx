@@ -8,6 +8,27 @@ import axios from 'axios';
 
 function addOrRemoveCalories(calorieCount) {
     console.log('Calories: ', calorieCount);
+    const token = localStorage.getItem('token');
+    if (!token) {
+        console.error('No token found in local storage');
+        return;
+    }
+    const date = Date.now();
+    const postCalories = async () => {
+        try {
+            const response = await axios.post(`http://localhost:8080/api/diet/supply_calories/${date}`, {
+                calories: calorieCount
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            return response;
+        } catch (error) {
+            return error;
+        }
+    }
+    postCalories()
 }
 
 function changeUserWeight(newWeight) {
