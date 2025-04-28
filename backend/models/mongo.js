@@ -29,6 +29,7 @@ const mealplanSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    suppliedCalories: Number,
     inactive: Boolean
 });
 
