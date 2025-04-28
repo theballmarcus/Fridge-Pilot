@@ -14,10 +14,9 @@ const LINKS = [
     },
     (localStorage.getItem('token') !== null ? {
         title: "Log ud",
-        href: "",
+        href: "/",
         onClick: () => {
             localStorage.clear();
-            document.location.pathname = '/';
         }
     } : {})
 ];
