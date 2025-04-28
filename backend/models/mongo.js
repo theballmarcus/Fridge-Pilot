@@ -28,7 +28,8 @@ const mealplanSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
-    }
+    },
+    inactive: Boolean
 });
 
 const mealSchema = new mongoose.Schema({
