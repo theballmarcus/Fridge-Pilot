@@ -57,17 +57,19 @@ function handleSignupSubmit(email, password) {
                 mail: email,
                 password: password
             }).then(response => {
-                if(response.status !== 201) throw 'Bruger eksisterer allerede';
+                if (response.status !== 201) throw 'Bruger eksisterer allerede';
+
                 localStorage.setItem('token', response.data.token);
+
                 return resolve({
                     email,
                     password
                 });
             }).catch(error => {
                 console.error('Error:', error);
-                throw 'Fejl ved at oprette konto';
+
+                return reject('Fejl ved at oprette konto');
             });
-              
         } catch (err) {
             return reject(err);
         }
