@@ -12,21 +12,21 @@ export default function MainPageProgress() {
             <div className="absolute size-[300px]">
                 <CircularProgressbar value={Math.random()*100} strokeWidth="5" styles={{
                     path: {
-                        stroke: `rgb(255 175 36 / 1.0)`
+                        stroke: 'rgb(248 70 67 / 1.0)'
                     }
                 }} />
             </div>
             <div className="absolute size-[258px]">
                 <CircularProgressbar value={Math.random()*100} strokeWidth="6" styles={{
                     path: {
-                        stroke: `rgb(48 120 186 / 1.0)`
+                        stroke: 'rgb(48 120 186 / 1.0)'
                     }
                 }} />
             </div>
             <div className="absolute size-[216px]">
                 <CircularProgressbarWithChildren strokeWidth="7" value={Math.random()*100} styles={{
                     path: {
-                        stroke: `rgb(248 70 67 / 1.0)`
+                        stroke: 'rgb(255 175 36 / 1.0)'
                     }
                 }}>
                     <div className="flex justify-center items-center">
@@ -42,7 +42,7 @@ export default function MainPageProgress() {
                 <Breadcrumb.Link className="flex justify-center w-[200px] rounded bg-secondary px-2 py-1 text-secondary-foreground">
                     <div className="grid grid-rows-2 grid-cols-[auto_auto] items-center">
                         <div className="w-fit col-span-1 row-span-1">
-                            <IconWheat color={"rgb(255 175 36 / 1.0)"} />
+                            <IconWheat color={"rgb(248 70 67 / 1.0)"} />
                         </div>
                         <div className="w-fit col-span-1 row-span-1">
                             <Typography type="h6">Kulhydrater</Typography>
@@ -70,7 +70,7 @@ export default function MainPageProgress() {
                 <Breadcrumb.Link className="flex justify-center w-[200px] rounded bg-secondary px-2 py-1 text-secondary-foreground">
                     <div className="grid grid-rows-2 grid-cols-[auto_auto] items-center">
                         <div className="w-fit col-span-1 row-span-1">
-                            <IconDroplet color={"rgb(248 70 67 / 1.0)"} />
+                            <IconDroplet color={"rgb(255 175 36 / 1.0)"} />
                         </div>
                         <div className="w-fit col-span-1 row-span-1">
                             <Typography type="h6">Fedt</Typography>

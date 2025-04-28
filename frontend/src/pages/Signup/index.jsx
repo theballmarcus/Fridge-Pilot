@@ -1,6 +1,6 @@
 import { useState, useEffect, forwardRef } from 'react';
-import { Menu, Card, Button, Input, Timeline, Typography } from "@material-tailwind/react";
-import { IconCircleArrowUp, IconUser, IconAdjustmentsHorizontal } from '@tabler/icons-react';
+import { Menu, Card, Radio, IconButton, Button, Input, Timeline, Typography } from "@material-tailwind/react";
+import { IconPlus, IconMinus, IconCircleArrowUp, IconUser, IconAdjustmentsHorizontal } from '@tabler/icons-react';
 
 function SignupProgress(props) {
     return (
@@ -42,91 +42,6 @@ function SignupProgress(props) {
     );
 }
 
-const ActivityItem = forwardRef(({ 
-  title, 
-  description,
-  onClick,
-  ...rest 
-}, ref) => {
-  return (
-    <Menu.Item 
-      ref={ref} 
-      {...rest} 
-      className="flex-col items-start p-3 hover:bg-gray-50"
-      onClick={onClick}
-    >
-      <Typography color="default" className="font-semibold">
-        {title}
-      </Typography>
-      <Typography type="small" className="text-gray-600 mt-1">
-        {description}
-      </Typography>
-    </Menu.Item>
-  );
-});
-
-function ActivityLevelDropdown({ value, onChange }) {
-  const activityLevels = [
-    {
-      id: 1,
-      title: "Stillesiddende",
-      description: "Lidt eller ingen motion, f.eks. et skrivebordsjob uden yderligere fysisk aktivitet"
-    },
-    {
-      id: 2,
-      title: "Let aktiv",
-      description: "Let motion 1-2 dage om ugen"
-    },
-    {
-      id: 3,
-      title: "Moderat aktiv",
-      description: "Moderat motion 3-5 dage/uge"
-    },
-    {
-      id: 4,
-      title: "Meget aktiv",
-      description: "Hård motion 6-7 dage/uge"
-    },
-    {
-      id: 5,
-      title: "Ekstremt aktiv",
-      description: "Hård daglig motion og fysisk arbejde eller træning to gange om dagen"
-    }
-  ];
-
-  const selectedLevel = activityLevels.find(level => level.id === value);
-  const buttonText = selectedLevel ? selectedLevel.title : "Vælg aktivitetsniveau";
-
-  const handleSelect = (levelId) => {
-    onChange(levelId);
-  };
-
-  return (
-    <Menu>
-      <Menu.Trigger
-        as={Button}
-        size="md"
-        className="flex items-center gap-2 border-gray-300 text-gray-700"
-      >
-        {buttonText}
-        <IconCircleArrowUp className="h-4 w-4 stroke-2 group-data-[open=true]:rotate-180" />
-      </Menu.Trigger>
-      <Menu.Content className="w-80 p-2 z-100">
-        <ul className="space-y-1">
-          {activityLevels.map((level) => (
-            <ActivityItem
-              key={level.id}
-              title={level.title}
-              description={level.description}
-              onClick={() => handleSelect(level.id)}
-            />
-          ))}
-        </ul>
-      </Menu.Content>
-    </Menu>
-  );
-}
-
 function SignupAccountCard({ onNext }) {
     return (
         <Card className="max-w-xs">
@@ -164,6 +79,7 @@ function SignupAccountCard({ onNext }) {
                     </Typography>
                     <Input id="password" type="password" placeholder="************" />
                 </div>
+                <hr className="my-6 border-surface" />
                 <Button isFullWidth onClick={onNext}>Opret konto</Button>
             </Card.Body>
             <Card.Footer className="text-center">
@@ -187,7 +103,441 @@ function SignupAccountCard({ onNext }) {
     );
 }
 
+function HeightSelect({ value, onChange }) {
+    const maxHeight = 250; // cm
+    value ??= 180;
+
+    const handleHeightChange = (newValue) => {
+        const clampedValue = Math.min(Math.max(newValue, 0), maxHeight);
+        value = clampedValue
+        onChange(value);
+    };
+
+    return (
+        <div>
+            <div className="relative w-[116px]">
+                <Input
+                    type='number'
+                    value={value}
+                    onChange={(e) => handleHeightChange(Number(e.target.value))}
+                    min={1}
+                    max={maxHeight}
+                    className="border-gray-300 text-gray-700 placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    containerProps={{
+                        className: "min-w-0",
+                    }}
+                />
+                <Typography className='absolute right-14 top-3 h-5 w-5 text-gray-700 text-xs'>cm</Typography>
+                <div className="absolute right-1 top-1 flex gap-0.5">
+                    <IconButton
+                        size="s"
+                        variant="ghost"
+                        className="rounded"
+                        onClick={() => handleHeightChange((value) - 1)}
+                        disabled={value <= 0}
+                    >
+                        <IconMinus />
+                    </IconButton>
+                    <IconButton
+                        size="s"
+                        variant="ghost"
+                        className="rounded"
+                        onClick={() => handleHeightChange((value) + 1)}
+                        disabled={value >= maxHeight}
+                    >
+                        <IconPlus />
+                    </IconButton>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function GenderSelect({ value, onChange }) {
+    const handleGenderChange = (gender) => {
+        onChange(gender);
+    };
+
+    return (
+        <div className="flex flex-col gap-2">
+            <Radio
+                value={value}
+                onChange={(e) => handleGenderChange(e.target.value)}
+                className="flex flex-col gap-2"
+            >
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                        <Radio.Item
+                            id="male"
+                            value="male"
+                            ripple="false"
+                        />
+                        <Typography
+                            as="label"
+                            htmlFor="male"
+                            className="cursor-pointer text-foreground"
+                        >
+                            Mand
+                        </Typography>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <Radio.Item
+                            id="female"
+                            value="female"
+                            ripple="false"
+                        />
+                        <Typography
+                            as="label"
+                            htmlFor="female"
+                            className="cursor-pointer text-foreground"
+                        >
+                            Kvinde
+                        </Typography>
+                    </div>
+                </div>
+            </Radio>
+        </div>
+    );
+}
+
+function YearSelect({ value, onChange }) {
+    const currentYear = new Date().getFullYear();
+    value ??= currentYear;
+
+    const handleYearChange = (newValue) => {
+        const clampedValue = Math.min(Math.max(newValue, 0), currentYear);
+        value = clampedValue
+        onChange(value);
+    };
+
+    return (
+        <div>
+            <div className="relative w-[116px]">
+                <Input
+                    type="number"
+                    value={value}
+                    onChange={(e) => handleYearChange(Number(e.target.value))}
+                    min={1}
+                    max={currentYear}
+                    className="border-gray-300 text-gray-700 placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    containerProps={{
+                        className: "min-w-0",
+                    }}
+                />
+                <div className="absolute right-1 top-1 flex gap-0.5">
+                    <IconButton
+                        size="s"
+                        variant="ghost"
+                        className="rounded"
+                        onClick={() => handleYearChange((value) - 1)}
+                        disabled={value <= 0}
+                    >
+                        <IconMinus />
+                    </IconButton>
+                    <IconButton
+                        size="s"
+                        variant="ghost"
+                        className="rounded"
+                        onClick={() => handleYearChange((value) + 1)}
+                        disabled={value >= currentYear}
+                    >
+                        <IconPlus />
+                    </IconButton>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function MonthDropdown({ selectedMonth, onSelect }) {
+    const months = [
+        { index: 0, name: "Januar" },
+        { index: 1, name: "Februar" },
+        { index: 2, name: "Marts" },
+        { index: 3, name: "April" },
+        { index: 4, name: "Maj" },
+        { index: 5, name: "Juni" },
+        { index: 6, name: "Juli" },
+        { index: 7, name: "August" },
+        { index: 8, name: "September" },
+        { index: 9, name: "Oktober" },
+        { index: 10, name: "November" },
+        { index: 11, name: "December" }
+    ];
+
+    const buttonText = typeof selectedMonth === 'number'
+        ? months.find(m => m.index === selectedMonth)?.name
+        : "Måned";
+
+    return (
+        <Menu>
+            <Menu.Trigger as={Button} className="w-[200px] rounded shadow-sm border-gray-300 text-gray-700" variant="ghost" size="sm">
+                {buttonText}
+            </Menu.Trigger>
+            <Menu.Content className="z-100">
+                {months.map((month) => (
+                    <Menu.Item
+                        key={month.index}
+                        onClick={() => onSelect(month.index)}
+                    >
+                        {month.name}
+                    </Menu.Item>
+                ))}
+            </Menu.Content>
+        </Menu>
+    );
+}
+
+function DaySelect({ selectedYear, selectedMonth, value, onChange }) {
+    const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
+    value ??= new Date().getDate();
+
+    // Ensure the value stays within valid day range (1 to daysInMonth)
+    const handleDayChange = (newValue) => {
+        const clampedValue = Math.min(Math.max(newValue, 1), daysInMonth);
+        onChange(clampedValue);
+    };
+
+    return (
+        <div>
+            <div className="relative w-[94px]">
+                <Input
+                    type="number"
+                    value={value}
+                    onChange={(e) => handleDayChange(Number(e.target.value))}
+                    min={1}
+                    max={daysInMonth}
+                    className="border-gray-300 text-gray-700 placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    containerProps={{
+                        className: "min-w-0",
+                    }}
+                />
+                <div className="absolute right-1 top-1 flex gap-0.5">
+                    <IconButton
+                        size="s"
+                        variant="ghost"
+                        className="rounded"
+                        onClick={() => handleDayChange((value) - 1)}
+                        disabled={value <= 1}
+                    >
+                        <IconMinus />
+                    </IconButton>
+                    <IconButton
+                        size="s"
+                        variant="ghost"
+                        className="rounded"
+                        onClick={() => handleDayChange((value) + 1)}
+                        disabled={value >= daysInMonth}
+                    >
+                        <IconPlus />
+                    </IconButton>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function WeightSelect({ value, onChange }) {
+    const maxWeight = 300; // kg
+    value ??= 110;
+
+    const handleWeightChange = (newValue) => {
+        const clampedValue = Math.min(Math.max(newValue, 0), maxWeight);
+        value = clampedValue
+        onChange(value);
+    };
+
+    return (
+        <div>
+            <div className="relative w-[140px]">
+                <Input
+                    type="number"
+                    value={value}
+                    onChange={(e) => handleWeightChange(Number(e.target.value))}
+                    min={1}
+                    max={maxWeight}
+                    className="border-gray-300 text-gray-700 placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    containerProps={{
+                        className: "min-w-0",
+                    }}
+                />
+                <Typography className='absolute right-14 top-3 h-5 w-5 text-gray-700 text-xs'>kg</Typography>
+                <div className="absolute right-1 top-1 flex gap-0.5">
+                    <IconButton
+                        size="s"
+                        variant="ghost"
+                        className="rounded"
+                        onClick={() => handleWeightChange((value) - 1)}
+                        disabled={value <= 0}
+                    >
+                        <IconMinus />
+                    </IconButton>
+                    <IconButton
+                        size="s"
+                        variant="ghost"
+                        className="rounded"
+                        onClick={() => handleWeightChange((value) + 1)}
+                        disabled={value >= maxWeight}
+                    >
+                        <IconPlus />
+                    </IconButton>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function WeightLossSelect({ value, onChange }) {
+    const maxLoss = 4;
+    value ??= 1.5;
+
+    const handleWeightLossChange = (newValue) => {
+        const clampedValue = Math.min(Math.max(newValue, 0), maxLoss);
+        const floatFixedValue = Math.round(clampedValue * 10) / 10
+        value = floatFixedValue;
+        onChange(value);
+    };
+
+    return (
+        <div>
+            <div className="relative w-full">
+                <Input
+                    type="number"
+                    value={value}
+                    onChange={(e) => handleWeightLossChange(Number(e.target.value))}
+                    min={1}
+                    max={maxLoss}
+                    className="w-[140px] border-gray-300 text-gray-700 placeholder:text-primary placeholder:opacity-100 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    containerProps={{
+                        className: "min-w-0",
+                    }}
+                />
+                <Typography className='absolute right-19 top-3 h-5 w-5 text-gray-700 text-xs'>kg/md.</Typography>
+                <div className="absolute right-1 top-1 flex gap-0.5">
+                    <IconButton
+                        size="s"
+                        variant="ghost"
+                        className="rounded"
+                        onClick={() => handleWeightLossChange((value) - 0.1)}
+                        disabled={value <= 0}
+                    >
+                        <IconMinus />
+                    </IconButton>
+                    <IconButton
+                        size="s"
+                        variant="ghost"
+                        className="rounded"
+                        onClick={() => handleWeightLossChange((value) + 0.1)}
+                        disabled={value >= maxLoss}
+                    >
+                        <IconPlus />
+                    </IconButton>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+const ActivityItem = forwardRef(({
+    title,
+    description,
+    onClick,
+    ...rest
+}, ref) => {
+    return (
+        <Menu.Item
+            ref={ref}
+            {...rest}
+            className="flex-col items-start p-3 hover:bg-gray-50"
+            onClick={onClick}
+        >
+            <Typography color="default" className="font-semibold">
+                {title}
+            </Typography>
+            <Typography type="small" className="text-gray-600 mt-1">
+                {description}
+            </Typography>
+        </Menu.Item>
+    );
+});
+
+function ActivityLevelDropdown({ value, onChange }) {
+    const activityLevels = [
+        {
+            id: 1,
+            title: "Stillesiddende",
+            description: "Lidt eller ingen motion, f.eks. et skrivebordsjob uden yderligere fysisk aktivitet"
+        },
+        {
+            id: 2,
+            title: "Let aktiv",
+            description: "Let motion 1-2 dage om ugen"
+        },
+        {
+            id: 3,
+            title: "Moderat aktiv",
+            description: "Moderat motion 3-5 dage/uge"
+        },
+        {
+            id: 4,
+            title: "Meget aktiv",
+            description: "Hård motion 6-7 dage/uge"
+        },
+        {
+            id: 5,
+            title: "Ekstremt aktiv",
+            description: "Hård daglig motion og fysisk arbejde eller træning to gange om dagen"
+        }
+    ];
+
+    const selectedLevel = activityLevels.find(level => level.id === value);
+    const buttonText = selectedLevel ? selectedLevel.title : "Vælg aktivitetsniveau";
+
+    const handleSelect = (levelId) => {
+        onChange(levelId);
+    };
+
+    return (
+        <Menu>
+            <Menu.Trigger
+                as={Button}
+                size="md"
+                variant="ghost"
+                className="flex items-center gap-2 shadow-sm border-gray-300 text-gray-700"
+            >
+                {buttonText}
+                <IconCircleArrowUp className="h-4 w-4 stroke-2 group-data-[open=true]:rotate-180" />
+            </Menu.Trigger>
+            <Menu.Content className="w-80 p-2 z-100">
+                <ul className="space-y-1">
+                    {activityLevels.map((level) => (
+                        <ActivityItem
+                            key={level.id}
+                            title={level.title}
+                            description={level.description}
+                            onClick={() => handleSelect(level.id)}
+                        />
+                    ))}
+                </ul>
+            </Menu.Content>
+        </Menu>
+    );
+}
+
+function handleDetailsSubmit(height, gender, year, month, day, weight, weightLossKgPrMonth, activityLevel) {
+    const time = new Date(year, month, day).getTime();
+    console.log(height, gender, time, weight, weightLossKgPrMonth, activityLevel);
+}
+
 function DetailsCard() {
+    const [selectedHeight, setSelectedHeight] = useState(null);
+    const [selectedGender, setSelectedGender] = useState('male');
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+    const [selectedDay, setSelectedDay] = useState(null);
+    const [selectedWeight, setSelectedWeight] = useState(null);
+    const [selectedWeightLoss, setSelectedWeightLoss] = useState(null);
     const [activityLevel, setActivityLevel] = useState(null);
 
     return (
@@ -202,13 +552,85 @@ function DetailsCard() {
                 </Typography>
             </Card.Header>
             <Card.Body className="flex justify-center flex-col">
-                <Typography>
+                <div className="grid grid-cols-[130px_1fr]">
+                    <div>
+                        <Typography>
+                            Højde
+                        </Typography>
+                    </div>
+                    <div>
+                        <Typography>
+                            Køn
+                        </Typography>
+                    </div>
+                    <div>
+                        <HeightSelect
+                            value={selectedHeight}
+                            onChange={setSelectedHeight}
+                        />
+                    </div>
+                    <div className="flex items-center">
+                        <GenderSelect
+                            value={selectedGender}
+                            onChange={setSelectedGender}
+                        />
+                    </div>
+                </div>
+
+                <Typography className="mt-4">
+                    Fødselsdag
+                </Typography>
+                <div className="flex flex-row justify-between w-full">
+                    <YearSelect
+                        value={selectedYear}
+                        onChange={setSelectedYear}
+                    />
+                    <MonthDropdown
+                        selectedMonth={selectedMonth}
+                        onSelect={setSelectedMonth}
+                    />
+                    <DaySelect
+                        value={selectedDay}
+                        selectedYear={selectedYear}
+                        selectedMonth={selectedMonth}
+                        onChange={setSelectedDay}
+                    />
+                </div>
+                <div className="grid grid-cols-[150px_1fr] mt-4">
+                    <div>
+                        <Typography className="mt6">
+                            Nuværende vægt
+                        </Typography>
+                    </div>
+                    <div>
+                        <Typography>
+                            Tab pr. måned
+                        </Typography>
+                    </div>
+                    <div>
+                        <WeightSelect
+                            value={selectedWeight}
+                            onChange={setSelectedWeight}
+                        />
+                    </div>
+                    <div className="flex items-center">
+                        <WeightLossSelect
+                            value={selectedWeightLoss}
+                            onChange={setSelectedWeightLoss}
+                        />
+                    </div>
+                </div>
+
+                <Typography className="mt-4">
                     Hvor aktiv er du?
                 </Typography>
                 <ActivityLevelDropdown
-                      value={activityLevel} 
-                      onChange={setActivityLevel} 
+                    value={activityLevel}
+                    onChange={setActivityLevel}
                 />
+                <hr className="my-6 border-surface" />
+                <Button isFullWidth onClick={() => handleDetailsSubmit(selectedHeight, selectedGender, selectedYear, selectedMonth, selectedDay, selectedWeight, selectedWeightLoss, activityLevel)}>Fortsæt</Button>
+
             </Card.Body>
         </Card>
     );
