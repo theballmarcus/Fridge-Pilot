@@ -89,7 +89,7 @@ function LoginCard() {
                     <Typography
                         type="small"
                         as="a"
-                        href="#"
+                        href="/signup"
                         color="primary"
                         className="font-bold"
                     >
