@@ -12,6 +12,13 @@ const LINKS = [
         title: "Kontakt os",
         href: "#",
     },
+    (localStorage.getItem('token') !== null ? {
+        title: "Log ud",
+        href: "/",
+        onClick: () => {
+            localStorage.clear();
+        }
+    } : {})
 ];
 
 export default function Footer() {
@@ -23,9 +30,9 @@ export default function Footer() {
             <div className="w-full">
                 <div className="flex w-full flex-row flex-wrap items-center justify-end gap-x-12 gap-y-3 text-center">
                     <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
-                        {LINKS.map(({ title, href }, key) => (
+                        {LINKS.map(({ title, href, onClick }, key) => (
                             <li key={key}>
-                                <Typography as="a" href={href} className="text-foreground hover:text-primary">
+                                <Typography as="a" href={href || ''} onClick={onClick || (() => {})} className="text-foreground hover:text-primary">
                                     {title}
                                 </Typography>
                             </li>
