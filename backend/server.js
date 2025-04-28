@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const { User, Mealplan, Meal, test, flush_database } = require("./models/mongo");
 require("dotenv").config();
 
-const { calculateDailyCalories, cleverMealplanPicker, getStatsFromMealplan, getMealFromId, pickMeal, load_recipes, getMealPrice } = require("./api");
+const { calculateDailyCalories, cleverMealplanPicker, getStatsFromMealplan, getMealFromId, pickMeal, load_recipes, getMealTranslationAndGuess } = require("./api");
 
 const TOKEN_EXPIRATION_TIME = '12h';
 const oneDayMs = 100*60*60*24;
@@ -42,23 +42,35 @@ async function formatMealReponse(mealplan) {
         const meal = getMealFromId(meals[j].mealId);
         meal.factor = meals[j].mealFactor;
         mealObjects.push(meal)
-        
         let instructions = "";
         let ingredients = [];
-        for (let i = 0; i < 10; i++) {
-            console.log(i)
-            if(meal[`directions_step_${i+1}`] !== null) {
-                instructions += meal[`directions_step_${i+1}`] + " "
-            }
-            if(meal[`ingredient_${i+1}`] !== null) {
-                ingredients.push(meal[`ingredient_${i+1}`])
+        let price;
+
+        if (meals[j].price) {
+            chatGPTAnswer = JSON.parse(meals[j].chatGPTAnswer);
+            instructions = chatGPTAnswer.instructions;
+            price = meals[j].price;
+            ingredients = chatGPTAnswer.products;
+
+        } else {
+
+            for (let i = 0; i < 10; i++) {
+                if(meal[`directions_step_${i+1}`] !== null) {
+                    instructions += meal[`directions_step_${i+1}`] + " "
+                }
+                if(meal[`ingredient_${i+1}`] !== null) {
+                    ingredients.push([meal[`ingredient_${i+1}`], meal[`measurement_${i+1}`], null, null]);
+                }
             }
         }
         resp.meals.push({
             'id' : meal.id,
             'instructions' : instructions,
             'category' : meal.category.category,
-            'ingredients' : ingredients
+            'ingredients' : ingredients,
+            'price' : price,
+            'image' : meal.image,
+
         })
     }
     
@@ -138,7 +150,13 @@ monthlyGoal: Number     (kg of fat pr. month)
         if (birthday) user.birthday = birthday;
         if (gender) user.gender = gender;
         if (height) user.height = height;
-        if (weight) user.weight = weight;
+        if (weight) {
+            user.weightHistory.push({
+                date: new Date().getTime(),
+                weight: weight
+            });
+            user.weight = weight;
+        }
         if (activityLevel) {
             if (activityLevel >= 1 && activityLevel <= 5) {
                 user.activityLevel = activityLevel
@@ -273,14 +291,27 @@ app.post("/api/diet/mealplan", verifyToken, async (req, res) => {
 
         const meals = cleverMealplanPicker(dailyDesiredCalories, user.curGroceries, usedMeals);
         for (let i = 0; i < 3; i++) {
-            getMealPrice(meals[i])
-            const meal = new Meal({
-                mealplanId: mealplan._id,
-                mealId: meals[i].id,
-                date : date,
-                mealFactor: meals[i].factor
-            });
-            await meal.save();
+            getMealTranslationAndGuess(meals[i], async (priceGuess) => {
+                if (priceGuess !== null) {
+                    const meal = new Meal({
+                        mealplanId: mealplan._id,
+                        mealId: meals[i].id,
+                        date : date,
+                        mealFactor: meals[i].factor,
+                        price: priceGuess.total_price,
+                        chatGPTAnswer: JSON.stringify(priceGuess)
+                    });
+                    await meal.save();
+                } else {
+                    const meal = new Meal({
+                        mealplanId: mealplan._id,
+                        mealId: meals[i].id,
+                        date : date,
+                        mealFactor: meals[i].factor
+                    });
+                    await meal.save();
+                }
+            })
         }
 
         console.log(getStatsFromMealplan(meals))
@@ -301,14 +332,12 @@ app.get("/api/diet/mealplan/:date", verifyToken, async (req, res) => {
     date = date - (date % oneDayMs);
     try {
         let mealplans = await Mealplan.find({"date" : date, userId : req.user.id});
-        console.log("GET:", mealplans)
         if(mealplans.length === 0) {
             res.status(404).json({
                 msg: "No mealplan found with date"
             });
         } 
         for(let i = 0; i < mealplans.length; i++) {
-            
             if (mealplans[i].inactive == false) {
                 res.status(200).json(await formatMealReponse(mealplans[i]));
             }

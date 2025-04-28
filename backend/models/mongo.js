@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema({
     weight: Number,
     activityLevel: Number,  // 1-5
     monthlyGoal: Number,    // kg. pr måned
+    weightHistory: [{
+        date: Number,
+        weight: Number
+    }],
 });
 
 const mealplanSchema = new mongoose.Schema({
@@ -44,7 +48,8 @@ const mealSchema = new mongoose.Schema({
         required: true
     },
     price: Number,
-    mealFactor: Number          // One meal might be too little calories, this factor is multiplied for calories
+    mealFactor: Number,          // One meal might be too little calories, this factor is multiplied for calories
+    chatGPTAnswer: String,
 });
 
 const User = mongoose.model('User', userSchema);
