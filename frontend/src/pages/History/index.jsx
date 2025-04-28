@@ -148,16 +148,16 @@ function LineChartCard({ title, description, data, categories, unit, children })
 function NutritionPieChart() {
     const { theme } = useTheme();
     const [colors, setColors] = React.useState(["#3B82F6", "#06B6D4", "#10B981"]); // Default colors (blue, cyan, emerald)
-  
+
     React.useEffect(() => {
-      // Get computed styles after component mounts to ensure CSS variables are available
-      const cssVarValue = window.getComputedStyle(document.documentElement);
-      
-      const colorPrimary = rgbToHex(cssVarValue.getPropertyValue("--color-primary").split(" ")) || "#3B82F6";
-      const colorInfo = rgbToHex(cssVarValue.getPropertyValue("--color-info").split(" ")) || "#06B6D4";
-      const colorSuccess = rgbToHex(cssVarValue.getPropertyValue("--color-success").split(" ")) || "#10B981";
-      
-      setColors([colorPrimary, colorInfo, colorSuccess]);
+        // Get computed styles after component mounts to ensure CSS variables are available
+        const cssVarValue = window.getComputedStyle(document.documentElement);
+
+        const colorPrimary = rgbToHex(cssVarValue.getPropertyValue("--color-primary").split(" ")) || "#3B82F6";
+        const colorInfo = rgbToHex(cssVarValue.getPropertyValue("--color-info").split(" ")) || "#06B6D4";
+        const colorSuccess = rgbToHex(cssVarValue.getPropertyValue("--color-success").split(" ")) || "#10B981";
+
+        setColors([colorPrimary, colorInfo, colorSuccess]);
     }, [theme]);
 
     const chartConfig = {
@@ -200,25 +200,25 @@ function NutritionPieChart() {
 
     return (
         <Card>
-          <Card.Header className="m-0 flex flex-wrap items-center gap-4 p-4">
-            <Card
-              color="primary"
-              className="grid h-16 w-16 shrink-0 place-items-center rounded-md text-primary-foreground md:h-20 md:w-20"
-            >
-              <IconChartPie className="h-6 w-6 md:h-8 md:w-8" />
-            </Card>
-            <div>
-              <Typography type="h6">Macronutrient Distribution</Typography>
-              <Typography className="mt-1 max-w-sm text-foreground">
-                Breakdown of your daily fat, protein, and carbohydrate intake in grams.
-              </Typography>
-            </div>
-          </Card.Header>
-          <Card.Body className="grid place-items-center">
-            {colors.length > 0 && <Chart {...chartConfig} />}
-          </Card.Body>
+            <Card.Header className="m-0 flex flex-wrap items-center gap-4 p-4">
+                <Card
+                    color="primary"
+                    className="grid h-16 w-16 shrink-0 place-items-center rounded-md text-primary-foreground md:h-20 md:w-20"
+                >
+                    <IconChartPie className="h-6 w-6 md:h-8 md:w-8" />
+                </Card>
+                <div>
+                    <Typography type="h6">Fordeling af makroer</Typography>
+                    <Typography className="mt-1 max-w-sm text-foreground">
+                        Fordeling af dit daglige fedt-, protein- og kulhydratindtag
+                    </Typography>
+                </div>
+            </Card.Header>
+            <Card.Body className="grid place-items-center">
+                {colors.length > 0 && <Chart {...chartConfig} />}
+            </Card.Body>
         </Card>
-      );
+    );
 }
 
 export default function History() {
@@ -236,14 +236,14 @@ export default function History() {
                 data={weightData}
                 categories={dates}
                 unit="kg"
-            ><IconWeight/></LineChartCard>
+            ><IconWeight /></LineChartCard>
             <LineChartCard
                 title="Daglig udgift"
                 description="Penge brugt på mad hver dag"
                 data={spendingData}
                 categories={dates}
                 unit="DKK"
-            ><IconCurrencyKroneDanish/></LineChartCard>
+            ><IconCurrencyKroneDanish /></LineChartCard>
             <NutritionPieChart />
         </div>
     );
