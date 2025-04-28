@@ -2,6 +2,7 @@ import { useState, useEffect, forwardRef } from 'react';
 import { Menu, Card, Radio, IconButton, Button, Input, Timeline, Typography } from "@material-tailwind/react";
 import { IconPlus, IconMinus, IconCircleArrowUp, IconUser, IconAdjustmentsHorizontal } from '@tabler/icons-react';
 import MissingInput from '../../components/MissingInput';
+import axios from 'axios';
 
 function SignupProgress(props) {
     return (
@@ -51,6 +52,16 @@ function handleSignupSubmit(email, password) {
             if (!(emailRegex.test(email))) throw 'Indtast gyldig e-mail'
             if (!(passwordRegex).test(password))
                 throw 'Adgangskoden skal indeholde et ciffer fra 1 til 9, et lille bogstav, et stort bogstav, et specialtegn, ingen mellemrum, og skal være mellem 8-16 tegn langt'
+            
+            axios.post('http://localhost:8080/api/auth/register', {
+                mail: email,
+                password: password
+            }).then(response => {
+                localStorage.setItem('token', response.data.token);
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+              
         } catch (err) {
             return reject(err);
         }
@@ -149,7 +160,7 @@ function SignupAccountCard({ show, onNext, setDetails }) {
 function HeightSelect({ value, onChange }) {
     const maxHeight = 250; // cm
     const isValueSet = value !== null;
-    value ??= 180;
+    value ??= 160;
 
     const handleHeightChange = (newValue) => {
         const clampedValue = Math.min(Math.max(newValue, 0), maxHeight);
@@ -561,12 +572,34 @@ function ActivityLevelDropdown({ value, onChange }) {
 function handleDetailsSubmit(height, gender, year, month, day, weight, weightLossKgPrMonth, activityLevel) {
     return new Promise((resolve, reject) => {
         try {
+            const token = localStorage.getItem('token');
+            if (!token) throw 'Ingen token fundet';
             if (!height) throw 'Indtast din højde';
             if (!gender) throw 'Vælg køn';
             if (!year || !month || !day) throw 'Sæt fødselsdato';
             if (!weight) throw 'Indtast din nuværende vægt';
             if (!weightLossKgPrMonth) throw 'Indtast ønsket vægttab pr. måned';
             if (!activityLevel) throw 'Vælg dit aktivitetsniveau';
+            console.log('Token:', token, 'Height:', height, 'gender', gender, 'year', year, 'month', month, 'day', day, 'weight', weight, 'weightLossKgPrMonth', weightLossKgPrMonth, 'activityLevel', activityLevel);
+            const birthday = new Date(year, month, day).getTime();
+            axios.post('http://localhost:8080/api/auth/register_details', {
+                birthday : birthday, 
+                gender: gender === 'male' ? 0 : 1, 
+                height : height, 
+                weight : weight, 
+                activityLevel : activityLevel, 
+                monthlyGoal : weightLossKgPrMonth
+            },  
+            {
+                headers: {
+                  Authorization: `Bearer ${token}`
+                }
+            }).then(response => {
+                localStorage.setItem('token', response.data.token);
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+
         } catch (err) {
             return reject(err);
         }
