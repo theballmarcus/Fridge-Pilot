@@ -3,7 +3,7 @@ import { IconPlus, IconMinus } from '@tabler/icons-react';
 
 export default function ChangeUserWeight({ value, onChange, onSubmit }) {
     const maxWeight = 300; // kg
-    const minWeight = 30; // kg
+    const minWeight = 0; // kg
 
     if (typeof value !== 'number') throw new Error('User weight is unset in ChangeUserWeight component');
 
@@ -15,7 +15,7 @@ export default function ChangeUserWeight({ value, onChange, onSubmit }) {
 
     return (
         <div className="items-center w-[500px] flex flex-row justify-between mt-6 mx-auto">
-            <Typography type="span" className="text-foreground">Hvad er fremskridtet i dag?</Typography>
+            <Typography type="span" className="text-foreground">Log din daglige vægt</Typography>
             <div className="flex flex-row">
                 <div className="relative w-[150px]">
                     <Input

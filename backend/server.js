@@ -219,6 +219,19 @@ app.post("/api/auth/login", async (req, res) => {
     }
 });
 
+app.get("/api/user", verifyToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('-password');
+        if (!user) return res.status(400).json({ msg: "User not found" });
+        res.status(200).json(user);
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            msg: "Server error"
+        });
+    }
+});
+
 app.post("/api/diet/groceries", verifyToken, async (req, res) => {
     const { groceries } = req.body;
     try {

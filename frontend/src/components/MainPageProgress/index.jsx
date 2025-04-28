@@ -33,7 +33,25 @@ function addOrRemoveCalories(calorieCount) {
 }
 
 function changeUserWeight(newWeight) {
-    console.log('Weight', newWeight)
+    console.log('New weight set: ', newWeight)
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+        console.error('No token found in local storage');
+        return;
+    }
+
+    axios.post('http://localhost:8080/api/auth/register_details', {
+        weight: newWeight
+    }, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }).then(response => {
+        console.log(response)
+    }).catch(error => {
+        console.error('Error:', error);
+    });
 }
 
 export default function MainPageProgress() {
@@ -50,14 +68,37 @@ export default function MainPageProgress() {
     const [dailyProtein, setDailyProtein] = React.useState(0);
     const [dailyFat, setDailyFat] = React.useState(0);
     const [dailyCarbs, setDailyCarbs] = React.useState(0);
-    React.useEffect(() => {
-        const date = Date.now();
-        const token = localStorage.getItem('token');
 
+    React.useEffect(() => {
+        const token = localStorage.getItem('token');
         if (!token) {
             console.error('No token found in local storage');
             return;
         }
+
+        axios.get('http://localhost:8080/api/user', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then(response => {
+            if (response.status === 200) {
+                console.log('User fetched successfully');
+
+                setUserWeight(response.data.weight);
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    }, []);
+
+    React.useEffect(() => {
+        const date = Date.now();
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('No token found in local storage');
+            return;
+        }
+
         const fetchStats = async () => {
             try {
                 const response = await axios.get(`http://localhost:8080/api/diet/stats/${date}`, {
@@ -70,11 +111,12 @@ export default function MainPageProgress() {
                 return error;
             }
         }
+
         const fetchData = async () => {
             let statsResponse = await fetchStats();
             if (statsResponse.status === 200) {
                 console.log('Stats fetched successfully');
-                
+
             } else if (statsResponse.status === 404) {
                 const mealplanResponse = await axios.post(`http://localhost:8080/api/diet/mealplan`, {
                     date: date
@@ -87,7 +129,7 @@ export default function MainPageProgress() {
                     console.log('Mealplan generated successfully');
                     statsResponse = await fetchStats();
                 }
-            }            
+            }
             console.log(statsResponse.data);
             setCalories(statsResponse.data.stats.total_calories);
             setProtein(statsResponse.data.stats.total_protein);
@@ -99,6 +141,7 @@ export default function MainPageProgress() {
             setDailyProtein(Math.round(statsResponse.data.dailyBurnedCalories * 0.2 / 4));
             setDailyFat(Math.round(statsResponse.data.dailyBurnedCalories * 0.75 / 9));
         }
+
         fetchData();
     }, []);
 
@@ -114,15 +157,12 @@ export default function MainPageProgress() {
     const colorInfo = vars ? vars.getPropertyValue("--color-info") : '';
     const colorSuccess = vars ? vars.getPropertyValue("--color-success") : '';
 
-    console.log(colorPrimary, colorInfo, colorSuccess);
-
-    
     // Render calorie count out of desired daily calorie count
     // Within, render weight loss in kgs out of desired weight loss
     return <>
         <div className="flex flex-col items-center justify-center">
             <Typography type="h2" className="mt-4">Dagens fremskridt</Typography>
-            <hr className="w-full my-6 border-surface"/>
+            <hr className="w-full my-6 border-surface" />
             <div className="relative w-[300px] h-[300px] flex items-center justify-center">
                 <div className="absolute size-[300px]">
                     <CircularProgressbar value={carbs / dailyCarbs * 100} strokeWidth="5" styles={{
@@ -146,7 +186,7 @@ export default function MainPageProgress() {
                     }}>
                         <div className="flex justify-center items-center">
                             <IconFlame size={50} />
-                            <Typography type="h5">{ calories }</Typography><span>/{dailyCalories}</span>
+                            <Typography type="h5">{calories}</Typography><span>/{dailyCalories}</span>
                         </div>
                         <span>Kalorier i dag</span>
                     </CircularProgressbarWithChildren>

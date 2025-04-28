@@ -2,7 +2,8 @@ import * as React from "react";
 import Chart from 'react-apexcharts';
 import { Card, Typography } from "@material-tailwind/react";
 import { useTheme } from "next-themes";
-import { IconCurrencyKroneDanish, IconWeight, IconChartPie } from "@tabler/icons-react";
+import { IconShoppingCart, IconWeight, IconChartPie } from "@tabler/icons-react";
+import axios from 'axios';
 
 function rgbToHex(rgb) {
     return (
@@ -16,7 +17,7 @@ function rgbToHex(rgb) {
     );
 }
 
-function LineChartCard({ title, description, data, categories, unit, children }) {
+function LineChartCard({ title, description, data, categories, unit, children: icon }) {
     const { theme } = useTheme();
     const [vars, setVars] = React.useState(null);
 
@@ -71,6 +72,7 @@ function LineChartCard({ title, description, data, categories, unit, children })
                 axisBorder: {
                     show: false,
                 },
+                tickAmount: 10, // Show only 5 labels
                 labels: {
                     style: {
                         colors: textColor,
@@ -127,9 +129,9 @@ function LineChartCard({ title, description, data, categories, unit, children })
             <Card.Header className="m-0 flex flex-wrap items-center gap-4 p-4">
                 <Card
                     color="primary"
-                    className="grid h-16 w-16 shrink-0 place-items-center rounded-md text-primary-foreground md:h-20 md:w-20"
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-md text-primary-foreground md:h-12 md:w-12"
                 >
-                    {children}
+                    {icon}
                 </Card>
                 <div>
                     <Typography type="h6">{title}</Typography>
@@ -203,7 +205,7 @@ function NutritionPieChart() {
             <Card.Header className="m-0 flex flex-wrap items-center gap-4 p-4">
                 <Card
                     color="primary"
-                    className="grid h-16 w-16 shrink-0 place-items-center rounded-md text-primary-foreground md:h-20 md:w-20"
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-md text-primary-foreground md:h-12 md:w-12"
                 >
                     <IconChartPie className="h-6 w-6 md:h-8 md:w-8" />
                 </Card>
@@ -222,10 +224,34 @@ function NutritionPieChart() {
 }
 
 export default function History() {
-    // Sample data - replace with actual data from your application
-    const dates = ["Jan", "Feb", "Mar", "Apr", "Maj", "Jun", "Jul"];
+    const [weightTimes, setWeightTimes] = React.useState([]);
+    const [weightData, setWeightData] = React.useState([]);
 
-    const weightData = [160, 158, 156, 154, 153, 152, 151];
+    React.useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('No token found in local storage');
+            return;
+        }
+
+        axios.get('http://localhost:8080/api/user', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then(response => {
+            const _weightTimes = [];
+            const _weightData = [];
+            for (const weighIn of response.data.weightHistory) {
+                _weightTimes.push(new Date(weighIn.date).toLocaleDateString('da-DK'));
+                _weightData.push(weighIn.weight);
+            }
+            setWeightTimes(_weightTimes);
+            setWeightData(_weightData);
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    }, []);
+    const dates = ["Jan", "Feb", "Mar", "Apr", "Maj", "Jun", "Jul"];
     const spendingData = [12, 15, 20, 18, 22, 25, 17];
 
     return (
@@ -234,7 +260,7 @@ export default function History() {
                 title="Vægtudvikling"
                 description="Følg dine vægtændringer over tid"
                 data={weightData}
-                categories={dates}
+                categories={weightTimes}
                 unit="kg"
             ><IconWeight /></LineChartCard>
             <LineChartCard
@@ -243,7 +269,7 @@ export default function History() {
                 data={spendingData}
                 categories={dates}
                 unit="DKK"
-            ><IconCurrencyKroneDanish /></LineChartCard>
+            ><IconShoppingCart /></LineChartCard>
             <NutritionPieChart />
         </div>
     );
