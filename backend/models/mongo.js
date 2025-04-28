@@ -43,6 +43,7 @@ const mealSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    price: Number,
     mealFactor: Number          // One meal might be too little calories, this factor is multiplied for calories
 });
 
