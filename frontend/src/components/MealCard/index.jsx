@@ -10,18 +10,18 @@ export default function HorizontalCard() {
     const mealOfDay = 'morgenmad';
 
     useEffect(() => {
-        const date = new Date().getTime();
-        axios.get(`http://localhost:8080/api/diet/mealplan/${ date }`, {
-            date
-        }, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        }).then(result => {
-            if (result.status === 200) {
-                console.log(result);
-            }
-        });
+        // const date = new Date().getTime();
+        // axios.get(`http://localhost:8080/api/diet/mealplan/${ date }`, {
+        //     date
+        // }, {
+        //     headers: {
+        //         'Authorization': `Bearer ${token}`
+        //     }
+        // }).then(result => {
+        //     if (result.status === 200) {
+        //         console.log(result);
+        //     }
+        // });
     }, []);
 
     return (

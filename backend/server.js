@@ -261,7 +261,6 @@ app.get("/api/diet/groceries", verifyToken, async (req, res) => {
     }
 });
 
-
 app.post("/api/diet/mealplan", verifyToken, async (req, res) => {
     let { date } = req.body; // Timestamp in ms
     const daysBeforeReset = 100*60*60*24*14;
@@ -340,7 +339,8 @@ app.post("/api/diet/mealplan", verifyToken, async (req, res) => {
 
         res.status(200).json({
             msg: "Mealplan created successfully",
-            meals
+            meals,
+            stats: getStatsFromMealplan(meals)
         });
     } catch (err) {
         console.log(err)
