@@ -207,6 +207,12 @@ export default function History() {
             const _priceData = [];
             const _caloriesTimes = [];
             const _caloriesData = [];
+
+            // Sort the arrays by date
+            response.data.advancements.weightHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
+            response.data.advancements.prices.sort((a, b) => new Date(a.date) - new Date(b.date));
+            response.data.advancements.calories.sort((a, b) => new Date(a.date) - new Date(b.date));
+
             for (const weighIn of response.data.advancements.weightHistory) {
                 _weightTimes.push(new Date(weighIn.date).toLocaleDateString('da-DK'));
                 _weightData.push(weighIn.weight);
