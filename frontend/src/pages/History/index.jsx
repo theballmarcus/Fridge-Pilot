@@ -118,13 +118,31 @@ function LineChartCard({ title, description, data, categories, unit, children: i
 }
 
 function NutritionPieChart() {
+    const [nutritionalValues, setNutritionalValues] = useState([0, 0,0 ]);
+
+    useEffect(() => {
+        const token = getToken();
+        const date = Date.now();
+        axios.get(`http://localhost:8080/api/diet/stats/${date}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }).then(response => {
+                if (response.status !== 200) throw new Error('Error fetching diet in nutritional pie chart');
+                console.log('Diet stats response: ', response);
+
+                const { total_carbs, total_protein, total_fat } = response.data.stats;
+                setNutritionalValues([total_carbs, total_protein, total_fat]);
+            })
+    }, [])
+
     const { firstColor: carbohydrateColor, secondaryColor: proteinColor, tertiaryColor: fatColor } = useThemeColors();
 
     const chartConfig = {
         type: 'pie',
         height: 240,
         width: '100%',
-        series: [65, 25, 10],
+        series: nutritionalValues,
         options: {
             responsive: [
                 {
@@ -175,7 +193,7 @@ function NutritionPieChart() {
                 </div>
             </Card.Header>
             <Card.Body className="grid place-items-center">
-                <Chart {...chartConfig} />
+                <Chart key={JSON.stringify(chartConfig)} {...chartConfig} />
             </Card.Body>
         </Card>
     );
@@ -188,7 +206,9 @@ export default function History() {
     const [priceData, setPriceData] = useState([]);
     const [caloriesTimes, setCaloriesTimes] = useState([]);
     const [caloriesData, setCaloriesData] = useState([]);
-    
+
+    // Get advancements:
+    // Weigh-ins, daily prices, daily calorie intake
     useEffect(() => {
         const token = getToken();
 
@@ -233,33 +253,40 @@ export default function History() {
             console.error('Error:', error);
         });
     }, []);
-    const dates = ["Jan", "Feb", "Mar", "Apr", "Maj", "Jun", "Jul"];
-    const spendingData = [12, 15, 20, 18, 22, 25, 17];
 
     return (
-        <div className="flex flex-col gap-6">
-            <LineChartCard
-                title="Vægtudvikling"
-                description="Følg dine vægtændringer over tid"
-                data={weightData}
-                categories={weightTimes}
-                unit="kg"
-            ><IconWeight /></LineChartCard>
-            <LineChartCard
-                title="Daglig udgift"
-                description="Penge brugt på mad hver dag"
-                data={priceData}
-                categories={priceTimes}
-                unit="DKK"
-            ><IconShoppingCart /></LineChartCard>
-            <LineChartCard
-                title="Daglig kalorieindtag"
-                description="Kalorier indtaget hver dag"
-                data={caloriesData}
-                categories={caloriesTimes}
-                unit=" kalorier"
-            ><IconFlame /></LineChartCard>
-            <NutritionPieChart />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Column 1 */}
+            <div className="space-y-6">
+                <LineChartCard
+                    title="Vægtudvikling"
+                    description="Følg dine vægtændringer over tid"
+                    data={weightData}
+                    categories={weightTimes}
+                    unit="kg"
+                ><IconWeight /></LineChartCard>
+
+                <LineChartCard
+                    title="Daglig kalorieindtag"
+                    description="Kalorier indtaget hver dag"
+                    data={caloriesData}
+                    categories={caloriesTimes}
+                    unit=" kalorier"
+                ><IconFlame /></LineChartCard>
+            </div>
+
+            {/* Column 2 */}
+            <div className="space-y-6">
+                <LineChartCard
+                    title="Daglig udgift"
+                    description="Penge brugt på mad hver dag"
+                    data={priceData}
+                    categories={priceTimes}
+                    unit="DKK"
+                ><IconShoppingCart /></LineChartCard>
+
+                <NutritionPieChart />
+            </div>
         </div>
     );
 }
