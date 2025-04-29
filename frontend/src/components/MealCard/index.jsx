@@ -33,7 +33,7 @@ export default function MealDayCard(date) {
             const token = getToken();
             if(token) {
                 axios.post(`http://localhost:8080/api/diet/mealplan`, {
-                    date: date
+                    date: date.date
                 }, {
                     headers: {
                         Authorization: `Bearer ${token}`
@@ -94,7 +94,7 @@ export default function MealDayCard(date) {
                                     type="small"
                                     className="mb-4 font-bold uppercase text-foreground"
                                 >
-                                    {meal.time === 1 ? 'Morgenmad' : meal.time === 2 ? 'Frokost' : 'Aftensmad'}
+                                    {meal.mealTime === 1 ? 'Morgenmad' : meal.mealTime === 2 ? 'Frokost' : 'Aftensmad'}
                                 </Typography>
                                 <Typography type="h5" className="mb-2">
                                     {meal.recipe}

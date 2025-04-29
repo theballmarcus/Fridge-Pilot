@@ -134,6 +134,8 @@ function pickMeal(recipes, groceries, max_calories, catogory, old_recipes) {
             for (let j = 0; j < groceries.length; j++) {
                 if (recipe[`ingredient_${i + 1}`] !== null && recipe[`ingredient_${i + 1}`].includes(groceries[j])) {
                     score++;
+                } else {
+                    missingIngrediens.push(recipe[`ingredient_${i + 1}`]);
                 }
             }
         }
@@ -244,7 +246,7 @@ if(process.env.OPENAI_ENABLED === 'true') {
 }
 
 /* CHATGPT */
-async function getMealTranslationAndGuess(meal, callback) {
+async function getMealTranslationAndGuess(meal, curGroceries, callback) {
     try {
         let products = ""
         let instructions = "";
@@ -257,14 +259,16 @@ async function getMealTranslationAndGuess(meal, callback) {
             }
         }
         if(openai !== null) {
-            const prompt  = `I have this list of ingredients: 
-            ${products}.
-            And I have instructions:
-            ${instructions}.
-            Translate the names to danish, make the units metric. Also translate the instructions to danish.
-            I need to know the estimated price of each ingredient in kr.
-            Respond ONLY with following JSON format so it can be parsed:
-            {"products" : [["product_name", "product_quantity", "product_unit", "estimated_price in kr"], ["product_name", "product_quantity", "product_unit", "estimated_price in kr"]], "instructions" : "instructions"}`;
+            const prompt  = `I have this list of ingredients I need: 
+${products}.
+I have these in my fridge:
+${curGroceries}
+And I have instructions:
+${instructions}.
+Translate the names to danish, make the units metric. Also translate the instructions to danish.
+I need to know the estimated price of each ingredient in kr. Lastly, true if I need to buy it, false if I already have it. Make the instructions short.
+Respond ONLY with following JSON format so it can be parsed:
+{"products" : [["product_name", "product_quantity", "product_unit", "estimated_price in kr", buy?], ["product_name", "product_quantity", "product_unit", "estimated_price in kr", buy?]], "instructions" : "instructions"}`;
 
             const gptResponse = await openai.chat.completions.create({
                 model: 'gpt-4o-mini',
@@ -274,7 +278,7 @@ async function getMealTranslationAndGuess(meal, callback) {
                         content: prompt
                     }
                 ],
-                max_tokens: 300,
+                max_tokens: 600,
             });
             
             message = gptResponse.choices[0].message.content.trim();                
