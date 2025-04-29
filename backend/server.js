@@ -10,7 +10,7 @@ const { calculateDailyCalories, cleverMealplanPicker, getStatsFromMealplan, getM
 
 const TOKEN_EXPIRATION_TIME = '12h';
 const oneDayMs = 100*60*60*24;
-
+3
 const app = express();
 
 app.use(cors());
@@ -47,13 +47,16 @@ async function formatMealReponse(mealplan) {
         let price;
 
         if (meals[j].price) {
+            price = meals[j].price;
+        
+        } 
+        
+        if (meals[j].chatGPTAnswer) {
             chatGPTAnswer = JSON.parse(meals[j].chatGPTAnswer);
             instructions = chatGPTAnswer.instructions;
-            price = meals[j].price;
             ingredients = chatGPTAnswer.products;
-
+            
         } else {
-
             for (let i = 0; i < 10; i++) {
                 if(meal[`directions_step_${i+1}`] !== null) {
                     instructions += meal[`directions_step_${i+1}`] + " "
@@ -70,7 +73,6 @@ async function formatMealReponse(mealplan) {
             'ingredients' : ingredients,
             'price' : price,
             'image' : meal.image,
-
         })
     }
     

@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const oneDayMs = 100*60*60*24;
+
 const userSchema = new mongoose.Schema({
     mail: {
         type: String,
@@ -69,22 +71,22 @@ async function test() {
             activityLevel: 2,
             monthlyGoal: 2,
             weightHistory: [
-                { date: Date.now(), weight: 90 },
-                { date: Date.now() - 1000 * 60 * 60 * 24 * 30, weight: 130 },
-                { date: Date.now() - 1000 * 60 * 60 * 24 * 60, weight: 125 },
-                { date: Date.now() - 1000 * 60 * 60 * 24 * 90, weight: 120 },
-                { date: Date.now() - 1000 * 60 * 60 * 24 * 120, weight: 115 },
-                { date: Date.now() - 1000 * 60 * 60 * 24 * 150, weight: 110 },
-                { date: Date.now() - 1000 * 60 * 60 * 24 * 180, weight: 105 },
-                { date: Date.now() - 1000 * 60 * 60 * 24 * 210, weight: 100 },
-                { date: Date.now() - 1000 * 60 * 60 * 24 * 240, weight: 95 },
-                { date: Date.now() - 1000 * 60 * 60 * 24 * 270, weight: 92 }
+                { date: Date.now() - (Date.now() % oneDayMs), weight: 90 },
+                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 30, weight: 130 },
+                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 90, weight: 120 },
+                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 60, weight: 125 },
+                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 120, weight: 115 },
+                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 150, weight: 110 },
+                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 180, weight: 105 },
+                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 210, weight: 100 },
+                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 240, weight: 95 },
+                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 270, weight: 92 }
             ]
         });
 
         for (let i = 0; i < 12; i++) {
             const mealplan = await Mealplan.create({
-                date: Date.now() - (i * 1000 * 60 * 60 * 24 * 30),
+                date: Date.now() - (Date.now() % oneDayMs) - (i * 1000 * 60 * 60 * 24 * 30),
                 userId: user._id,
                 inactive: Math.random() > 0.5,
                 suppliedCalories: Math.random() * 500,
