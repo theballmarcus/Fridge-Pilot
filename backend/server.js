@@ -89,7 +89,7 @@ async function formatMealReponse(mealplan) {
             'instructions' : instructions,
             'category' : meal.category.category,
             'ingredients' : ingredients,
-            'price' : price * meals[j].mealFactor,
+            'price' : price,
             'image' : meal.image,
             'calories' : Math.round(meal.calories * meals[j].mealFactor),
             'fat' : Math.round(meal.fat_in_grams * meals[j].mealFactor),
@@ -527,7 +527,7 @@ app.get("/api/advancements", verifyToken, async (req, res) => {
                 if(!meals[j].mealFactor) meals[j].mealFactor = 1;
 
                 if (meals[j].price) {
-                    curPrice = curPrice + meals[j].price * meals[j].mealFactor;
+                    curPrice = curPrice + meals[j].price;
                 }
                 thisMeal = getMealFromId(meals[j].mealId);
                 curCalories = curCalories + thisMeal.calories * meals[j].mealFactor;

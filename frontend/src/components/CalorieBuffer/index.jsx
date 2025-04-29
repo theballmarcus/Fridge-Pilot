@@ -2,13 +2,14 @@ import { List, Card, Typography } from "@material-tailwind/react";
 import { IconBrandPeanut, IconMilk, IconCheese, IconEggs } from '@tabler/icons-react';
 import header from '../../assets/cheatmeal-header.jpg';
 
-export default function CalorieBuffer() {
+export default function CalorieBuffer(currentCalories, maxCalories) {
+
     return (
         <Card className="max-w-xs">
             <Card.Header as="img" src={header} alt="Foto af bestik med skriften keto diet" />
             <Card.Body>
                 <Typography type="h6">Cheat Meals</Typography>
-                <Typography>I dag har du et kalorieoverskud på <i>{ 300 }</i> kcal! Du har buffer til ekstra snacks i dag.</Typography>
+                <Typography>I dag har du et kalorieunderskud på <i>{ maxCalories - currentCalories }</i> kcal! Du har buffer til ekstra snacks i dag.</Typography>
                 <List>
                     <List.Item>
                         <List.ItemStart>
