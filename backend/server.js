@@ -35,22 +35,31 @@ async function formatMealReponse(mealplan) {
     // respond with id, instruction, category, ingrdients, 
 
     var resp = {'meals' : [], stats: {}}
+    const user = await User.findById(mealplan.userId);
+    const groceries = user.curGroceries;
 
     const meals = await Meal.find({mealplanId : mealplan._id});
     let mealObjects = []
+
     for(let j = 0; j < meals.length; j++) {
         const meal = getMealFromId(meals[j].mealId);
         meal.factor = meals[j].mealFactor;
         mealObjects.push(meal)
         let instructions = "";
         let ingredients = [];
-        let price;
 
+        let price;
         if (meals[j].price) {
             price = meals[j].price;
-        
         } 
-        
+
+        let mealTime;
+        console.log(meals[j])
+        if(meals[j].time) {
+            mealTime = meals[j].time;
+        } 
+        console.log("mealTime: ", mealTime)
+
         if (meals[j].chatGPTAnswer) {
             chatGPTAnswer = JSON.parse(meals[j].chatGPTAnswer);
             instructions = chatGPTAnswer.instructions;
@@ -58,17 +67,24 @@ async function formatMealReponse(mealplan) {
 
         } else {
             for (let i = 0; i < 10; i++) {
+                let haveIngredient = false;
+                for (let k = 0; k < groceries.length; k++) {
+                    if (meal[`ingredient_${i+1}`]?.includes(groceries[k])) {
+                        haveIngredient = true;
+                        break;
+                    }
+                }
+
                 if(meal[`directions_step_${i+1}`] !== null) {
                     instructions += meal[`directions_step_${i+1}`] + " "
                 }
+
                 if(meal[`ingredient_${i+1}`] !== null) {
-                    ingredients.push([meal[`ingredient_${i+1}`], meal[`measurement_${i+1}`], null, null]);
+                    ingredients.push([meal[`ingredient_${i+1}`], meal[`measurement_${i+1}`], null, null, haveIngredient]);
                 }
             }
         }
-        if(!meals[j].time) {
-            meals[j].time = 1;
-        }
+
         resp.meals.push({
             'id' : meal.id,
             'recipe' : meal.recipe,
@@ -82,7 +98,8 @@ async function formatMealReponse(mealplan) {
             'carbs' : meal.carbohydrates_in_grams * meals[j].mealFactor,
             'protein' : meal.protein_in_grams * meals[j].mealFactor,
             'prepTime' : meal.prep_time_in_minutes,
-            'time' : meals[j].time // 1 for breakfast, 2 for lunch, 3 for dinner
+            'totalTime' : meal.prep_time_in_minutes + meal.cook_time_in_minutes,
+            'mealTime' : mealTime // 1 for breakfast, 2 for lunch, 3 for dinner
         })
     }
     
@@ -241,11 +258,13 @@ app.get("/api/user", verifyToken, async (req, res) => {
 });
 
 app.post("/api/diet/groceries", verifyToken, async (req, res) => {
-    const { groceries } = req.body;
+    const { groceries } = req.body; // array please
     try {
         const user = await User.findById(req.user.id);
         user.curGroceries = groceries;
+
         await user.save();
+
         res.status(200).json({
             msg: "Groceries updated successfully"
         });
@@ -279,6 +298,7 @@ app.post("/api/diet/mealplan", verifyToken, async (req, res) => {
         date = date - (date % oneDayMs);
 
         const user = await User.findById(req.user.id);
+        if (!user) return res.status(400).json({ msg: "User not found" });
         var age = new Date(new Date() - new Date(user.birthday)).getFullYear() - 1970;
 
         const dailyBurnedCalories = calculateDailyCalories(user.gender, user.weight, user.height, age, user.activityLevel); 
@@ -324,7 +344,7 @@ app.post("/api/diet/mealplan", verifyToken, async (req, res) => {
 
         const meals = cleverMealplanPicker(dailyDesiredCalories, user.curGroceries, usedMeals);
         for (let i = 0; i < 3; i++) {
-            getMealTranslationAndGuess(meals[i], async (priceGuess) => {
+            getMealTranslationAndGuess(meals[i], user.curGroceries, async (priceGuess) => {
                 if (priceGuess !== null) {
                     const meal = new Meal({
                         mealplanId: mealplan._id,
@@ -332,7 +352,8 @@ app.post("/api/diet/mealplan", verifyToken, async (req, res) => {
                         date : date,
                         mealFactor: meals[i].factor,
                         price: priceGuess.total_price,
-                        chatGPTAnswer: JSON.stringify(priceGuess)
+                        chatGPTAnswer: JSON.stringify(priceGuess),
+                        time: i + 1
                     });
                     await meal.save();
                 } else {
