@@ -204,7 +204,7 @@ function getStatsFromMealplan(mealplan, groceries) {
         total_carbs += mealplan[i].carbohydrates_in_grams * mealplan[i].factor;
     }
     total_calories = Math.round(total_calories)
-    console.log(total_calories)
+    console.log("Total calories: ", total_calories)
     return {
         total_calories,
         total_protein,

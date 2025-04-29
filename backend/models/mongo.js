@@ -89,7 +89,7 @@ async function test() {
                 date: Date.now() - (Date.now() % oneDayMs) - (i * 1000 * 60 * 60 * 24 * 30),
                 userId: user._id,
                 inactive: Math.random() > 0.5,
-                suppliedCalories: Math.random() * 500,
+                suppliedCalories: Math.round(Math.random() * 500),
             });
     
             await Meal.create({
