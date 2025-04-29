@@ -42,103 +42,49 @@ const changeUserWeight = async (newWeight) => {
     });
 }
 
-export default function MainPageProgress() {
-    const [calories, setCalories] = useState(0);
-    const [protein, setProtein] = useState(0);
-    const [fat, setFat] = useState(0);
-    const [carbs, setCarbs] = useState(0);
+export default function MainPageProgress({calories, protein, fat, carbs, dailyCalories, dailyProtein, dailyFat, dailyCarbs}) {
+    // const [calories, setCalories] = useState(pCalories);
+    // const [protein, setProtein] = useState(pProtein);
+    // const [fat, setFat] = useState(pFat);
+    // const [carbs, setCarbs] = useState(pCarbs);
 
-    const [dailyCalories, setDailyCalories] = useState(0);
-    const [dailyProtein, setDailyProtein] = useState(0);
-    const [dailyFat, setDailyFat] = useState(0);
-    const [dailyCarbs, setDailyCarbs] = useState(0);
+    // const [dailyCalories, setDailyCalories] = useState(pDailyCalories);
+    // const [dailyProtein, setDailyProtein] = useState(pDailyProtein);
+    // const [dailyFat, setDailyFat] = useState(pDailyFat);
+    // const [dailyCarbs, setDailyCarbs] = useState(pDailyCarbs);
 
     const [addRemoveCalories, setAddRemoveCalories] = useState(0);
     const [newUserWeight, setNewUserWeight] = useState(0);
     const [caloriesChanging, setCaloriesChanging] = useState(false);
     const [weightChanging, setWeightChanging] = useState(false);
 
-    useEffect(() => {
-        const token = getToken();
-
-        const fetchUserWeight = () => {
-            return axios.get('http://localhost:8080/api/user', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }).then(response => {
-                if (response.status === 200) {
-                    console.log('User fetched successfully');
-
-                    return response.data.weight;
-                }
-
-                return null;
-            }).catch(error => {
-                console.error('Error:', error);
-            });
-        }
-
-        const fetchStats = async () => {
-            const date = Date.now();
-            try {
-                const response = await axios.get(`http://localhost:8080/api/diet/stats/${date}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                return response;
-            } catch (error) {
-                return error;
-            }
-        }
-
-        const fetchData = async () => {
-            const date = Date.now();
-            let statsResponse = await fetchStats();
-            if (statsResponse.status === 200) {
-                console.log('Stats fetched successfully');
-
-                return statsResponse.data;
-            } else {
-                // Generate new meal plan and fetch stats
-                const mealplanResponse = await axios.post(`http://localhost:8080/api/diet/mealplan`, {
-                    date: date
-                }, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                if (mealplanResponse.status === 200) {
-                    console.log('Mealplan generated successfully');
-                    statsResponse = await fetchStats();
-                }
-
-                return statsResponse.data;
-            }
-        }
-
-        fetchData().then(data => {
-            console.log(data);
-
-            setCalories(data.stats.total_calories);
-            setProtein(data.stats.total_protein);
-            setFat(data.stats.total_fat);
-            setCarbs(data.stats.total_carbs);
-
-            setDailyCalories(data.dailyBurnedCalories);
-            setDailyCarbs(Math.round(data.dailyBurnedCalories * 0.05 / 4));
-            setDailyProtein(Math.round(data.dailyBurnedCalories * 0.2 / 4));
-            setDailyFat(Math.round(data.dailyBurnedCalories * 0.75 / 9));
-        });
-
-        fetchUserWeight().then(weight => setNewUserWeight(weight))
-    }, [caloriesChanging, weightChanging]);
-
     const { firstColor, secondaryColor, tertiaryColor } = useThemeColors();
-
+    const token = getToken();
     // Render calorie count out of desired daily calorie count
     // Within, render weight loss in kgs out of desired weight loss
+
+    const fetchUserWeight = () => {
+        return axios.get('http://localhost:8080/api/user', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then(response => {
+            if (response.status === 200) {
+                console.log('User fetched successfully');
+
+                return response.data.weight;
+            }
+
+            return null;
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    }
+    
+    useState(() => {
+        fetchUserWeight().then(weight => setNewUserWeight(weight))
+    }, [weightChanging]);
+
     return <>
         <div className="flex flex-col items-center justify-center">
             <Typography type="h2" className="mt-4">Dagens fremskridt</Typography>
