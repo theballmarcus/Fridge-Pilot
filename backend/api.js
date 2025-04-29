@@ -121,6 +121,25 @@ function getAllRecipes() {
     req.end();
 }
 
+function scoreRecipe(recipe, groceries, old_recipes) {
+    let score = 10;
+    for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < groceries.length; j++) {
+            if (recipe[`ingredient_${i + 1}`] !== null && recipe[`ingredient_${i + 1}`].includes(groceries[j])) {
+                score = score + 2;
+            }
+        }
+    }
+    if (Object.keys(old_recipes).includes(recipe.id.toString())) { // If it has been eaten in the last 14 days, make the score lower.
+        score = score / (1.8 * old_recipes[recipe.id]);
+    }
+    // Remove score if the recipe has too little calories
+    factor = findMealCaloryFactor(recipe, max_calories);
+    c = recipe.calories * factor;
+    score = score * (c / max_calories);
+    return score;
+}
+
 function pickMeal(recipes, groceries, max_calories, catogory, old_recipes) {
     /*
     This function picks a meal based on the user's groceries and calorie limit.
@@ -128,26 +147,6 @@ function pickMeal(recipes, groceries, max_calories, catogory, old_recipes) {
     It returns a recipe that fits the criteria.
     returns a recipe object.
     */
-    console.log(old_recipes)
-    function scoreRecipe(recipe, groceries) {
-        let score = 10;
-        for (let i = 0; i < 10; i++) {
-            for (let j = 0; j < groceries.length; j++) {
-                if (recipe[`ingredient_${i + 1}`] !== null && recipe[`ingredient_${i + 1}`].includes(groceries[j])) {
-                    score = score + 2;
-                }
-            }
-        }
-        if (Object.keys(old_recipes).includes(recipe.id.toString())) { // If it has been eaten in the last 14 days, make the score lower.
-            score = score / (1.8 * old_recipes[recipe.id]);
-        }
-        // Remove score if the recipe has too little calories
-        factor = findMealCaloryFactor(recipe, max_calories);
-        c = recipe.calories * factor;
-        score = score * (c / max_calories);
-        return score;
-    }
-
     let mealCandidates = [];
     const meals = recipes.filter(recipe => recipe.category.id === catogory && recipe.difficulty === "Easy");
     for(let i = 0; i < meals.length; i++) {
@@ -157,7 +156,7 @@ function pickMeal(recipes, groceries, max_calories, catogory, old_recipes) {
     }
     let allScores = [];
     for (let i = 0; i < mealCandidates.length; i++) {
-        allScores.push(scoreRecipe(mealCandidates[i], groceries));
+        allScores.push(scoreRecipe(mealCandidates[i], groceries, old_recipes));
     }
     console.log("allScores", allScores)
     let mealMaxScore = Math.max(...allScores);
@@ -250,6 +249,31 @@ function getMealFromId(id) {
             return recipes[i]
         }
     }
+}
+
+function getNSacks(calories, nAmount, old_recipes) {
+    /*
+    This function picks nAmount meals for the day based on the user's groceries and calorie limit.
+    It filters the recipes based on the groceries available and the calorie limit.
+    It returns a list of recipes that fit the criteria.
+
+    returns an array of recipes. Ex: [breakfast, lunch, dinner]
+    */
+    const recipes = load_recipes();
+    let mealCandidates = [];
+    for(let i = 0; i < recipes.length; i++) {
+        if(recipes[i].calories <= calories) {
+            mealCandidates.push(recipes[i]);
+        }
+    }
+    let allScores = [];
+    for (let i = 0; i < mealCandidates.length; i++) {
+        allScores.push(scoreRecipe(mealCandidates[i], groceries));
+    }
+    let mealMaxScore = Math.max(...allScores);
+    let maxScoreIndex = allScores.indexOf(mealMaxScore);
+    mealCandidates[maxScoreIndex].factor = findMealCaloryFactor(mealCandidates[maxScoreIndex], calories)
+    return mealCandidates[maxScoreIndex];
 }
 
 let openai = null;
