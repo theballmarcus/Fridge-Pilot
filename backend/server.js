@@ -420,7 +420,7 @@ app.get("/api/diet/stats/:date", verifyToken, async (req, res) => {
         }
         const stats = getStatsFromMealplan(mealObjects);
         if(mealplan.suppliedCalories) {
-            stats.total_calories = stats.total_calories + mealplan.suppliedCalories;
+            stats.total_calories = stats.total_calories + Math.ceil(mealplan.suppliedCalories);
         }
         res.status(200).json({
             msg: "Stats get successfully",
