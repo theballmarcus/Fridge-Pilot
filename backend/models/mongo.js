@@ -69,18 +69,18 @@ async function test() {
             height: 180,
             weight: 90,
             activityLevel: 2,
-            monthlyGoal: 2,
+            monthlyGoal: 5,
             weightHistory: [
                 { date: Date.now() - (Date.now() % oneDayMs), weight: 90 },
-                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 30, weight: 130 },
-                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 90, weight: 120 },
-                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 60, weight: 125 },
-                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 120, weight: 115 },
+                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 30, weight: 92 },
+                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 90, weight: 95 },
+                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 60, weight: 100 },
+                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 120, weight: 105 },
                 { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 150, weight: 110 },
-                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 180, weight: 105 },
-                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 210, weight: 100 },
-                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 240, weight: 95 },
-                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 270, weight: 92 }
+                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 180, weight: 120 },
+                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 210, weight: 125 },
+                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 240, weight: 130 },
+                { date: Date.now() - (Date.now() % oneDayMs) - 1000 * 60 * 60 * 24 * 270, weight: 135 }
             ]
         });
 

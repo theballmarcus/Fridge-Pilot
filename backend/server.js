@@ -55,7 +55,7 @@ async function formatMealReponse(mealplan) {
             chatGPTAnswer = JSON.parse(meals[j].chatGPTAnswer);
             instructions = chatGPTAnswer.instructions;
             ingredients = chatGPTAnswer.products;
-            
+
         } else {
             for (let i = 0; i < 10; i++) {
                 if(meal[`directions_step_${i+1}`] !== null) {
@@ -460,7 +460,7 @@ app.get("/api/advancements", verifyToken, async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
 
-        const mealplans = await Mealplan.find({userId : req.user.id, inactive : false});
+        const mealplans = await Mealplan.find({userId : req.user.id, inactive : false}).limit(30).sort({date: -1});
         let prices = []
         let calories = []
         for(let i = 0; i < mealplans.length; i++) {
@@ -480,6 +480,13 @@ app.get("/api/advancements", verifyToken, async (req, res) => {
             prices.push({'date' : mealplans[i].date, 'price' : curPrice});
             calories.push({'date' : mealplans[i].date, 'calories' : curCalories});
         }
+        let weightHistoryLimit;
+        if(user.weightHistory.length > 30) {
+            weightHistoryLimit = user.weightHistory.slice(-30);
+        } else {
+            weightHistoryLimit = user.weightHistory;
+        }
+        
         const advancements = {
             weightHistory: user.weightHistory,
             prices: prices,
