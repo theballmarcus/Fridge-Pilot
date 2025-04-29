@@ -247,6 +247,20 @@ app.post("/api/diet/groceries", verifyToken, async (req, res) => {
     }
 });
 
+app.get("/api/diet/groceries", verifyToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        res.status(200).json({
+            groceries: user.curGroceries
+        });
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            msg: "Server error"
+        });
+    }
+});
+
 app.post("/api/diet/mealplan", verifyToken, async (req, res) => {
     let { date } = req.body; // Timestamp in ms
     const daysBeforeReset = 100*60*60*24*14;
@@ -480,7 +494,7 @@ app.get("/api/advancements", verifyToken, async (req, res) => {
             prices.push({'date' : mealplans[i].date, 'price' : curPrice});
             calories.push({'date' : mealplans[i].date, 'calories' : curCalories});
         }
-        
+
         let weightHistoryLimit;
         if(user.weightHistory.length > 30) {
             weightHistoryLimit = user.weightHistory.slice(-30);
