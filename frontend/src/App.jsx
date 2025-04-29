@@ -20,11 +20,11 @@ function App() {
 }
 
 const AuthRedirector = ({ children, requireAuth }) => {
-    const loggedIn = localStorage.getItem('token') !== null;
+    // const loggedIn = localStorage.getItem('token') !== null;
 
-    if (requireAuth && !loggedIn) {
-        return <Navigate to="/" replace />;
-    }
+    // if (requireAuth && !loggedIn) {
+    //     return <Navigate to="/" replace />;
+    // }
     return children;
 };
 

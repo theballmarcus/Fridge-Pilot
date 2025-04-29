@@ -2,10 +2,11 @@ import KetoGuidelines from '../../components/KetoGuidelines';
 import MainPageProgress from '../../components/MainPageProgress';
 import CalorieBuffer from '../../components/CalorieBuffer';
 import { useEffect, useState } from 'react';
-import { getToken } from '../../utils/Session.jsx';
+import { useAuth } from '../../context/AuthProvider';
 import axios from 'axios';
 
 export default function Today() {
+    const { getToken } = useAuth();
     const [shouldRefetch, setShouldRefetch] = useState(false);
 
     const [calories, setCalories] = useState(0);
@@ -18,13 +19,14 @@ export default function Today() {
     const [dailyFat, setDailyFat] = useState(0);
     const [dailyCarbs, setDailyCarbs] = useState(0);
 
-    const token = getToken();
 
     const refreshData = () => {
         setShouldRefetch(!shouldRefetch);
     };
 
     const fetchStats = async () => {
+        const token = getToken();
+
         const date = Date.now();
         try {
             const response = await axios.get(`http://localhost:8080/api/diet/stats/${date}`, {
@@ -39,6 +41,8 @@ export default function Today() {
     }
 
     const fetchData = async () => {
+        const token = getToken();
+
         const date = Date.now();
         let statsResponse = await fetchStats();
         if (statsResponse.status === 200) {
@@ -46,7 +50,6 @@ export default function Today() {
 
             return statsResponse.data;
         } else {
-            // Generate new meal plan and fetch stats
             const mealplanResponse = await axios.post(`http://localhost:8080/api/diet/mealplan`, {
                 date: date
             }, {
@@ -65,19 +68,23 @@ export default function Today() {
 
 
     useEffect(() => {
-        fetchData().then(data => {
-            console.log(data);
+        const token = getToken();
 
-            setCalories(data.stats.total_calories);
-            setProtein(data.stats.total_protein);
-            setFat(data.stats.total_fat);
-            setCarbs(data.stats.total_carbs);
-
-            setDailyCalories(data.dailyBurnedCalories);
-            setDailyCarbs(Math.round(data.dailyBurnedCalories * 0.05 / 4));
-            setDailyProtein(Math.round(data.dailyBurnedCalories * 0.2 / 4));
-            setDailyFat(Math.round(data.dailyBurnedCalories * 0.75 / 9));
-        });
+        if(token) {
+            fetchData().then(data => {
+                console.log(data);
+    
+                setCalories(data.stats.total_calories);
+                setProtein(data.stats.total_protein);
+                setFat(data.stats.total_fat);
+                setCarbs(data.stats.total_carbs);
+    
+                setDailyCalories(data.dailyBurnedCalories);
+                setDailyCarbs(Math.round(data.dailyBurnedCalories * 0.05 / 4));
+                setDailyProtein(Math.round(data.dailyBurnedCalories * 0.2 / 4));
+                setDailyFat(Math.round(data.dailyBurnedCalories * 0.75 / 9));
+            });
+        }
 
     }, [shouldRefetch]);
 
