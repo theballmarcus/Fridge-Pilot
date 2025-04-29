@@ -134,8 +134,6 @@ function pickMeal(recipes, groceries, max_calories, catogory, old_recipes) {
             for (let j = 0; j < groceries.length; j++) {
                 if (recipe[`ingredient_${i + 1}`] !== null && recipe[`ingredient_${i + 1}`].includes(groceries[j])) {
                     score++;
-                } else {
-                    missingIngrediens.push(recipe[`ingredient_${i + 1}`]);
                 }
             }
         }
