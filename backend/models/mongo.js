@@ -52,6 +52,7 @@ const mealSchema = new mongoose.Schema({
     price: Number,
     mealFactor: Number,          // One meal might be too little calories, this factor is multiplied for calories
     chatGPTAnswer: String,
+    time: Number,                // 1 for breakfast, 2 for lunch, 3 for dinner
 });
 
 const User = mongoose.model('User', userSchema);
@@ -96,18 +97,21 @@ async function test() {
                 mealplanId: mealplan._id,
                 mealId: Math.round(Math.random() * 400),
                 price: Math.round(Math.random() * 100),
+                time: 1
             });
     
             await Meal.create({
                 mealplanId: mealplan._id,
                 mealId: Math.round(Math.random() * 400),
                 price: Math.round(Math.random() * 100),
+                time: 2
             });
     
             await Meal.create({
                 mealplanId: mealplan._id,
                 mealId: Math.round(Math.random() * 400),
                 price: Math.round(Math.random() * 100),
+                time: 3
             });
         }
 

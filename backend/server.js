@@ -10,7 +10,7 @@ const { calculateDailyCalories, cleverMealplanPicker, getStatsFromMealplan, getM
 
 const TOKEN_EXPIRATION_TIME = '12h';
 const oneDayMs = 100*60*60*24;
-3
+
 const app = express();
 
 app.use(cors());
@@ -66,13 +66,23 @@ async function formatMealReponse(mealplan) {
                 }
             }
         }
+        if(!meals[j].time) {
+            meals[j].time = 1;
+        }
         resp.meals.push({
             'id' : meal.id,
+            'recipe' : meal.recipe,
             'instructions' : instructions,
             'category' : meal.category.category,
             'ingredients' : ingredients,
-            'price' : price,
+            'price' : price * meals[j].mealFactor,
             'image' : meal.image,
+            'calories' : meal.calories * meals[j].mealFactor,
+            'fat' : meal.fat_in_grams * meals[j].mealFactor,
+            'carbs' : meal.carbohydrates_in_grams * meals[j].mealFactor,
+            'protein' : meal.protein_in_grams * meals[j].mealFactor,
+            'prepTime' : meal.prep_time_in_minutes,
+            'time' : meals[j].time // 1 for breakfast, 2 for lunch, 3 for dinner
         })
     }
     
@@ -330,7 +340,8 @@ app.post("/api/diet/mealplan", verifyToken, async (req, res) => {
                         mealplanId: mealplan._id,
                         mealId: meals[i].id,
                         date : date,
-                        mealFactor: meals[i].factor
+                        mealFactor: meals[i].factor,
+                        time: i + 1
                     });
                     await meal.save();
                 }
