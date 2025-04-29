@@ -341,27 +341,21 @@ const handleMealplanRequest = async (req) => {
 
         const meals = await cleverMealplanPicker(dailyDesiredCalories, user.curGroceries, usedMeals);
         for (let i = 0; i < 3; i++) {
-            await getMealTranslationAndGuess(meals[i], user.curGroceries, async (priceGuess) => {
+            const meal = new Meal({
+                mealplanId: mealplan._id,
+                mealId: meals[i].id,
+                date : date,
+                mealFactor: meals[i].factor,
+                time: i + 1
+            });
+            await meal.save();
+
+            getMealTranslationAndGuess(meals[i], user.curGroceries, async (priceGuess) => {
                 if (priceGuess !== null) {
-                    const meal = new Meal({
-                        mealplanId: mealplan._id,
-                        mealId: meals[i].id,
-                        date : date,
-                        mealFactor: meals[i].factor,
-                        price: priceGuess.total_price,
-                        chatGPTAnswer: JSON.stringify(priceGuess),
-                        time: i + 1
-                    });
+                    meal.price = priceGuess.total_price;
+                    meal.chatGPTAnswer = JSON.stringify(priceGuess);
                     await meal.save();
-                } else {
-                    const meal = new Meal({
-                        mealplanId: mealplan._id,
-                        mealId: meals[i].id,
-                        date : date,
-                        mealFactor: meals[i].factor,
-                        time: i + 1
-                    });
-                    await meal.save();
+
                 }
             })
         }
