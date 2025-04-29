@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { CircularProgressbar, CircularProgressbarWithChildren } from 'react-circular-progressbar';
 import { Typography, Breadcrumb } from '@material-tailwind/react';
 import { IconFlame, IconWheat, IconMeat, IconDroplet } from '@tabler/icons-react';
+import CalorieProgress from '../../components/CalorieProgress';
 import ChangeUserWeight from '../../components/ChangeUserWeight';
 import CalorieAddRemove from '../../components/CalorieAddRemove';
 import axios from 'axios';
@@ -172,6 +173,7 @@ export default function MainPageProgress() {
                 </div>
             </div>
             <div className="w-[600px] flex flex-col justify-center items-center">
+                <CalorieProgress value={ (calories/dailyCalories) * 100 } progressBarText={ `${calories}/${dailyCalories} kalorier (${Math.round((calories/dailyCalories) * 100)}%)`}/>
                 <ChangeUserWeight value={newUserWeight} disabled={weightChanging} onChange={setNewUserWeight} onSubmit={() => {
                     setWeightChanging(true);
                     changeUserWeight(newUserWeight).then(() => setWeightChanging(false))

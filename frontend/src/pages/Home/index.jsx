@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
 import Today from '../Today';
+import MealPlan from '../MealPlan';
 import History from '../History';
 import { Tabs } from '@material-tailwind/react';
 import { IconProgressCheck, IconCalendarWeek, IconFridge, IconActivityHeartbeat } from '@tabler/icons-react';
@@ -31,7 +31,7 @@ const PAGES = {
         id: 'mealplan',
         icon: <IconCalendarWeek />,
         label: 'Måltidsplan',
-        content: 'Her kan du se de næste dages madplan'
+        content: <MealPlan/>
     },
     FRIDGE: {
         id: 'fridge',

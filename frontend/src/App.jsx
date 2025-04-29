@@ -1,6 +1,7 @@
 // App.jsx
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthProvider';
+import './App.css';
 import LandingPage from './pages/Landing';
 import LoginPage from './pages/Login';
 import SignupPage from './pages/Signup';

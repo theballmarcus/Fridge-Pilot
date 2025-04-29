@@ -1,5 +1,8 @@
-import React from "react";
+import React from 'react';
+import MealCard from '../../components/MealCard';
 
 export default function MealPlanPage() {
-    return <></>
+    return <>
+        <MealCard></MealCard>
+    </>
 }
