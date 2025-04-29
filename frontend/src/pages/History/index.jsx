@@ -7,7 +7,7 @@ import { useThemeColors } from '../../hooks/useThemeColors.jsx';
 import { getToken } from '../../utils/Session.jsx';
 
 function LineChartCard({ title, description, data, categories, unit, children: icon }) {
-    const { firstColor: chartColor, secondaryColor: textColor, tertiaryColor: lineColor } = useThemeColors();
+    const { firstColor: chartColor } = useThemeColors();
 
     const chartConfig = {
         type: 'line',
@@ -48,7 +48,6 @@ function LineChartCard({ title, description, data, categories, unit, children: i
                 tickAmount: 10, // Show only 5 labels
                 labels: {
                     style: {
-                        colors: textColor,
                         fontSize: '12px',
                         fontFamily: 'inherit',
                         fontWeight: 400,
@@ -59,7 +58,6 @@ function LineChartCard({ title, description, data, categories, unit, children: i
             yaxis: {
                 labels: {
                     style: {
-                        colors: textColor,
                         fontSize: '12px',
                         fontFamily: 'inherit',
                         fontWeight: 400,
@@ -71,7 +69,6 @@ function LineChartCard({ title, description, data, categories, unit, children: i
             },
             grid: {
                 show: true,
-                borderColor: lineColor,
                 strokeDashArray: 5,
                 xaxis: {
                     lines: {

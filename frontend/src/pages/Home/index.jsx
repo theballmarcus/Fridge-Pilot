@@ -1,5 +1,6 @@
 import Today from '../Today';
 import MealPlan from '../MealPlan';
+import Fridge from '../Fridge';
 import History from '../History';
 import { Tabs } from '@material-tailwind/react';
 import { IconProgressCheck, IconCalendarWeek, IconFridge, IconActivityHeartbeat } from '@tabler/icons-react';
@@ -37,7 +38,7 @@ const PAGES = {
         id: 'fridge',
         icon: <IconFridge />,
         label: 'Mit køleskab',
-        content: 'Her kan du føje ting til dit digitale køleskab'
+        content: <Fridge/>
     },
     HISTORY: {
         id: 'history',
