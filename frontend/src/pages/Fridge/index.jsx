@@ -3,10 +3,10 @@ import { Navbar, Input, Button, Chip } from '@material-tailwind/react';
 import { IconX, IconSearch } from '@tabler/icons-react';
 import { matchSorter } from 'match-sorter';
 import axios from 'axios';
-import { getToken } from '../../utils/Session.jsx';
+import { useAuth } from '../../context/AuthProvider/index.jsx';
 
 const groceryPost = (groceryList) => {
-    const token = getToken();
+    const token = localStorage.getItem('token');
     axios.post(`http://localhost:8080/api/diet/groceries`, {
         groceries: groceryList
     }, {
@@ -46,6 +46,7 @@ function GroceryChip({ grocery, onDelete }) {
 }
 
 export default function FridgePage() {
+    const { getToken } = useAuth();
     const [groceryInput, setGroceryInput] = useState('');
     const [groceryList, setGroceryList] = useState([]);
     const [filteredGroceries, setFilteredGroceries] = useState([]);
@@ -55,7 +56,7 @@ export default function FridgePage() {
 
     useEffect(() => {
         const token = getToken();
-
+        if(!token) return;
         axios.get('http://localhost:8080/api/diet/groceries', {
             headers: {
                 'Authorization': `Bearer ${token}`

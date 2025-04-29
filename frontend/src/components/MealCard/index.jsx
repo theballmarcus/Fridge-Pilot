@@ -2,14 +2,16 @@ import { useEffect, useState } from "react";
 import { Card, Typography, Button } from "@material-tailwind/react";
 import { IconGrillFork } from '@tabler/icons-react';
 import axios from 'axios';
-import { getToken } from "../../utils/Session";
+import { useAuth } from '../../context/AuthProvider/index.jsx';
+
 
 export default function MealDayCard(date) {
+    const { getToken } = useAuth();
     const [theseMeals, setTheseMeals] = useState([]);
   
-    const token = getToken();
-
     function retrieveMealplan(date) {
+        const token = getToken();
+
         return new Promise((resolve, reject) => {
             if(token) {
                 axios.get(`http://localhost:8080/api/diet/mealplan/${date}`, {
@@ -83,7 +85,6 @@ export default function MealDayCard(date) {
                         <Card key={index} className="m-2 flex h-full w-full max-w-[48rem] flex-row">
                             <Card.Header className="m-0 h-full w-2/5 shrink-0 rounded-r-none">
                                 <img
-                                    // src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1471&q=80"
                                     src={meal.image}
                                     alt="card-image"
                                     className="h-full w-full object-cover"

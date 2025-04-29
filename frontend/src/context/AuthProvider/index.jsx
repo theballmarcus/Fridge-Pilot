@@ -1,33 +1,46 @@
 import { createContext, useState, useContext } from 'react';
 import { createPortal } from 'react-dom';
-import { useNavigate } from 'react-router-dom';
+import { Dialog, Typography, Button } from "@material-tailwind/react";
 
+const ErrorModal = ({ onClose }) => {
 
-/*const ErrorModal = () => {
-    const navigate = useNavigate();
+    const handleLoginRedirect = () => {
+        onClose();
+        window.location.href = '/login';
+
+    };
 
     return createPortal(
-        <Dialog open={true}>
-            <Dialog.Overlay>
-                <Dialog.Content>
-                    <div className='flex items-center justify-between gap-4'>
-                        <Typography type='h6'>Du er ikke logget ind</Typography>
-                    </div>
-                    <Typography className='mb-6 mt-2 text-foreground'>
-                        Klik på knappen for at tilgå forsiden, så du kan logge ind igen
-                    </Typography>
-                    <div className='mb-1 flex items-center justify-end gap-2'>
-                        <Button onClick={() => {
-                            localStorage.clear();
-                            navigate('/', { replace: true });
-                        }}>Til forsiden</Button>
-                    </div>
-                </Dialog.Content>
-            </Dialog.Overlay>
-        </Dialog>,
+        <div className="fixed inset-0  z-[9999] flex items-center justify-center p-4">
+            <div className="max-w-md w-full bg-white rounded-lg shadow-xl p-6 text-center">
+                <Typography variant="h4" color="red" className="mb-4">
+                    Adgang nægtet
+                </Typography>
+                <Typography variant="paragraph" className="mb-6 text-gray-700">
+                    Du skal være logget ind for at få adgang til denne side. Venligst log ind eller opret en konto for at fortsætte.
+                </Typography>
+                <div className="flex flex-col sm:flex-row justify-center gap-3">
+                    <Button
+                        color="gray"
+                        onClick={onClose}
+                        className="w-full sm:w-auto"
+                    >
+                        Annuller
+                    </Button>
+                    <Button
+                        color="red"
+                        onClick={handleLoginRedirect}
+                        className="w-full sm:w-auto"
+                    >
+                        Log ind
+                    </Button>
+                </div>
+            </div>
+        </div>,
         document.getElementById('modal-root')
     );
-};*/
+};
+
 
 const AuthContext = createContext();
 
@@ -43,11 +56,15 @@ export const AuthProvider = ({ children }) => {
         return true;
     };
 
+    const getToken = () => {
+        return validateToken() ? localStorage.getItem('token') : null;
+    };
+
     return (
-        <AuthContext.Provider value={{ tokenError, setTokenError, validateToken }}>
-            {/*tokenError && (
+        <AuthContext.Provider value={{ tokenError, setTokenError, validateToken, getToken }}>
+            {tokenError && (
                 <ErrorModal onClose={() => setTokenError(false)} />
-            )*/}
+            )}
             {children}
         </AuthContext.Provider>
     );

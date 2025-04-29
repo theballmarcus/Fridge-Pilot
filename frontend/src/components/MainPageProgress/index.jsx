@@ -6,13 +6,14 @@ import CalorieProgress from '../../components/CalorieProgress';
 import ChangeUserWeight from '../../components/ChangeUserWeight';
 import CalorieAddRemove from '../../components/CalorieAddRemove';
 import axios from 'axios';
-import { getToken } from '../../utils/Session.jsx';
+import { useAuth } from '../../context/AuthProvider';
+
 import { useThemeColors } from '../../hooks/useThemeColors.jsx';
 
 const addOrRemoveCalories = async (calorieCount) => {
+    let token = localStorage.getItem('token');
     console.log('Changing calories: ', calorieCount);
 
-    const token = getToken();
     const date = Date.now();
     return await axios.post(`http://localhost:8080/api/diet/supply_calories/${date}`, {
         calories: calorieCount
@@ -26,9 +27,9 @@ const addOrRemoveCalories = async (calorieCount) => {
 }
 
 const changeUserWeight = async (newWeight) => {
+    let token = localStorage.getItem('token');
     console.log('New weight set: ', newWeight)
 
-    const token = getToken();
     return await axios.post('http://localhost:8080/api/auth/register_details', {
         weight: newWeight
     }, {
@@ -43,6 +44,8 @@ const changeUserWeight = async (newWeight) => {
 }
 
 export default function MainPageProgress({calories, protein, fat, carbs, dailyCalories, dailyProtein, dailyFat, dailyCarbs, refreshData}) {
+    const { getToken } = useAuth();
+
     // const [calories, setCalories] = useState(pCalories);
     // const [protein, setProtein] = useState(pProtein);
     // const [fat, setFat] = useState(pFat);
@@ -59,11 +62,11 @@ export default function MainPageProgress({calories, protein, fat, carbs, dailyCa
     const [weightChanging, setWeightChanging] = useState(false);
 
     const { firstColor, secondaryColor, tertiaryColor } = useThemeColors();
-    const token = getToken();
     // Render calorie count out of desired daily calorie count
     // Within, render weight loss in kgs out of desired weight loss
 
     const fetchUserWeight = () => {
+        const token = localStorage.getItem('token');
         return axios.get('http://localhost:8080/api/user', {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -82,7 +85,11 @@ export default function MainPageProgress({calories, protein, fat, carbs, dailyCa
     }
     
     useEffect(() => {
-        fetchUserWeight().then(weight => setNewUserWeight(weight))
+        const token = getToken();
+
+        if(token) {
+            fetchUserWeight().then(weight => setNewUserWeight(weight))
+        }
     }, [weightChanging]);
 
     useEffect(() => {

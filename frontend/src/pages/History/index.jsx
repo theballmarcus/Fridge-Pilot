@@ -4,7 +4,7 @@ import { Card, Typography } from '@material-tailwind/react';
 import { IconShoppingCart, IconWeight, IconChartPie, IconFlame } from '@tabler/icons-react';
 import axios from 'axios';
 import { useThemeColors } from '../../hooks/useThemeColors.jsx';
-import { getToken } from '../../utils/Session.jsx';
+import { useAuth } from '../../context/AuthProvider/index.jsx';
 
 function LineChartCard({ title, description, data, categories, unit, children: icon }) {
     const { firstColor: chartColor } = useThemeColors();
@@ -118,10 +118,12 @@ function LineChartCard({ title, description, data, categories, unit, children: i
 }
 
 function NutritionPieChart() {
+    const { getToken } = useAuth();
     const [nutritionalValues, setNutritionalValues] = useState([0, 0,0 ]);
 
     useEffect(() => {
         const token = getToken();
+        if(!token) return;
         const date = Date.now();
         axios.get(`http://localhost:8080/api/diet/stats/${date}`, {
                 headers: {
@@ -200,6 +202,7 @@ function NutritionPieChart() {
 }
 
 export default function History() {
+    const { getToken } = useAuth();
     const [weightTimes, setWeightTimes] = useState([]);
     const [weightData, setWeightData] = useState([]);
     const [priceTimes, setPriceTimes] = useState([]);
@@ -211,7 +214,7 @@ export default function History() {
     // Weigh-ins, daily prices, daily calorie intake
     useEffect(() => {
         const token = getToken();
-
+        if(!token) return;
         axios.get('http://localhost:8080/api/advancements', {
             headers: {
                 Authorization: `Bearer ${token}`
