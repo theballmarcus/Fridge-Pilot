@@ -156,7 +156,6 @@ monthlyGoal: Number     (kg of fat pr. month)
             });
             user.weight = weight;
         }
-        console.log(activityLevel)
         if (activityLevel) {
             if (activityLevel >= 1 && activityLevel <= 5) {
                 user.activityLevel = activityLevel
@@ -322,7 +321,6 @@ app.post("/api/diet/mealplan", verifyToken, async (req, res) => {
             })
         }
 
-        console.log(getStatsFromMealplan(meals))
         res.status(200).json({
             msg: "Mealplan created successfully",
             meals
@@ -419,7 +417,6 @@ app.get("/api/diet/stats/:date", verifyToken, async (req, res) => {
             mealObjects.push(meal)
         }
         const stats = getStatsFromMealplan(mealObjects);
-        console.log(mealplan)
         if(mealplan.suppliedCalories) {
             stats.total_calories = stats.total_calories + mealplan.suppliedCalories;
         }
@@ -475,7 +472,6 @@ app.get("/api/advancements", verifyToken, async (req, res) => {
                     curPrice = curPrice + meals[j].price * meals[j].mealFactor;
                 }
                 thisMeal = getMealFromId(meals[j].mealId);
-                console.log(thisMeal)
                 curCalories = curCalories + thisMeal.calories * meals[j].mealFactor;
                 
             }

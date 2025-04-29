@@ -215,7 +215,6 @@ function getStatsFromMealplan(mealplan, groceries) {
 
 function calculateDailyCalories(gender, weight, height, age, activityLevel, ) {
     const activityFactors = [1.2, 1.375, 1.55, 1.725, 1.9];
-    console.log("Activity level: " + activityLevel)
     if (!activityFactors[activityLevel - 1]) {
         throw new Error("Invalid activity level");
     }
@@ -283,7 +282,6 @@ async function getMealTranslationAndGuess(meal, callback) {
                 message = message.slice(7, -3);
             }
             parsed = JSON.parse(message);
-            console.log(parsed)
 
             let total_price = 0;
             for (let i = 0; i < parsed.products.length; i++) {
