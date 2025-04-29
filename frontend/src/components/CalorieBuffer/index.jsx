@@ -1,6 +1,6 @@
+import { Fragment, useState, useEffect } from 'react';
 import { List, Card, Typography } from '@material-tailwind/react';
 import header from '../../assets/cheatmeal-header.jpg';
-import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getToken } from '../../utils/Session.jsx';
 
@@ -59,13 +59,16 @@ export default function CalorieBuffer({ currentCalories, maxCalories }) {
                 <Typography type="h6">Cheat Meals</Typography>
                 <Typography>I dag har du et kalorieunderskud på <b>{maxCalories - currentCalories} kcal</b>! Du har buffer til ekstra snacks i dag.</Typography>
                 <List>
+                    {/* FIXME: snack can be null */}
                     {cheatMeals.map((snack, index) => (
-                        <List.Item key={index} onClick={() => postSnack(snack.id)} className="cursor-pointer hover:bg-gray-100">
-                            <List.ItemStart>
-                                <img src={snack.image} alt={snack.recipe} className="w-8 h-8 rounded-full object-cover" />
-                            </List.ItemStart>
-                            {snack.recipe}: {snack.calories} kcal
-                        </List.Item>
+                        <Fragment key={index}>
+                            {snack !== null && <List.Item onClick={() => postSnack(snack.id)} className="cursor-pointer hover:bg-gray-100">
+                                <List.ItemStart>
+                                    <img src={snack.image} alt={snack.recipe} className="w-8 h-8 rounded-full object-cover" />
+                                </List.ItemStart>
+                                {snack.recipe}: {snack.calories} kcal
+                            </List.Item>}
+                        </Fragment>
                     ))}
                 </List>
             </Card.Body>
