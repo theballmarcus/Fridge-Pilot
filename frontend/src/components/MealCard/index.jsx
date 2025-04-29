@@ -2,14 +2,16 @@ import { useEffect, useState } from "react";
 import { Card, Typography, Button } from "@material-tailwind/react";
 import { IconGrillFork } from '@tabler/icons-react';
 import axios from 'axios';
-import { getToken } from "../../utils/Session";
+import { useAuth } from '../../context/AuthProvider/index.jsx';
+
 
 export default function MealDayCard(date) {
+    const { getToken } = useAuth();
     const [theseMeals, setTheseMeals] = useState([]);
   
-    const token = getToken();
-
     function retrieveMealplan(date) {
+        const token = getToken();
+
         return new Promise((resolve, reject) => {
             if(token) {
                 axios.get(`http://localhost:8080/api/diet/mealplan/${date}`, {
