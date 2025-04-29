@@ -436,8 +436,7 @@ app.get("/api/diet/snacks/:calories/:nAmount", verifyToken, async (req, res) => 
         }
 
         const snacks = getNSnacks(calories, nAmount, usedMeals);
-        console.log(snacks)
-        
+
         return res.status(200).json({
             msg: "Snack generated successfully",
             snacks
@@ -450,26 +449,31 @@ app.get("/api/diet/snacks/:calories/:nAmount", verifyToken, async (req, res) => 
     }
 });
 
-app.get("/api/diet/snack/:calories/:date", verifyToken, async (req, res) => {
-    let calories = req.params.calories;
-    let date = req.params.date;
+app.post("/api/diet/snacks", verifyToken, async (req, res) => {
+    let { snackId, date } = req.body;
     date = date - (date % oneDayMs);
+    console.log(date)
     try {
+        const mealplan = await Mealplan.findOne({"date" : date, userId : req.user.id, inactive : false});
         const user = await User.findById(req.user.id);
-        const mealplan = await Mealplan.findOne({"date" : date, userId : req.user.id});
-        if (!mealplan) return res.status(400).json({ msg: "Mealplan not found" });
-        if (calories < 0) return res.status(400).json({ msg: "Invalid calories" });
-        const recipes = load_recipes();
-        const meal = pickMeal(recipes, user.curGroceries, calories, 2, 0);
-        const mealObject = new Meal({
+        
+        const meal = new Meal({
             mealplanId: mealplan._id,
-            mealId: meal.id,
-            mealFactor: 1
+            mealId: snackId,
+            date : date,
+            mealFactor: 1,
+            time: 4
         });
-        await mealObject.save();
-        return res.status(200).json({
-            msg: "Snack generated successfully",
-            meal
+        await meal.save();
+        getMealTranslationAndGuess(meal, user.curGroceries, async (priceGuess) => {
+            if (priceGuess !== null) {
+                meal.price = priceGuess.total_price;
+                meal.chatGPTAnswer = JSON.stringify(priceGuess);
+                await meal.save();
+            }
+        })
+        res.status(200).json({
+            msg: "Snack added successfully"
         });
     } catch (err) {
         console.log(err)

@@ -2,6 +2,7 @@ import { List, Card, Typography } from "@material-tailwind/react";
 import { IconBrandPeanut, IconMilk, IconCheese, IconEggs } from '@tabler/icons-react';
 import header from '../../assets/cheatmeal-header.jpg';
 import { useState, useEffect } from 'react';
+import axios from "axios";
 
 export default function CalorieBuffer({currentCalories, maxCalories}) {
     const [cheatMeals, setCheatMeals] = useState([]);
@@ -12,19 +13,36 @@ export default function CalorieBuffer({currentCalories, maxCalories}) {
     console.log('Max calories: ', maxCalories);
 
     const fetchCheatMeals = async () => {
-        console.log(maxCalories - currentCalories);
-        const response = await fetch(`http://localhost:8080/api/diet/snacks/${maxCalories - currentCalories}/4`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            }
-        });
-        if (response.status === 200) {
-            const data = await response.json();
-            console.log(data.snacks)
-            setCheatMeals(data.snacks);
-        } else {
-            console.error('Error fetching cheat meals:', response.statusText);
+        try {
+            const response = await axios.get(`http://localhost:8080/api/diet/snacks/${maxCalories - currentCalories}/4`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            });
+            console.log('Cheat meals fetched successfully');
+            console.log(response.data);
+            setCheatMeals(response.data.snacks);
+        } catch (error) {
+            console.error('Error fetching cheat meals:', error);
+            return;
+        }
+    }
+
+    async function postSnack(snackId) {
+        try {
+            const response = await axios.post(`http://localhost:8080/api/diet/snacks`, {
+                snackId: snackId,
+                date: Date.now()
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            });
+            console.log('Snack posted successfully');
+            console.log(response.data);
+        } catch (error) {
+            console.error('Error posting snack:', error);
+            return;
         }
     }
 
@@ -42,7 +60,7 @@ export default function CalorieBuffer({currentCalories, maxCalories}) {
                 <Typography>I dag har du et kalorieunderskud på <i>{ maxCalories - currentCalories }</i> kcal! Du har buffer til ekstra snacks i dag.</Typography>
                 <List>
                     {cheatMeals.map((snack, index) => (
-                        <List.Item key={index}>
+                        <List.Item key={index} onClick={() => postSnack(snack.id)} className="cursor-pointer hover:bg-gray-100">
                             <List.ItemStart>
                                 <img src={snack.image} alt={snack.recipe} className="w-8 h-8 rounded-full" />
                             </List.ItemStart>
