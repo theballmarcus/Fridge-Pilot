@@ -309,6 +309,7 @@ function YearSelect({ value, onChange }) {
 }
 
 function MonthDropdown({ selectedMonth, onSelect }) {
+    selectedMonth ??= new Date().getMonth();
     const months = [
         { index: 0, name: "Januar" },
         { index: 1, name: "Februar" },
@@ -324,9 +325,7 @@ function MonthDropdown({ selectedMonth, onSelect }) {
         { index: 11, name: "December" }
     ];
 
-    const buttonText = typeof selectedMonth === 'number'
-        ? months.find(m => m.index === selectedMonth)?.name
-        : "Måned";
+    const buttonText = months.find(m => m.index === selectedMonth)?.name
 
     return (
         <Menu>
@@ -584,7 +583,7 @@ function handleDetailsSubmit(height, gender, year, month, day, weight, weightLos
             if (!token) throw 'Ingen token fundet';
             if (!height) throw 'Indtast din højde';
             if (!gender) throw 'Vælg køn';
-            if (!year || !month || !day) throw 'Sæt fødselsdato';
+            if (typeof year !== 'number' || typeof month !== 'number' || typeof day !== 'number') throw 'Sæt fødselsdato';
             if (!weight) throw 'Indtast din nuværende vægt';
             if (!weightLossKgPrMonth) throw 'Indtast ønsket vægttab pr. måned';
             if (!activityLevel) throw 'Vælg dit aktivitetsniveau';
