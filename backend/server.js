@@ -480,13 +480,14 @@ app.get("/api/advancements", verifyToken, async (req, res) => {
             prices.push({'date' : mealplans[i].date, 'price' : curPrice});
             calories.push({'date' : mealplans[i].date, 'calories' : curCalories});
         }
+        
         let weightHistoryLimit;
         if(user.weightHistory.length > 30) {
             weightHistoryLimit = user.weightHistory.slice(-30);
         } else {
             weightHistoryLimit = user.weightHistory;
         }
-        
+
         const advancements = {
             weightHistory: user.weightHistory,
             prices: prices,

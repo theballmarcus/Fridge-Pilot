@@ -64,7 +64,7 @@ async function test() {
             mail: 'a@a.a',
             password: '1',
             curGroceries: ['Rice', 'Chicken'],
-            age: 30,
+            birthday: Date.now() - 1000 * 60 * 60 * 24 * 365 * 35,
             gender: 0,
             height: 180,
             weight: 90,
