@@ -57,12 +57,12 @@ export default function CalorieBuffer({currentCalories, maxCalories}) {
             <Card.Header as="img" src={header} alt="Foto af bestik med skriften keto diet" />
             <Card.Body>
                 <Typography type="h6">Cheat Meals</Typography>
-                <Typography>I dag har du et kalorieunderskud på <i>{ maxCalories - currentCalories }</i> kcal! Du har buffer til ekstra snacks i dag.</Typography>
+                <Typography>I dag har du et kalorieunderskud på <b>{ maxCalories - currentCalories } kcal</b>! Du har buffer til ekstra snacks i dag.</Typography>
                 <List>
                     {cheatMeals.map((snack, index) => (
                         <List.Item key={index} onClick={() => postSnack(snack.id)} className="cursor-pointer hover:bg-gray-100">
                             <List.ItemStart>
-                                <img src={snack.image} alt={snack.recipe} className="w-8 h-8 rounded-full" />
+                                <img src={snack.image} alt={snack.recipe} className="w-8 h-8 rounded-full object-cover" />
                             </List.ItemStart>
                             {snack.recipe}: {snack.calories} kcal
                         </List.Item>
