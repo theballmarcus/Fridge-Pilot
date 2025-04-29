@@ -277,12 +277,12 @@ async function getMealTranslationAndGuess(meal, curGroceries, callback) {
 ${products}.
 I have these in my fridge:
 ${curGroceries}
-And I have instructions:
+And I have cooking instructions:
 ${instructions}.
-Translate the names to danish, make the units metric. Also translate the instructions to danish.
-I need to know the estimated price of each ingredient in kr. Lastly, true if I need to buy it, false if I already have it. Make the instructions short.
+Translate the names to danish, recalculate the units to metric. Also translate the cooking instructions to danish.
+I need to know the estimated price of each ingredient in DKK. Lastly, set \`buy\` true if I need to buy it, false if I already have it in my fridge. Make the instructions short.
 Respond ONLY with following JSON format so it can be parsed:
-{"products" : [["product_name", "product_quantity", "product_unit", "estimated_price in kr", buy?], ["product_name", "product_quantity", "product_unit", "estimated_price in kr", buy?]], "instructions" : "instructions"}`;
+{"products" : [["product_name", "product_quantity", "product_unit", "estimated_price in DKK", buy?], ["product_name", "product_quantity", "product_unit", "estimated_price in DKK", buy?]], "instructions" : "instructions"}`;
 
             const gptResponse = await openai.chat.completions.create({
                 model: 'gpt-4o-mini',
