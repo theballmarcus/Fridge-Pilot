@@ -42,7 +42,7 @@ const changeUserWeight = async (newWeight) => {
     });
 }
 
-export default function MainPageProgress({calories, protein, fat, carbs, dailyCalories, dailyProtein, dailyFat, dailyCarbs}) {
+export default function MainPageProgress({calories, protein, fat, carbs, dailyCalories, dailyProtein, dailyFat, dailyCarbs, refreshData}) {
     // const [calories, setCalories] = useState(pCalories);
     // const [protein, setProtein] = useState(pProtein);
     // const [fat, setFat] = useState(pFat);
@@ -81,9 +81,13 @@ export default function MainPageProgress({calories, protein, fat, carbs, dailyCa
         });
     }
     
-    useState(() => {
+    useEffect(() => {
         fetchUserWeight().then(weight => setNewUserWeight(weight))
     }, [weightChanging]);
+
+    useEffect(() => {
+        refreshData();
+    }, [caloriesChanging, weightChanging]);
 
     return <>
         <div className="flex flex-col items-center justify-center">

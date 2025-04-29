@@ -6,6 +6,8 @@ import { getToken } from '../../utils/Session.jsx';
 import axios from 'axios';
 
 export default function Today() {
+    const [shouldRefetch, setShouldRefetch] = useState(false);
+
     const [calories, setCalories] = useState(0);
     const [protein, setProtein] = useState(0);
     const [fat, setFat] = useState(0);
@@ -17,6 +19,10 @@ export default function Today() {
     const [dailyCarbs, setDailyCarbs] = useState(0);
 
     const token = getToken();
+
+    const refreshData = () => {
+        setShouldRefetch(!shouldRefetch);
+    };
 
     const fetchStats = async () => {
         const date = Date.now();
@@ -73,12 +79,12 @@ export default function Today() {
             setDailyFat(Math.round(data.dailyBurnedCalories * 0.75 / 9));
         });
 
-    }, []);
+    }, [shouldRefetch]);
 
     return <>
         <div className="flex flex-row items-start justify-between">
             <div><KetoGuidelines /></div>
-            <div className="w-max"><MainPageProgress calories={calories} protein={protein} fat={fat} carbs={carbs} dailyCalories={dailyCalories} dailyProtein={dailyProtein} dailyFat={dailyFat} dailyCarbs={dailyCarbs} /></div>
+            <div className="w-max"><MainPageProgress calories={calories} protein={protein} fat={fat} carbs={carbs} dailyCalories={dailyCalories} dailyProtein={dailyProtein} dailyFat={dailyFat} dailyCarbs={dailyCarbs} refreshData={refreshData} /></div>
             <div><CalorieBuffer  /></div>
         </div>
     </>
