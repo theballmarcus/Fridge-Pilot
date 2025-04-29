@@ -1,10 +1,17 @@
 import { useState, useEffect, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu, Card, Radio, IconButton, Button, Input, Timeline, Typography } from '@material-tailwind/react';
-import { IconPlus, IconMinus, IconCircleArrowUp, IconUser, IconAdjustmentsHorizontal } from '@tabler/icons-react';
+import { IconPlus, IconMinus, IconCircleArrowUp, IconUser, IconAdjustmentsHorizontal, IconArrowLeft, IconArrowRight, IconCheck } from '@tabler/icons-react';
 import { getToken } from '../../utils/Session.jsx';
 import MissingInput from '../../components/MissingInput';
 import axios from 'axios';
+import intro1 from '../../assets/intro/0.png';
+import intro2 from '../../assets/intro/1.png';
+import intro3 from '../../assets/intro/2.png';
+import intro4 from '../../assets/intro/3.png';
+import intro5 from '../../assets/intro/4.png';
+import intro6 from '../../assets/intro/5.png';
+import intro7 from '../../assets/intro/6.png';
 
 function SignupProgress(props) {
     return (
@@ -747,6 +754,62 @@ function DetailsCard({ show, onNext }) {
     );
 }
 
+const IntroCarousel = ({ show, onNext }) => {
+    const images = [intro1, intro2, intro3, intro4, intro5, intro6, intro7];
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [backDisabled, setBackDisabled] = useState(true);
+
+    const goToPrevious = () => {
+        setCurrentIndex(prevIndex => Math.max(0, prevIndex - 1));
+    };
+
+    const goToNext = () => {
+        const nextIndex = currentIndex + 1;
+        if (nextIndex >= images.length) {
+            onNext({});
+        } else {
+            setCurrentIndex(nextIndex);
+        }
+    };
+
+    useEffect(() => {
+        setBackDisabled(currentIndex === 0);
+    }, [currentIndex])
+
+    return (
+        <div className={(show ? "block" : "hidden")}>
+            <div className="fixed w-screen top-0 left-0 h-screen overflow-hidden bg-primary">
+                {/* Full-width image */}
+                <img
+                    src={images[currentIndex]}
+                    alt={`Slide ${currentIndex + 1}`}
+                    className="absolute inset-0 m-auto h-[calc(100%_-_100px)] object-cover rounded-4xl"
+                />
+
+                {/* Navigation arrows at the bottom */}
+                <div className="fixed bottom-0 left-0 right-0 flex justify-between items-center px-8 bottom-4">
+                    <Button
+                        onClick={goToPrevious}
+                        variant="ghost"
+                        disabled={backDisabled}
+                    >
+                        <IconArrowLeft size={60} color="rgb(var(--color-black))" stroke={2} />
+                    </Button>
+                    <button
+                        onClick={goToNext}
+                        variant="ghost"
+                    >
+                        {currentIndex === images.length - 1 ?
+                            <IconCheck size={60} color="rgb(var(--color-black))" stroke={2} />
+                            : <IconArrowRight size={60} color="rgb(var(--color-black))" stroke={2} />
+                        }
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 export default function Signup() {
     const [signupStep, setSignupStep] = useState(0);
     const [_loginDetails, setLoginDetails] = useState({});
@@ -759,7 +822,6 @@ export default function Signup() {
     }, [signupStep]);
 
     const handleNextStep = (stepData) => {
-        console.log(stepData, signupStep);
         switch (signupStep) {
             case 0:
                 setLoginDetails(stepData);
@@ -767,6 +829,10 @@ export default function Signup() {
                 break;
             case 1:
                 setUserDetails(stepData);
+                setSignupStep(signupStep + 1);
+                break;
+            case 2:
+                setSignupStep(signupStep + 1);
                 navigate('/home', { replace: true });
                 break;
             default:
@@ -779,9 +845,10 @@ export default function Signup() {
             <div className="flex flex-col items-center w-full max-w-md">
                 <SignupAccountCard show={signupStep === 0} onNext={handleNextStep} />
                 <DetailsCard show={signupStep === 1} onNext={handleNextStep} />
-                <div className="mt-10 w-[300px]">
+                <IntroCarousel show={signupStep === 2} onNext={handleNextStep} />
+                {signupStep !== 2 && <div className="mt-10 w-[300px]">
                     <SignupProgress step={signupStep} />
-                </div>
+                </div>}
             </div>
         </div>
     );
