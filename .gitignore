@@ -27,3 +27,4 @@ package-lock.json
 
 # Ignore .env files in all directories:
 .env
+.token.json

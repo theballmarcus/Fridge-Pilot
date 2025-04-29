@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
 import { Card, Typography } from '@material-tailwind/react';
-import { IconShoppingCart, IconWeight, IconChartPie } from '@tabler/icons-react';
+import { IconShoppingCart, IconWeight, IconChartPie, IconFlame } from '@tabler/icons-react';
 import axios from 'axios';
 import { useThemeColors } from '../../hooks/useThemeColors.jsx';
 import { getToken } from '../../utils/Session.jsx';
@@ -187,23 +187,45 @@ function NutritionPieChart() {
 export default function History() {
     const [weightTimes, setWeightTimes] = useState([]);
     const [weightData, setWeightData] = useState([]);
-
+    const [priceTimes, setPriceTimes] = useState([]);
+    const [priceData, setPriceData] = useState([]);
+    const [caloriesTimes, setCaloriesTimes] = useState([]);
+    const [caloriesData, setCaloriesData] = useState([]);
+    
     useEffect(() => {
         const token = getToken();
 
-        axios.get('http://localhost:8080/api/user', {
+        axios.get('http://localhost:8080/api/advancements', {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         }).then(response => {
+            console.log('Response:', response.data);
             const _weightTimes = [];
             const _weightData = [];
-            for (const weighIn of response.data.weightHistory) {
+            const _priceTimes = [];
+            const _priceData = [];
+            const _caloriesTimes = [];
+            const _caloriesData = [];
+            for (const weighIn of response.data.advancements.weightHistory) {
                 _weightTimes.push(new Date(weighIn.date).toLocaleDateString('da-DK'));
                 _weightData.push(weighIn.weight);
             }
+            for (const price of response.data.advancements.prices) {
+                _priceTimes.push(new Date(price.date).toLocaleDateString('da-DK'));
+                _priceData.push(price.price);
+            }
+            for (const calories of response.data.advancements.calories) {
+                _caloriesTimes.push(new Date(calories.date).toLocaleDateString('da-DK'));
+                _caloriesData.push(calories.calories);
+            }
+
             setWeightTimes(_weightTimes);
             setWeightData(_weightData);
+            setPriceTimes(_priceTimes);
+            setPriceData(_priceData);
+            setCaloriesTimes(_caloriesTimes);
+            setCaloriesData(_caloriesData);
         }).catch(error => {
             console.error('Error:', error);
         });
@@ -223,10 +245,17 @@ export default function History() {
             <LineChartCard
                 title="Daglig udgift"
                 description="Penge brugt på mad hver dag"
-                data={spendingData}
-                categories={dates}
+                data={priceData}
+                categories={priceTimes}
                 unit="DKK"
             ><IconShoppingCart /></LineChartCard>
+            <LineChartCard
+                title="Daglig kalorieindtag"
+                description="Kalorier indtaget hver dag"
+                data={caloriesData}
+                categories={caloriesTimes}
+                unit=" kalorier"
+            ><IconFlame /></LineChartCard>
             <NutritionPieChart />
         </div>
     );
