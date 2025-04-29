@@ -276,9 +276,9 @@ async function getMealTranslationAndGuess(meal, curGroceries, callback) {
             const prompt  = `I have this list of ingredients I need: 
 ${products}.
 I have these in my fridge:
-${curGroceries}\n
+${curGroceries}
 And I have cooking instructions:
-${instructions}.\n
+${instructions}.
 Translate the names to danish, recalculate the units to metric. Also translate the cooking instructions to danish.
 I need to know the estimated price of each ingredient in DKK. Lastly, set \`buy\` true if I need to buy it, false if I already have it in my fridge. Make the instructions short.
 Respond ONLY with following JSON format so it can be parsed:
