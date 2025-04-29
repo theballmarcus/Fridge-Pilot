@@ -59,36 +59,55 @@ const Meal = mongoose.model('Meal', mealSchema);
 async function test() {
     try {
         const user = await User.create({
-            mail: 'test@example.com',
-            password: 'secure123',
+            mail: 'a@a.a',
+            password: '1',
             curGroceries: ['Rice', 'Chicken'],
             age: 30,
             gender: 0,
             height: 180,
-            weight: 75,
+            weight: 90,
             activityLevel: 2,
-            monthlyGoal: 2
+            monthlyGoal: 2,
+            weightHistory: [
+                { date: Date.now(), weight: 90 },
+                { date: Date.now() - 1000 * 60 * 60 * 24 * 30, weight: 130 },
+                { date: Date.now() - 1000 * 60 * 60 * 24 * 60, weight: 125 },
+                { date: Date.now() - 1000 * 60 * 60 * 24 * 90, weight: 120 },
+                { date: Date.now() - 1000 * 60 * 60 * 24 * 120, weight: 115 },
+                { date: Date.now() - 1000 * 60 * 60 * 24 * 150, weight: 110 },
+                { date: Date.now() - 1000 * 60 * 60 * 24 * 180, weight: 105 },
+                { date: Date.now() - 1000 * 60 * 60 * 24 * 210, weight: 100 },
+                { date: Date.now() - 1000 * 60 * 60 * 24 * 240, weight: 95 },
+                { date: Date.now() - 1000 * 60 * 60 * 24 * 270, weight: 92 }
+            ]
         });
 
-        const mealplan = await Mealplan.create({
-            date: Date.now(),
-            userId: user._id
-        });
+        for (let i = 0; i < 12; i++) {
+            const mealplan = await Mealplan.create({
+                date: Date.now() - (i * 1000 * 60 * 60 * 24 * 30),
+                userId: user._id,
+                inactive: Math.random() > 0.5,
+                suppliedCalories: Math.random() * 500,
+            });
     
-        await Meal.create({
-            mealplanId: mealplan._id,
-            mealId: 1
-        });
+            await Meal.create({
+                mealplanId: mealplan._id,
+                mealId: Math.round(Math.random() * 400),
+                price: Math.round(Math.random() * 100),
+            });
     
-        await Meal.create({
-            mealplanId: mealplan._id,
-            mealId: 2
-        });
+            await Meal.create({
+                mealplanId: mealplan._id,
+                mealId: Math.round(Math.random() * 400),
+                price: Math.round(Math.random() * 100),
+            });
     
-        await Meal.create({
-            mealplanId: mealplan._id,
-            mealId: 3
-        });
+            await Meal.create({
+                mealplanId: mealplan._id,
+                mealId: Math.round(Math.random() * 400),
+                price: Math.round(Math.random() * 100),
+            });
+        }
 
         console.log('User created successfully:', user);
     }

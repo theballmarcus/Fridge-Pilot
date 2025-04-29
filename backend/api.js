@@ -215,6 +215,7 @@ function getStatsFromMealplan(mealplan, groceries) {
 
 function calculateDailyCalories(gender, weight, height, age, activityLevel, ) {
     const activityFactors = [1.2, 1.375, 1.55, 1.725, 1.9];
+    console.log("Activity level: " + activityLevel)
     if (!activityFactors[activityLevel - 1]) {
         throw new Error("Invalid activity level");
     }
