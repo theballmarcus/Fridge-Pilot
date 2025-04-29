@@ -58,7 +58,7 @@ export default function MealPlanPage() {
         for (let i = 0; i < 3; i++) {
             retrieveMealplan(date + oneDayMs*i).then((response) => {
                 console.log('Mealplan:', response);
-                if(i === 0) {
+                if(i === 0) {                                           /* EWWWWWWWWWWWWWWWWWWW */
                     setMealToday(response);
                 } else if(i === 1) {
                     setMealTomorrow(response);
@@ -70,7 +70,7 @@ export default function MealPlanPage() {
                 if(error.status === 404) {
                     postMealplan(date + oneDayMs*i).then((response) => {
                         console.log('Mealplan created:', response);
-                        if(i === 0) {
+                        if(i === 0) {                                   /* EWWWWWWWWWWWWWWWWWWW */
                             setMealToday(response);
                         } else if(i === 1) {
                             setMealTomorrow(response);
