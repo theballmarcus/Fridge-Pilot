@@ -121,7 +121,7 @@ function getAllRecipes() {
     req.end();
 }
 
-function scoreRecipe(recipe, groceries, old_recipes) {
+function scoreRecipe(recipe, groceries, old_recipes, max_calories) {
     let score = 10;
     for (let i = 0; i < 10; i++) {
         for (let j = 0; j < groceries.length; j++) {
@@ -134,9 +134,11 @@ function scoreRecipe(recipe, groceries, old_recipes) {
         score = score / (1.8 * old_recipes[recipe.id]);
     }
     // Remove score if the recipe has too little calories
-    factor = findMealCaloryFactor(recipe, max_calories);
-    c = recipe.calories * factor;
-    score = score * (c / max_calories);
+    if (max_calories != -1) {
+        factor = findMealCaloryFactor(recipe, max_calories);
+        c = recipe.calories * factor;
+        score = score * (c / max_calories);
+    }
     return score;
 }
 
@@ -156,7 +158,7 @@ function pickMeal(recipes, groceries, max_calories, catogory, old_recipes) {
     }
     let allScores = [];
     for (let i = 0; i < mealCandidates.length; i++) {
-        allScores.push(scoreRecipe(mealCandidates[i], groceries, old_recipes));
+        allScores.push(scoreRecipe(mealCandidates[i], groceries, old_recipes, max_calories));
     }
     console.log("allScores", allScores)
     let mealMaxScore = Math.max(...allScores);
@@ -251,7 +253,7 @@ function getMealFromId(id) {
     }
 }
 
-function getNSacks(calories, nAmount, old_recipes) {
+function getNSnacks(calories, nAmount, old_recipes) {
     /*
     This function picks nAmount meals for the day based on the user's groceries and calorie limit.
     It filters the recipes based on the groceries available and the calorie limit.
@@ -259,21 +261,27 @@ function getNSacks(calories, nAmount, old_recipes) {
 
     returns an array of recipes. Ex: [breakfast, lunch, dinner]
     */
+   console.log(calories, nAmount, old_recipes)
     const recipes = load_recipes();
     let mealCandidates = [];
     for(let i = 0; i < recipes.length; i++) {
-        if(recipes[i].calories <= calories) {
+        if((recipes[i].category.id === 2 || recipes[i].category.id === 8) && recipes[i].calories <= calories) {
             mealCandidates.push(recipes[i]);
         }
     }
     let allScores = [];
     for (let i = 0; i < mealCandidates.length; i++) {
-        allScores.push(scoreRecipe(mealCandidates[i], groceries));
+        allScores.push(scoreRecipe(mealCandidates[i], [], old_recipes, -1));
     }
-    let mealMaxScore = Math.max(...allScores);
-    let maxScoreIndex = allScores.indexOf(mealMaxScore);
-    mealCandidates[maxScoreIndex].factor = findMealCaloryFactor(mealCandidates[maxScoreIndex], calories)
-    return mealCandidates[maxScoreIndex];
+    // Return nAmount of the highest scoring recipes
+    let bestSnacks = [];
+    for(let i = 0; i < nAmount; i++) {
+        let mealMaxScore = Math.max(...allScores);
+        let maxScoreIndex = allScores.indexOf(mealMaxScore);
+        bestSnacks.push(mealCandidates[maxScoreIndex]);
+        allScores[maxScoreIndex] = -1; // Remove the recipe from the list
+    }
+    return bestSnacks;
 }
 
 let openai = null;
@@ -348,5 +356,6 @@ module.exports = {
     getMealFromId,
     pickMeal,
     load_recipes,
-    getMealTranslationAndGuess
+    getMealTranslationAndGuess,
+    getNSnacks
 };

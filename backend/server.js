@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const { User, Mealplan, Meal, test, flush_database } = require("./models/mongo");
 require("dotenv").config();
 
-const { calculateDailyCalories, cleverMealplanPicker, getStatsFromMealplan, getMealFromId, pickMeal, load_recipes, getMealTranslationAndGuess } = require("./api");
+const { calculateDailyCalories, cleverMealplanPicker, getStatsFromMealplan, getMealFromId, pickMeal, load_recipes, getMealTranslationAndGuess, getNSnacks } = require("./api");
 
 const TOKEN_EXPIRATION_TIME = '12h';
 const oneDayMs = 100*60*60*24;
@@ -407,6 +407,41 @@ app.get("/api/diet/mealplan/:date", verifyToken, async (req, res) => {
             }
         }
         
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            msg: "Server error"
+        });
+    }
+});
+
+app.get("/api/diet/snacks/:calories/:nAmount", verifyToken, async (req, res) => {
+    let calories = req.params.calories;
+    let nAmount = req.params.nAmount;
+    try {
+        const user = await User.findById(req.user.id);
+
+        const mealplans = await Mealplan.find({"date" : {$gte: Date.now() - oneDayMs*14}, userId : req.user.id});
+        let usedMeals = {}
+        for(let i = 0; i < mealplans.length; i++) {
+            const meals = await Meal.find({mealplanId : mealplans[i]._id});
+            for(let j = 0; j < meals.length; j++) {
+                if (Object.keys(usedMeals).includes(meals[j].mealId.toString())) {
+                    usedMeals[meals[j].mealId] = usedMeals[meals[j].mealId] + 1
+                }
+                else {
+                    usedMeals[meals[j].mealId] = 1
+                }
+            }
+        }
+
+        const snacks = getNSnacks(calories, nAmount, usedMeals);
+        console.log(snacks)
+        
+        return res.status(200).json({
+            msg: "Snack generated successfully",
+            snacks
+        });
     } catch (err) {
         console.log(err)
         res.status(500).json({

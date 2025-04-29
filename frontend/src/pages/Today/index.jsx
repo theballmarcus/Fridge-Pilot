@@ -85,7 +85,7 @@ export default function Today() {
         <div className="flex flex-row items-start justify-between">
             <div><KetoGuidelines /></div>
             <div className="w-max"><MainPageProgress calories={calories} protein={protein} fat={fat} carbs={carbs} dailyCalories={dailyCalories} dailyProtein={dailyProtein} dailyFat={dailyFat} dailyCarbs={dailyCarbs} refreshData={refreshData} /></div>
-            <div><CalorieBuffer  /></div>
+            <div><CalorieBuffer currentCalories={calories} maxCalories={dailyCalories} /></div>
         </div>
     </>
 }
