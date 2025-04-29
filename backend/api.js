@@ -128,17 +128,18 @@ function pickMeal(recipes, groceries, max_calories, catogory, old_recipes) {
     It returns a recipe that fits the criteria.
     returns a recipe object.
     */
+    console.log(old_recipes)
     function scoreRecipe(recipe, groceries) {
-        let score = 0;
+        let score = 10;
         for (let i = 0; i < 10; i++) {
             for (let j = 0; j < groceries.length; j++) {
                 if (recipe[`ingredient_${i + 1}`] !== null && recipe[`ingredient_${i + 1}`].includes(groceries[j])) {
-                    score++;
+                    score = score + 2;
                 }
             }
         }
         if (Object.keys(old_recipes).includes(recipe.id.toString())) { // If it has been eaten in the last 14 days, make the score lower.
-            score = score / old_recipes[recipe.id.toString()]
+            score = score / (1.8 * old_recipes[recipe.id]);
         }
         // Remove score if the recipe has too little calories
         factor = findMealCaloryFactor(recipe, max_calories);
@@ -154,12 +155,14 @@ function pickMeal(recipes, groceries, max_calories, catogory, old_recipes) {
             mealCandidates.push(meals[i]);
         }
     }
-    let breakfastScores = [];
+    let allScores = [];
     for (let i = 0; i < mealCandidates.length; i++) {
-        breakfastScores.push(scoreRecipe(mealCandidates[i], groceries));
+        allScores.push(scoreRecipe(mealCandidates[i], groceries));
     }
-    let mealMaxScore = Math.max(...breakfastScores);
-    let maxScoreIndex = breakfastScores.indexOf(mealMaxScore);
+    console.log("allScores", allScores)
+    let mealMaxScore = Math.max(...allScores);
+    console.log("mealMaxScore", mealMaxScore)
+    let maxScoreIndex = allScores.indexOf(mealMaxScore);
     mealCandidates[maxScoreIndex].factor = findMealCaloryFactor(mealCandidates[maxScoreIndex], max_calories)
     return mealCandidates[maxScoreIndex];
 }
@@ -177,11 +180,24 @@ function cleverMealplanPicker(max_calories, groceries, old_recipes) {
     const calories_dinner = max_calories / 100 * 35;
 
     const lunch_category = getRandom(3,7);
-    const dinner_category = getRandom(3,7);
+    let dinner_category = getRandom(3,7);
+    while (lunch_category === dinner_category) {
+        dinner_category = getRandom(3,7);
+    }
 
     const recipes = load_recipes();
     const breakfast = pickMeal(recipes, groceries, calories_morning, 1, old_recipes);
+    if (Object.keys(old_recipes).includes(breakfast.id.toString())) {
+        old_recipes[breakfast.id] = old_recipes[breakfast.id] + 1
+    } else {
+        old_recipes[breakfast.id] = 1
+    }
     const lunch = pickMeal(recipes, groceries, calories_lunch, lunch_category, old_recipes);
+    if (Object.keys(old_recipes).includes(lunch.id.toString())) {
+        old_recipes[lunch.id] = old_recipes[lunch.id] + 1
+    } else {
+        old_recipes[lunch.id] = 1
+    }
     const dinner = pickMeal(recipes, groceries, calories_dinner, dinner_category, old_recipes);
     return [breakfast, lunch, dinner];
 }
