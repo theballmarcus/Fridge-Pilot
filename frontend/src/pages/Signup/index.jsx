@@ -633,7 +633,7 @@ function DetailsCard({ show, onNext }) {
     const [selectedHeight, setSelectedHeight] = useState(null);
     const [selectedGender, setSelectedGender] = useState(null);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-    const [selectedMonth, setSelectedMonth] = useState(null);
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
     const [selectedDay, setSelectedDay] = useState(1);
     const [selectedWeight, setSelectedWeight] = useState(null);
     const [selectedWeightLoss, setSelectedWeightLoss] = useState(null);

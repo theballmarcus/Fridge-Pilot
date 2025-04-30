@@ -85,7 +85,7 @@ function MealCard({ meal }) {
                     type="small"
                     className="mb-4 font-bold uppercase text-foreground"
                 >
-                    {meal.mealTime === 1 ? 'Morgenmad' : meal.mealTime === 2 ? 'Frokost' : meal.mealTime === 3 ? 'Aftensmad' : 'ANDET'}
+                    {meal.mealTime === 1 ? 'Morgenmad' : meal.mealTime === 2 ? 'Frokost' : meal.mealTime === 3 ? 'Aftensmad' : 'Snack'}
                 </Typography>
                 <Typography type="h5" className="mb-2">
                     {meal.recipe}
@@ -98,15 +98,15 @@ function MealCard({ meal }) {
                     </div>
                     <div className="flex items-center justify-center">
                         <IconWheat color={firstColor} />
-                        <Typography type="h6">{meal.carbs} kulhydrater</Typography>
+                        <Typography type="h6">{meal.carbs}g kulhydrater</Typography>
                     </div>
                     <div className="flex items-center justify-center">
                         <IconMeat color={secondaryColor} />
-                        <Typography type="h6">{meal.protein} protein</Typography>
+                        <Typography type="h6">{meal.protein}g protein</Typography>
                     </div>
                     <div className="flex items-center justify-center">
                         <IconDroplet color={tertiaryColor} />
-                        <Typography type="h6">{meal.fat} fedt</Typography>
+                        <Typography type="h6">{meal.fat}g fedt</Typography>
                     </div>
                 </div>
                 <hr className="my-2 border-surface" />
@@ -115,8 +115,8 @@ function MealCard({ meal }) {
                     <Typography><b>Arbejdstid</b>: {meal.prepTime} min</Typography>
                 </div>
                 <hr className="my-2 border-surface" />
-                <div className="flex flex-row">
-                    <Button className="flex w-fit items-center gap-2" onClick={() => setRecipeOpen(true)}>
+                <div className="flex flex-row mt-4">
+                    <Button className="flex w-fit items-center gap-2" variant="outline" onClick={() => setRecipeOpen(true)}>
                         <IconGrillFork />
                         Se opskrift
                     </Button>
@@ -246,7 +246,7 @@ export default function MealCardDay({ date }) {
                 // Show actual meals when we have them
                 <div className="flex flex-col h-full w-full items-center justify-center">
                     {theseMeals.map((meal, index) => (
-                        meal.mealTime <= 3 && <MealCard meal={meal} key={index} />
+                        <MealCard meal={meal} key={index} />
                     ))}
                 </div>
             ) : (

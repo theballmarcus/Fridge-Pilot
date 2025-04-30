@@ -4,7 +4,7 @@ import header from '../../assets/cheatmeal-header.jpg';
 import axios from 'axios';
 import { getToken } from '../../utils/Session.jsx';
 
-export default function CalorieBuffer({ currentCalories, maxCalories }) {
+export default function CalorieBuffer({ currentCalories, maxCalories, onAdd }) {
     const [cheatMeals, setCheatMeals] = useState([]);
 
     console.log('Current calories: ', currentCalories);
@@ -23,6 +23,7 @@ export default function CalorieBuffer({ currentCalories, maxCalories }) {
             });
             console.log('Snack posted successfully');
             console.log(response.data);
+            onAdd();
         } catch (error) {
             console.error('Error posting snack:', error);
             return;
@@ -57,14 +58,19 @@ export default function CalorieBuffer({ currentCalories, maxCalories }) {
             <Card.Header as="img" src={header} alt="Foto af bestik med skriften keto diet" />
             <Card.Body>
                 <Typography type="h6">Cheat Meals</Typography>
-                { maxCalories - currentCalories === 0 && <Typography>Du har nået dit kalorieindtag for i dag. Du kan ikke tilføje flere snacks.</Typography>}
-                { maxCalories - currentCalories < 0 && <Typography>Du har overskredet dit kalorieindtag for i dag med <b>{currentCalories - maxCalories} kalorier</b>. Du kan ikke tilføje flere snacks.</Typography>}
-                { maxCalories - currentCalories > 0 && <Typography>I dag har du et kalorieunderskud på <b>{maxCalories - currentCalories} kcal</b>! Du har buffer til ekstra snacks i dag. Tryk på en snack for at tilføje en snack!</Typography>}
+                {maxCalories - currentCalories === 0 && <Typography>Du har nået dit kalorieindtag for i dag. Du kan ikke tilføje flere snacks.</Typography>}
+                {maxCalories - currentCalories < 0 && <Typography>Du har overskredet dit kalorieindtag for i dag med <b>{currentCalories - maxCalories} kalorier</b>. Du kan ikke tilføje flere snacks.</Typography>}
+                {maxCalories - currentCalories > 0 && <Typography className="whitespace-pre-line">
+                    I dag har du et kalorieunderskud på <br /><b>{maxCalories - currentCalories} kcal</b>!<br />
+                    {cheatMeals.some(snack => snack !== null) ? <>
+                        Du har en buffer til ekstra snacks i dag.
+                        <br />
+                        Tryk på en snack for at tilføje til måltiderne:
+                    </> : <>Der er ikke nogle snacks til {maxCalories - currentCalories} kcal</>}</Typography>}
                 <List>
-                    {/* FIXME: snack can be null */}
                     {cheatMeals.map((snack, index) => (
                         <Fragment key={index}>
-                            {snack !== null && <List.Item onClick={() => postSnack(snack.id)} className="cursor-pointer hover:bg-gray-100">
+                            {snack !== null && <List.Item onClick={() => postSnack(snack.id)} className="text-left cursor-pointer hover:bg-gray-100">
                                 <List.ItemStart>
                                     <img src={snack.image} alt={snack.recipe} className="w-8 h-8 rounded-full object-cover" />
                                 </List.ItemStart>

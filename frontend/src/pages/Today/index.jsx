@@ -70,7 +70,7 @@ export default function Today() {
     useEffect(() => {
         const token = getToken();
 
-        if(token) {
+        if (token) {
             fetchData().then(data => {
                 console.log(data);
     
@@ -92,7 +92,7 @@ export default function Today() {
         <div className="flex flex-row items-start justify-between">
             <div><KetoGuidelines /></div>
             <div className="w-max"><MainPageProgress calories={calories} protein={protein} fat={fat} carbs={carbs} dailyCalories={dailyCalories} dailyProtein={dailyProtein} dailyFat={dailyFat} dailyCarbs={dailyCarbs} refreshData={refreshData} /></div>
-            <div><CalorieBuffer currentCalories={calories} maxCalories={dailyCalories} /></div>
+            <div><CalorieBuffer currentCalories={calories} maxCalories={dailyCalories} onAdd={refreshData} /></div>
         </div>
     </>
 }

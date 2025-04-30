@@ -11,7 +11,7 @@ import { useAuth } from '../../context/AuthProvider';
 import { useThemeColors } from '../../hooks/useThemeColors.jsx';
 
 const round = number => {
-    return Math.round(number / 10) * 10
+    return Math.round(number * 10) / 10
 }
 
 const addOrRemoveCalories = async (calorieCount) => {
@@ -50,24 +50,12 @@ const changeUserWeight = async (newWeight) => {
 export default function MainPageProgress({ calories, protein, fat, carbs, dailyCalories, dailyProtein, dailyFat, dailyCarbs, refreshData }) {
     const { getToken } = useAuth();
 
-    // const [calories, setCalories] = useState(pCalories);
-    // const [protein, setProtein] = useState(pProtein);
-    // const [fat, setFat] = useState(pFat);
-    // const [carbs, setCarbs] = useState(pCarbs);
-
-    // const [dailyCalories, setDailyCalories] = useState(pDailyCalories);
-    // const [dailyProtein, setDailyProtein] = useState(pDailyProtein);
-    // const [dailyFat, setDailyFat] = useState(pDailyFat);
-    // const [dailyCarbs, setDailyCarbs] = useState(pDailyCarbs);
-
     const [addRemoveCalories, setAddRemoveCalories] = useState(0);
     const [newUserWeight, setNewUserWeight] = useState(0);
     const [caloriesChanging, setCaloriesChanging] = useState(false);
     const [weightChanging, setWeightChanging] = useState(false);
 
     const { firstColor, secondaryColor, tertiaryColor } = useThemeColors();
-    // Render calorie count out of desired daily calorie count
-    // Within, render weight loss in kgs out of desired weight loss
 
     const fetchUserWeight = () => {
         const token = localStorage.getItem('token');
@@ -163,7 +151,7 @@ export default function MainPageProgress({ calories, protein, fat, carbs, dailyC
                             <div className="w-fit col-span-2 row-span-1">
                                 <span className='font-bold'>{round(carbs)}</span> / {round(dailyCarbs)}g
                             </div>
-                            <div className="col-span-2 row-span-1 text-xs text-muted-foreground">
+                            <div className="col-span-2 row-span-1 text-xs text-muted-foreground text-left">
                                 <b>Madplan</b> / Anbefalet
                             </div>
                         </div>
@@ -180,7 +168,7 @@ export default function MainPageProgress({ calories, protein, fat, carbs, dailyC
                             <div className="w-fit col-span-2 row-span-1">
                                 <span className='font-bold'>{round(protein)}</span> / {round(dailyProtein)}g
                             </div>
-                            <div className="col-span-2 row-span-1 text-xs text-muted-foreground">
+                            <div className="col-span-2 row-span-1 text-xs text-muted-foreground text-left">
                                 <b>Madplan</b> / Anbefalet
                             </div>
                         </div>
@@ -197,7 +185,7 @@ export default function MainPageProgress({ calories, protein, fat, carbs, dailyC
                             <div className="w-fit col-span-2 row-span-1">
                                 <span className='font-bold'>{round(fat)}</span> / {round(dailyFat)}g
                             </div>
-                            <div className="col-span-2 row-span-1 text-xs text-muted-foreground">
+                            <div className="col-span-2 row-span-1 text-xs text-muted-foreground text-left">
                                 <b>Madplan</b> / Anbefalet
                             </div>
                         </div>
