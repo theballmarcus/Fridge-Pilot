@@ -121,11 +121,15 @@ export default function MainPageProgress({calories, protein, fat, carbs, dailyCa
                             stroke: tertiaryColor
                         }
                     }}>
+                        
                         <div className="flex justify-center items-center">
                             <IconFlame size={50} />
-                            <Typography type="h5">{calories}</Typography><span>/{dailyCalories}</span>
+                            <Typography type="h5">{calories}</Typography>
+                            <span>/{dailyCalories}</span>
                         </div>
-                        <span>Kalorier i dag</span>
+                        <span className="text-xs text-center text-gray-500 mt-1">
+                        <b>Madplan</b> / Din forbrænding!
+                        </span>
                     </CircularProgressbarWithChildren>
                 </div>
             </div>
