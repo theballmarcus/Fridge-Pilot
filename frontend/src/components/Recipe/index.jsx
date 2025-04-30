@@ -10,7 +10,7 @@ function Ingredient({ needsIngredient, weight, unit, ingredient }) {
     return (
         <List.Item onClick={() => setMarkedDone(!markedDone)}>
             <List.ItemStart>
-                {needsIngredient ? <IconX /> : <IconCheck />}
+                <Typography color={needsIngredient ? 'error' : 'success'}>{needsIngredient ? <IconX/> : <IconCheck />}</Typography>
             </List.ItemStart>
             <Typography className={markedDone && 'line-through'}>{weight} {unit} {ingredient}</Typography>
         </List.Item>
