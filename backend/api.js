@@ -305,16 +305,41 @@ async function getMealTranslationAndGuess(meal, curGroceries, callback) {
             }
         }
         if(openai !== null) {
-            const prompt  = `I have this list of ingredients I need: 
-${products}.
-I have these in my fridge:
+//             const prompt  = `I have this list of ingredients I need: 
+// ${products}.
+// I have these in my fridge:
+// ${curGroceries}
+// And I have cooking instructions:
+// ${instructions}.
+// Translate the names to danish, recalculate the units to metric. Also translate the cooking instructions to danish.
+// I need to know the estimated price of each ingredient in DKK - presume I'm buying them cheap - always write as an integer (0 if unknown or if I already have it). Lastly, set \`buy\` true (as a boolen, not a string) if I need to buy it, false if I already have it in my fridge. Make the instructions short and seperate with \\n for every new instruction. Also write the name of the dish in danish with the first letter capitalized in the "dish_name".
+// Respond ONLY with following JSON format so it can be parsed:
+// {"products" : [["product_name", "product_quantity", "product_unit", "estimated_price in DKK", buy?], ["product_name", "product_quantity", "product_unit", "estimated_price in DKK", buy?]], "instructions" : "instructions", "dish_name" : "dish_name"}`;
+            const prompt = `Inputs:
+- Ingredients I need:
+ ${products}
+- Ingredients I already have:
 ${curGroceries}
-And I have cooking instructions:
-${instructions}.
-Translate the names to danish, recalculate the units to metric. Also translate the cooking instructions to danish.
-I need to know the estimated price of each ingredient in DKK - presume I'm buying them cheap - always write as an integer (0 if unknown or if I already have it). Lastly, set \`buy\` true (as a boolen, not a string) if I need to buy it, false if I already have it in my fridge. Make the instructions short and seperate with \\n. Also write the name of the dish in danish with the first letter capitalized in the "dish_name".
-Respond ONLY with following JSON format so it can be parsed:
-{"products" : [["product_name", "product_quantity", "product_unit", "estimated_price in DKK", buy?], ["product_name", "product_quantity", "product_unit", "estimated_price in DKK", buy?]], "instructions" : "instructions", "dish_name" : "dish_name"}`;
+- Cooking steps / instructions:
+${instructions}
+
+Task:
+1. Translate ingredient names to Danish.
+2. Convert all quantities to metric units (g, ml, etc.).
+3. For each product, return:
+   ["translated_name", quantity_in_metric, unit, estimated_price_DKK (int, 0 if unknown or already in fridge), buy (true/false)]
+4. Translate and simplify instructions to Danish, use \n between steps.
+5. Translate the dish name to Danish, capitalize first letter.
+
+Output ONLY this JSON format:
+{
+  "products": [
+    ["product_name", quantity, unit, price_DKK, buy],
+    ...
+  ],
+  "instructions": "translated steps",
+  "dish_name": "Danish dish name"
+}`
 
             const gptResponse = await openai.chat.completions.create({
                 model: 'gpt-4o-mini',

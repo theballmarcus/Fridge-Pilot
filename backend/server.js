@@ -287,11 +287,16 @@ app.post("/api/diet/groceries", verifyToken, async (req, res) => {
                         for(let j = 0; j < meals.length; j++) {
                             const meal = getMealFromId(meals[j].mealId);
                             getMealTranslationAndGuess(meal, groceries, async (priceGuess) => {
-                                if (priceGuess !== null) {
-                                    meals[j].price = priceGuess.total_price;
-                                    meals[j].chatGPTAnswer = JSON.stringify(priceGuess);
-                                    await meals[j].save();
-                                } else {
+                                try {
+                                    if (priceGuess !== null) {
+                                        meals[j].price = priceGuess.total_price;
+                                        meals[j].chatGPTAnswer = JSON.stringify(priceGuess);
+                                        await meals[j].save();
+                                    } else {
+                                        meals[j].chatGPTAnswer = null;
+                                    }
+                                } catch (err) {
+                                    console.log(err)
                                     meals[j].chatGPTAnswer = null;
                                 }
                             })
