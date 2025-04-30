@@ -3,6 +3,7 @@ import { Card, Typography, Button } from "@material-tailwind/react";
 import { IconPhoto, IconGrillFork, IconShoppingCart, IconFlame, IconWheat, IconMeat, IconDroplet } from '@tabler/icons-react';
 import axios from 'axios';
 import { useThemeColors } from '../../hooks/useThemeColors.jsx';
+import Recipe from '../Recipe';
 import { useAuth } from '../../context/AuthProvider/index.jsx';
 
 function SkeletonText({ type, as, variant, className, textClassName }) {
@@ -66,67 +67,71 @@ function SkeletonCard() {
 
 function MealCard({ meal }) {
     const { firstColor, secondaryColor, tertiaryColor, quaternaryColor } = useThemeColors();
+    const [recipeOpen, setRecipeOpen] = useState(false);
 
-    return <Card className="m-2 flex h-full w-full max-w-[48rem] flex-row">
-        <div className="flex h-[300px] w-2/5">
-            <Card.Header className="h-full w-auto m-0 rounded-r-none">
-                <img
-                    src={meal.image}
-                    alt="card-image"
-                    className="h-full w-auto object-cover object-center"
-                />
-            </Card.Header>
-        </div>
-        <Card.Body className="p-4">
-            <Typography
-                type="small"
-                className="mb-4 font-bold uppercase text-foreground"
-            >
-                {meal.mealTime === 1 ? 'Morgenmad' : meal.mealTime === 2 ? 'Frokost' : meal.mealTime === 3 ? 'Aftensmad' : 'ANDET'}
-            </Typography>
-            <Typography type="h5" className="mb-2">
-                {meal.recipe}
-            </Typography>
-            <hr className="my-2 border-surface" />
-            <div className="w-full grid grid-cols-2 grid-rows-2 gap-4 h-[80px]">
-                <div className="flex items-center justify-center">
-                    <IconFlame color={quaternaryColor} />
-                    <Typography type="h6">{meal.calories} kcal</Typography>
-                </div>
-                <div className="flex items-center justify-center">
-                    <IconWheat color={firstColor} />
-                    <Typography type="h6">{meal.carbs} kulhydrater</Typography>
-                </div>
-                <div className="flex items-center justify-center">
-                    <IconMeat color={secondaryColor} />
-                    <Typography type="h6">{meal.protein} protein</Typography>
-                </div>
-                <div className="flex items-center justify-center">
-                    <IconDroplet color={tertiaryColor} />
-                    <Typography type="h6">{meal.fat} fedt</Typography>
-                </div>
+    return <>
+        <Card className="m-2 flex h-full w-full max-w-[48rem] flex-row">
+            <div className="flex h-[300px] w-2/5">
+                <Card.Header className="h-full w-auto m-0 rounded-r-none">
+                    <img
+                        src={meal.image}
+                        alt="card-image"
+                        className="h-full w-auto object-cover object-center"
+                    />
+                </Card.Header>
             </div>
-            <hr className="my-2 border-surface" />
-            <div className="flex flex-row justify-between mx-8">
-                <Typography><b>Tid i alt</b>: {meal.totalTime} min</Typography>
-                <Typography><b>Arbejdstid</b>: {meal.prepTime} min</Typography>
-            </div>
-            <hr className="my-2 border-surface" />
-            <div className="flex flex-row">
-                <Button className="flex w-fit items-center gap-2">
-                    <IconGrillFork />
-                    Se opskrift
-                </Button>
-                <Button className="flex w-fit items-center gap-2 ml-2">
-                    <IconShoppingCart />
-                    Se pris og ingredienser
-                </Button>
-            </div>
-        </Card.Body>
-    </Card>
+            <Card.Body className="p-4">
+                <Typography
+                    type="small"
+                    className="mb-4 font-bold uppercase text-foreground"
+                >
+                    {meal.mealTime === 1 ? 'Morgenmad' : meal.mealTime === 2 ? 'Frokost' : meal.mealTime === 3 ? 'Aftensmad' : 'ANDET'}
+                </Typography>
+                <Typography type="h5" className="mb-2">
+                    {meal.recipe}
+                </Typography>
+                <hr className="my-2 border-surface" />
+                <div className="w-full grid grid-cols-2 grid-rows-2 gap-4 h-[80px]">
+                    <div className="flex items-center justify-center">
+                        <IconFlame color={quaternaryColor} />
+                        <Typography type="h6">{meal.calories} kcal</Typography>
+                    </div>
+                    <div className="flex items-center justify-center">
+                        <IconWheat color={firstColor} />
+                        <Typography type="h6">{meal.carbs} kulhydrater</Typography>
+                    </div>
+                    <div className="flex items-center justify-center">
+                        <IconMeat color={secondaryColor} />
+                        <Typography type="h6">{meal.protein} protein</Typography>
+                    </div>
+                    <div className="flex items-center justify-center">
+                        <IconDroplet color={tertiaryColor} />
+                        <Typography type="h6">{meal.fat} fedt</Typography>
+                    </div>
+                </div>
+                <hr className="my-2 border-surface" />
+                <div className="flex flex-row justify-between mx-8">
+                    <Typography><b>Tid i alt</b>: {meal.totalTime} min</Typography>
+                    <Typography><b>Arbejdstid</b>: {meal.prepTime} min</Typography>
+                </div>
+                <hr className="my-2 border-surface" />
+                <div className="flex flex-row">
+                    <Button className="flex w-fit items-center gap-2" onClick={() => setRecipeOpen(true)}>
+                        <IconGrillFork />
+                        Se opskrift
+                    </Button>
+                    <Button className="flex w-fit items-center gap-2 ml-2">
+                        <IconShoppingCart />
+                        Se pris og ingredienser
+                    </Button>
+                </div>
+            </Card.Body>
+        </Card>
+        <Recipe open={recipeOpen} meal={meal} onVisibilityChange={setRecipeOpen}/>
+    </>
 }
 
-export default function MealCardDay({date}) {
+export default function MealCardDay({ date }) {
     const { getToken } = useAuth();
     const [theseMeals, setTheseMeals] = useState([]);
     const [mealsLoaded, setMealsLoaded] = useState(false);
@@ -134,7 +139,7 @@ export default function MealCardDay({date}) {
     useEffect(() => {
         function retrieveMealplan(date) {
             const token = getToken();
-    
+
             return new Promise((resolve, reject) => {
                 if (token) {
                     axios.get(`http://localhost:8080/api/diet/mealplan/${date}`, {
@@ -151,7 +156,7 @@ export default function MealCardDay({date}) {
                 }
             });
         }
-    
+
         function postNewMealplan(date) {
             return new Promise((resolve, reject) => {
                 const token = getToken();
@@ -203,7 +208,7 @@ export default function MealCardDay({date}) {
                 poll();
             });
         }
-        
+
         retrieveMealplan(date)
             .then((response) => {
                 setTheseMeals(response.data.meals || []);
