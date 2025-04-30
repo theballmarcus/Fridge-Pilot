@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Card, Typography, Button } from "@material-tailwind/react";
-import { IconGrillFork } from '@tabler/icons-react';
+import { IconGrillFork, IconShoppingCart, IconFlame, IconWheat, IconMeat, IconDroplet } from '@tabler/icons-react';
 import axios from 'axios';
+import { useThemeColors } from '../../hooks/useThemeColors.jsx';
 import { useAuth } from '../../context/AuthProvider/index.jsx';
 
 export default function MealCardDay(date) {
     const { getToken } = useAuth();
+    const { firstColor, secondaryColor, tertiaryColor, quaternaryColor } = useThemeColors();
     const [theseMeals, setTheseMeals] = useState([]);
 
     function retrieveMealplan(date) {
@@ -51,35 +53,6 @@ export default function MealCardDay(date) {
         })
     }
 
-    function getRelativeDateWithFormat(date) {
-        const today = new Date();
-        const inputDate = new Date(date);
-
-        today.setHours(0, 0, 0, 0);
-        inputDate.setHours(0, 0, 0, 0);
-
-        const diffInDays = Math.floor((inputDate - today) / (1000 * 60 * 60 * 24));
-
-        const formattedDate = inputDate.toLocaleDateString("da-DK", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-        });
-
-        // Determine meal card label
-        switch (diffInDays) {
-            case 0:
-                return `I dag (${formattedDate})`;
-            case 1:
-                return `I morgen (${formattedDate})`;
-            case 2:
-                return `I overmorgen (${formattedDate})`;
-            default:
-                // Fallback date
-                return formattedDate;
-        }
-    }
-
     useEffect(() => {
         retrieveMealplan(date.date).then((response) => {
             console.log('Mealplan:', response);
@@ -104,49 +77,69 @@ export default function MealCardDay(date) {
         <>
             {theseMeals.length < 1 ? (
                 <div className="flex h-full w-full items-center justify-center">
-                    <Typography type="h5" className="text-foreground">
-                        Ingen måltider fundet for denne dato
+                    <Typography type="h5" color="error">
+                        Ingen måltider fundet
                     </Typography>
                 </div>
             ) : (
-                <div className="flex h-full w-full items-center justify-center">
-                    <Typography type="h5">{getRelativeDateWithFormat(date.date)}</Typography>
+                <div className="flex flex-col h-full w-full items-center justify-center">
                     {theseMeals.map((meal, index) => (
-                        <Card key={index} className="m-2 flex h-full w-full max-w-[48rem] flex-row">
-                            <Card.Header className="m-0 h-full w-2/5 shrink-0 rounded-r-none">
-                                <img
-                                    src={meal.image}
-                                    alt="card-image"
-                                    className="h-full w-full object-cover"
-                                />
-                            </Card.Header>
+                        (meal.mealTime <= 3 && <Card key={index} className="m-2 flex h-full w-full max-w-[48rem] flex-row">
+                            <div className="flex h-[300px] w-2/5">
+                                <Card.Header className="h-full w-auto m-0 rounded-r-none">
+                                    <img
+                                        src={meal.image}
+                                        alt="card-image"
+                                        className="h-full w-auto object-cover object-center"
+                                    />  </Card.Header>
+                            </div>
                             <Card.Body className="p-4">
                                 <Typography
                                     type="small"
                                     className="mb-4 font-bold uppercase text-foreground"
                                 >
-                                    {meal.mealTime === 1 ? 'Morgenmad' : meal.mealTime === 2 ? 'Frokost' : meal.mealTime === 3 ? 'Aftensmad' : 'Snack'}
+                                    {meal.mealTime === 1 ? 'Morgenmad' : meal.mealTime === 2 ? 'Frokost' : meal.mealTime === 3 ? 'Aftensmad' : 'ANDET'}
                                 </Typography>
                                 <Typography type="h5" className="mb-2">
                                     {meal.recipe}
                                 </Typography>
-                                <Typography className="mb-8 text-foreground">
-                                    {meal.calories} kcal
-                                    {meal.fat} g fedt
-                                    {meal.carbs} g kulhydrater
-                                    {meal.protein} g protein
-                                    {meal.prepTime} min prep tid
-                                    {meal.price} kr
-                                    Her skal vi vise kcal, kulhydrater, protein, fedt med deres farvekodning og ikon
-                                    <br />
-                                    Vi skal også vise tid i alt, indkøbstid, pris og manglende ingredienser
-                                </Typography>
-                                <Button className="mb-2 flex w-fit items-center gap-2">
-                                    <IconGrillFork />
-                                    Se opskrift
-                                </Button>
+                                <hr className="my-2 border-surface" />
+                                <div className="w-full grid grid-cols-2 grid-rows-2 gap-4 h-[80px]">
+                                    <div className="flex items-center justify-center">
+                                        <IconFlame color={quaternaryColor} />
+                                        <Typography type="h6">{meal.calories} kcal</Typography>
+                                    </div>
+                                    <div className="flex items-center justify-center">
+                                        <IconWheat color={firstColor} />
+                                        <Typography type="h6">{meal.carbs} kulhydrater</Typography>
+                                    </div>
+                                    <div className="flex items-center justify-center">
+                                        <IconMeat color={secondaryColor} />
+                                        <Typography type="h6">{meal.protein} protein</Typography>
+                                    </div>
+                                    <div className="flex items-center justify-center">
+                                        <IconDroplet color={tertiaryColor} />
+                                        <Typography type="h6">{meal.fat} fedt</Typography>
+                                    </div>
+                                </div>
+                                <hr className="my-2 border-surface" />
+                                <div className="flex flex-row justify-between mx-8">
+                                    <Typography><b>Tid i alt</b>: {meal.totalTime} min</Typography>
+                                    <Typography><b>Arbejdstid</b>: {meal.prepTime} min</Typography>
+                                </div>
+                                <hr className="my-2 border-surface" />
+                                <div className="flex flex-row">
+                                    <Button className="flex w-fit items-center gap-2">
+                                        <IconGrillFork />
+                                        Se opskrift
+                                    </Button>
+                                    <Button className="flex w-fit items-center gap-2 ml-2">
+                                        <IconShoppingCart />
+                                        Se pris og ingredienser
+                                    </Button>
+                                </div>
                             </Card.Body>
-                        </Card>
+                        </Card>)
                     ))}
                 </div>
             )}

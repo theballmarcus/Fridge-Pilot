@@ -27,7 +27,8 @@ const getThemeColors = () => {
     return {
         firstColor: rgbToHex(computedStyles.getPropertyValue('--color-primary').trim()),
         secondaryColor: rgbToHex(computedStyles.getPropertyValue('--color-info').trim()),
-        tertiaryColor: rgbToHex(computedStyles.getPropertyValue('--color-success').trim())
+        tertiaryColor: rgbToHex(computedStyles.getPropertyValue('--color-success').trim()),
+        quaternaryColor: rgbToHex(computedStyles.getPropertyValue('--color-error').trim())
     };
 };
 
