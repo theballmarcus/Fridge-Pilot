@@ -140,7 +140,8 @@ app.post("/api/auth/register", async (req, res) => {
 
         const newUser = new User({
             mail,
-            password: hash
+            password: hash,
+            curGroceries: ['Vand', 'Salt', 'Peber', 'Olie'],
         });
         await newUser.save();
 

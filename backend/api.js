@@ -312,7 +312,7 @@ ${curGroceries}
 And I have cooking instructions:
 ${instructions}.
 Translate the names to danish, recalculate the units to metric. Also translate the cooking instructions to danish.
-I need to know the estimated price of each ingredient in DKK - presume I'm buying them cheap. Lastly, set \`buy\` true (as a boolen, not a string) if I need to buy it, false if I already have it in my fridge. Make the instructions short and seperate with \\n. Also write the name of the dish in danish with the first letter capitalized.
+I need to know the estimated price of each ingredient in DKK - presume I'm buying them cheap. Lastly, set \`buy\` true (as a boolen, not a string) if I need to buy it, false if I already have it in my fridge. Make the instructions short and seperate with \\n. Also write the name of the dish in danish with the first letter capitalized in the "dish_name".
 Respond ONLY with following JSON format so it can be parsed:
 {"products" : [["product_name", "product_quantity", "product_unit", "estimated_price in DKK", buy?], ["product_name", "product_quantity", "product_unit", "estimated_price in DKK", buy?]], "instructions" : "instructions", "dish_name" : "dish_name"}`;
 
