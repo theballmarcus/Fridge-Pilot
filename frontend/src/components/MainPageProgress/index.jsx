@@ -47,7 +47,7 @@ const changeUserWeight = async (newWeight) => {
     });
 }
 
-export default function MainPageProgress({calories, protein, fat, carbs, dailyCalories, dailyProtein, dailyFat, dailyCarbs, refreshData}) {
+export default function MainPageProgress({ calories, protein, fat, carbs, dailyCalories, dailyProtein, dailyFat, dailyCarbs, refreshData }) {
     const { getToken } = useAuth();
 
     // const [calories, setCalories] = useState(pCalories);
@@ -87,11 +87,11 @@ export default function MainPageProgress({calories, protein, fat, carbs, dailyCa
             console.error('Error:', error);
         });
     }
-    
+
     useEffect(() => {
         const token = getToken();
 
-        if(token) {
+        if (token) {
             fetchUserWeight().then(weight => setNewUserWeight(weight))
         }
     }, [weightChanging]);
@@ -125,22 +125,23 @@ export default function MainPageProgress({calories, protein, fat, carbs, dailyCa
                             stroke: tertiaryColor
                         }
                     }}>
-                        
+
                         <div className="flex justify-center items-center">
                             <IconFlame size={50} />
                             <Typography type="h5">{round(calories)}</Typography>
                             <span>/{round(dailyCalories)}</span>
                         </div>
                         <span className="text-xs text-center text-gray-500 mt-1">
-                        <b>Madplan</b> / Din forbrænding!
+                            <b>Madplan</b> / Din forbrænding!
                         </span>
                     </CircularProgressbarWithChildren>
                 </div>
             </div>
             <div className="w-[600px] flex flex-col justify-center items-center">
                 <CalorieProgress
-                    value={ (calories/dailyCalories) * 100 }
-                    progressBarText={ `${round(calories)}/${round(dailyCalories)} kalorier (${Math.round((round(calories)/round(dailyCalories)) * 100)}%)`}
+                    value={((calories / dailyCalories) * 100) % 100}
+                    progressBarText={`${round(calories)}/${round(dailyCalories)} kalorier (${Math.round((round(calories) / round(dailyCalories)) * 100)}%)`}
+                    overMax={calories > dailyCalories}
                 />
                 <ChangeUserWeight value={newUserWeight} disabled={weightChanging} onChange={setNewUserWeight} onSubmit={() => {
                     setWeightChanging(true);

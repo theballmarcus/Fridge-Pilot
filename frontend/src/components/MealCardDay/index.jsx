@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card, Typography, Button } from "@material-tailwind/react";
-import { IconPhoto, IconGrillFork, IconShoppingCart, IconFlame, IconWheat, IconMeat, IconDroplet } from '@tabler/icons-react';
+import { IconPhoto, IconGrillFork, IconFlame, IconWheat, IconMeat, IconDroplet } from '@tabler/icons-react';
 import axios from 'axios';
 import { useThemeColors } from '../../hooks/useThemeColors.jsx';
 import Recipe from '../Recipe';
@@ -119,10 +119,6 @@ function MealCard({ meal }) {
                     <Button className="flex w-fit items-center gap-2" onClick={() => setRecipeOpen(true)}>
                         <IconGrillFork />
                         Se opskrift
-                    </Button>
-                    <Button className="flex w-fit items-center gap-2 ml-2">
-                        <IconShoppingCart />
-                        Se pris og ingredienser
                     </Button>
                 </div>
             </Card.Body>
