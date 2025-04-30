@@ -172,6 +172,37 @@ export default function MealCardDay({date}) {
                 }
             });
         }
+
+        async function waitForMealplanReady(mealplanId) {
+            const token = getToken();
+
+            const checkStatus = async () => {
+                try {
+                    const response = await axios.get(`http://localhost:8080/api/diet/mealplan/isDone/${mealplanId}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+                    return response.data.isDone === true;
+                } catch (err) {
+                    console.error("Error checking isDone:", err);
+                    return false;
+                }
+            };
+
+            const interval = 1500;
+            return new Promise((resolve) => {
+                const poll = async () => {
+                    const isDone = await checkStatus();
+                    if (isDone) {
+                        resolve(true);
+                    } else {
+                        setTimeout(poll, interval);
+                    }
+                };
+                poll();
+            });
+        }
         
         retrieveMealplan(date)
             .then((response) => {
@@ -184,8 +215,10 @@ export default function MealCardDay({date}) {
 
                 if (error.response?.status === 404) {
                     postNewMealplan(date)
-                        .then(response => {
-                            setTheseMeals(response.data.meals || []);
+                        .then(async (response) => {
+                            await waitForMealplanReady(response.data.mealplanId)
+                            const updatedData = await retrieveMealplan(date);
+                            setTheseMeals(updatedData.data.meals || []);
                         })
                         .catch((error) => {
                             console.error('Error generating mealplan:', error);

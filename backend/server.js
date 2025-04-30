@@ -405,11 +405,20 @@ app.get("/api/diet/mealplan/isDone/:mealPlanId", verifyToken, async (req, res) =
 
     try {
         const mealplan = await Mealplan.findById(mealplanId);
+        const oneMeal = await Meal.findOne({mealplanId : mealplanId});
         if (!mealplan) return res.status(400).json({ msg: "Mealplan not found" });
-        console.log(meaĺplan)
+        console.log(oneMeal)
+
+        let isDone;
+        if (oneMeal.chatGPTAnswer === undefined) {
+            isDone = false;
+        } else {
+            isDone = true;
+        }
+            
         res.status(200).json({
             msg: "Mealplan found",
-            isDone: mealplan.inactive
+            isDone: isDone
         });
     } catch (err) {
         console.log(err)
