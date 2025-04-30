@@ -10,6 +10,10 @@ import { useAuth } from '../../context/AuthProvider';
 
 import { useThemeColors } from '../../hooks/useThemeColors.jsx';
 
+const round = number => {
+    return Math.round(number / 10) * 10
+}
+
 const addOrRemoveCalories = async (calorieCount) => {
     let token = localStorage.getItem('token');
     console.log('Changing calories: ', calorieCount);
@@ -124,8 +128,8 @@ export default function MainPageProgress({calories, protein, fat, carbs, dailyCa
                         
                         <div className="flex justify-center items-center">
                             <IconFlame size={50} />
-                            <Typography type="h5">{calories}</Typography>
-                            <span>/{dailyCalories}</span>
+                            <Typography type="h5">{round(calories)}</Typography>
+                            <span>/{round(dailyCalories)}</span>
                         </div>
                         <span className="text-xs text-center text-gray-500 mt-1">
                         <b>Madplan</b> / Din forbrænding!
@@ -134,7 +138,10 @@ export default function MainPageProgress({calories, protein, fat, carbs, dailyCa
                 </div>
             </div>
             <div className="w-[600px] flex flex-col justify-center items-center">
-                <CalorieProgress value={ (calories/dailyCalories) * 100 } progressBarText={ `${calories}/${dailyCalories} kalorier (${Math.round((calories/dailyCalories) * 100)}%)`}/>
+                <CalorieProgress
+                    value={ (calories/dailyCalories) * 100 }
+                    progressBarText={ `${round(calories)}/${round(dailyCalories)} kalorier (${Math.round((round(calories)/round(dailyCalories)) * 100)}%)`}
+                />
                 <ChangeUserWeight value={newUserWeight} disabled={weightChanging} onChange={setNewUserWeight} onSubmit={() => {
                     setWeightChanging(true);
                     changeUserWeight(newUserWeight).then(() => setWeightChanging(false))
@@ -153,7 +160,7 @@ export default function MainPageProgress({calories, protein, fat, carbs, dailyCa
                                 <Typography type="h6">Kulhydrater</Typography>
                             </div>
                             <div className="w-fit col-span-2 row-span-1">
-                                <span className='font-bold'>{carbs}</span> / {dailyCarbs}g
+                                <span className='font-bold'>{round(carbs)}</span> / {round(dailyCarbs)}g
                             </div>
                             <div className="col-span-2 row-span-1 text-xs text-muted-foreground">
                                 <b>Madplan</b> / Anbefalet
@@ -170,7 +177,7 @@ export default function MainPageProgress({calories, protein, fat, carbs, dailyCa
                                 <Typography type="h6">Protein</Typography>
                             </div>
                             <div className="w-fit col-span-2 row-span-1">
-                                <span className='font-bold'>{protein}</span> / {dailyProtein}g
+                                <span className='font-bold'>{round(protein)}</span> / {round(dailyProtein)}g
                             </div>
                             <div className="col-span-2 row-span-1 text-xs text-muted-foreground">
                                 <b>Madplan</b> / Anbefalet
@@ -187,7 +194,7 @@ export default function MainPageProgress({calories, protein, fat, carbs, dailyCa
                                 <Typography type="h6">Fedt</Typography>
                             </div>
                             <div className="w-fit col-span-2 row-span-1">
-                                <span className='font-bold'>{fat}</span> / {dailyFat}g
+                                <span className='font-bold'>{round(fat)}</span> / {round(dailyFat)}g
                             </div>
                             <div className="col-span-2 row-span-1 text-xs text-muted-foreground">
                                 <b>Madplan</b> / Anbefalet
