@@ -541,8 +541,10 @@ app.post("/api/diet/snacks", verifyToken, async (req, res) => {
             mealFactor: 1,
             time: 4
         });
+
+        const mealData = getMealFromId(snackId);
         await meal.save();
-        getMealTranslationAndGuess(meal, user.curGroceries, async (priceGuess) => {
+        getMealTranslationAndGuess(mealData, user.curGroceries, async (priceGuess) => {
             if (priceGuess !== null) {
                 meal.price = priceGuess.total_price;
                 meal.chatGPTAnswer = JSON.stringify(priceGuess);
