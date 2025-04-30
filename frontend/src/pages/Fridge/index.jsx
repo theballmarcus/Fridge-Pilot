@@ -159,7 +159,7 @@ export default function FridgePage() {
                                 </Input>
                             </div>
                             <Button
-                                className="ml-2"
+                                className="ml-2 cursor-pointer"
                                 disabled={submitDisabled}
                                 variant="outline"
                                 onClick={() =>

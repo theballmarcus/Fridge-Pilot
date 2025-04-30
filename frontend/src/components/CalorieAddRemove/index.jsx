@@ -48,7 +48,7 @@ export default function CalorieAddRemove({ value, disabled, onChange, onSubmit }
                         </IconButton>
                     </div>
                 </div>
-                <Button className="ml-2" disabled={value === 0 || disabled} variant="outline" onClick={() => onSubmit(value)}>{value < 0 ? 'Fjern kcal' : 'Tilføj kcal'}</Button>
+                <Button className="ml-2 cursor-pointer" disabled={value === 0 || disabled} variant="outline" onClick={() => onSubmit(value)}>{value < 0 ? 'Fjern kcal' : 'Tilføj kcal'}</Button>
             </div>
         </div>
     );

@@ -49,7 +49,7 @@ export default function ChangeUserWeight({ value, disabled, onChange, onSubmit }
                         </IconButton>
                     </div>
                 </div>
-                <Button className="ml-2" disabled={value === 0 || disabled} variant="outline" onClick={() => onSubmit(value)}>Sæt ny vægt</Button>
+                <Button className="ml-2 cursor-pointer" disabled={value === 0 || disabled} variant="outline" onClick={() => onSubmit(value)}>Sæt ny vægt</Button>
             </div>
         </div>
     );

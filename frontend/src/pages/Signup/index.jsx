@@ -141,7 +141,7 @@ function SignupAccountCard({ show, onNext }) {
                     />
                 </div>
                 <hr className="my-6 border-surface" />
-                <Button isFullWidth onClick={(e) => {
+                <Button isFullWidth className="cursor-pointer" onClick={(e) => {
                     e.preventDefault();
                     setError(null);
                     handleSignupSubmit(email, password)
@@ -731,7 +731,7 @@ function DetailsCard({ show, onNext }) {
                     onChange={setActivityLevel}
                 />
                 <hr className="my-6 border-surface" />
-                <Button isFullWidth onClick={(e) => {
+                <Button isFullWidth className="cursor-pointer" onClick={(e) => {
                     e.preventDefault();
                     handleDetailsSubmit(
                         selectedHeight,

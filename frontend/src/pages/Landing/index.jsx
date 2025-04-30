@@ -27,8 +27,8 @@ export default function LandingPage() {
                             Nem keto diæt med <span className="text-primary">FridgePilot</span>
                         </h1>
                         <div className="flex gap-4 mt-6">
-                            <Button size="lg" onClick={() => navigate('/signup')}>Sign Up</Button>
-                            <Button size="lg" onClick={() => navigate('/login')}>Log In</Button>
+                            <Button size="lg" className="cursor-pointer" onClick={() => navigate('/signup')}>Sign Up</Button>
+                            <Button size="lg" className="cursor-pointer" onClick={() => navigate('/login')}>Log In</Button>
                         </div>
 
                         {/* Wave SVG */}
