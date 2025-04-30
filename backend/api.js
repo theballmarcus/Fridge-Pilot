@@ -310,6 +310,8 @@ async function getMealTranslationAndGuess(meal, curGroceries, callback) {
             instructions += meal[key] + '\n';
         }
 
+        console.log(meal)
+
         if(openai !== null) {
             const prompt = `Inputs:
 {INGREDIENTS_FOR_RECIPE}
