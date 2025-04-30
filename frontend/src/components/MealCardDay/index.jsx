@@ -200,6 +200,7 @@ export default function MealCardDay({ date }) {
                 const poll = async () => {
                     const isDone = await checkStatus();
                     if (isDone) {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
                         resolve(true);
                     } else {
                         setTimeout(poll, interval);
