@@ -155,6 +155,9 @@ export default function MainPageProgress({calories, protein, fat, carbs, dailyCa
                             <div className="w-fit col-span-2 row-span-1">
                                 <span className='font-bold'>{carbs}</span> / {dailyCarbs}g
                             </div>
+                            <div className="col-span-2 row-span-1 text-xs text-muted-foreground">
+                                <b>Madplan</b> / Anbefalet
+                            </div>
                         </div>
                     </Breadcrumb.Link>
                     <Breadcrumb.Separator>·</Breadcrumb.Separator>
@@ -169,6 +172,9 @@ export default function MainPageProgress({calories, protein, fat, carbs, dailyCa
                             <div className="w-fit col-span-2 row-span-1">
                                 <span className='font-bold'>{protein}</span> / {dailyProtein}g
                             </div>
+                            <div className="col-span-2 row-span-1 text-xs text-muted-foreground">
+                                <b>Madplan</b> / Anbefalet
+                            </div>
                         </div>
                     </Breadcrumb.Link>
                     <Breadcrumb.Separator>·</Breadcrumb.Separator>
@@ -182,6 +188,9 @@ export default function MainPageProgress({calories, protein, fat, carbs, dailyCa
                             </div>
                             <div className="w-fit col-span-2 row-span-1">
                                 <span className='font-bold'>{fat}</span> / {dailyFat}g
+                            </div>
+                            <div className="col-span-2 row-span-1 text-xs text-muted-foreground">
+                                <b>Madplan</b> / Anbefalet
                             </div>
                         </div>
                     </Breadcrumb.Link>
