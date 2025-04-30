@@ -262,14 +262,47 @@ app.get("/api/user", verifyToken, async (req, res) => {
     }
 });
 
+const groceryTimers = new Map(); 
 app.post("/api/diet/groceries", verifyToken, async (req, res) => {
     const { groceries } = req.body; // array please
     try {
         const user = await User.findById(req.user.id);
+        const userId = req.user.id;
         user.curGroceries = groceries;
 
         await user.save();
 
+        if (groceryTimers.has(userId)) {
+            clearTimeout(groceryTimers.get(userId));
+        }
+
+        const timeout = setTimeout(() => {
+            console.log(`User ${userId} stopped posting groceries for 10s`);
+            Mealplan.find({userId : userId, date : {$gte: Date.now() - oneDayMs*14}}).then(mealplans => {
+                for(let i = 0; i < mealplans.length; i++) {
+                    // Get meals from mealplan and 
+                    // rerun getMealTranslationAndGuess for all meals in mealplan because new groceries is added
+                    Meal.find({mealplanId : mealplans[i]._id}).then(meals => {
+                        for(let j = 0; j < meals.length; j++) {
+                            const meal = getMealFromId(meals[j].mealId);
+                            getMealTranslationAndGuess(meal, groceries, async (priceGuess) => {
+                                if (priceGuess !== null) {
+                                    meals[j].price = priceGuess.total_price;
+                                    meals[j].chatGPTAnswer = JSON.stringify(priceGuess);
+                                    await meals[j].save();
+                                } else {
+                                    meals[j].chatGPTAnswer = null;
+                                }
+                            })
+                        }
+                    })
+                }
+            }).catch(err => console.log(err));
+
+
+        }, 10000);
+
+        groceryTimers.set(userId, timeout);
         res.status(200).json({
             msg: "Groceries updated successfully"
         });
