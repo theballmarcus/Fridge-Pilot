@@ -74,7 +74,7 @@ const LoginForm = ({ onSubmit, error }) => {
                         </Typography>
                     )}
 
-                    <Button type="submit" isFullWidth>
+                    <Button type="submit" className="cursor-pointer" isFullWidth>
                         Log ind
                     </Button>
                 </div>

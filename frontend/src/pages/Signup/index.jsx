@@ -790,13 +790,15 @@ const IntroCarousel = ({ show, onNext }) => {
                 {/* Navigation arrows at the bottom */}
                 <div className="fixed bottom-0 left-0 right-0 flex justify-between items-center px-8 bottom-4">
                     <Button
+                        className="cursor-pointer"
                         onClick={goToPrevious}
                         variant="ghost"
                         disabled={backDisabled}
                     >
                         <IconArrowLeft size={60} color="rgb(var(--color-black))" stroke={2} />
                     </Button>
-                    <button
+                    <Button
+                        className="cursor-pointer"
                         onClick={goToNext}
                         variant="ghost"
                     >
@@ -804,7 +806,7 @@ const IntroCarousel = ({ show, onNext }) => {
                             <IconCheck size={60} color="rgb(var(--color-black))" stroke={2} />
                             : <IconArrowRight size={60} color="rgb(var(--color-black))" stroke={2} />
                         }
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>

@@ -23,14 +23,14 @@ const ErrorModal = ({ onClose }) => {
                     <Button
                         color="gray"
                         onClick={onClose}
-                        className="w-full sm:w-auto"
+                        className="w-full sm:w-auto cursor-pointer"
                     >
                         Annuller
                     </Button>
                     <Button
                         color="red"
                         onClick={handleLoginRedirect}
-                        className="w-full sm:w-auto"
+                        className="w-full sm:w-auto cursor-pointer"
                     >
                         Log ind
                     </Button>

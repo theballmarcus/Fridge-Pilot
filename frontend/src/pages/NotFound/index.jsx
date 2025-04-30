@@ -22,7 +22,7 @@ export default function NotFoundPage() {
                 <Button
                     color="blue"
                     onClick={() => navigate("/home")}
-                    className="mt-4"
+                    className="mt-4 cursor-pointer"
                 >
                     Tilbage til hjem
                 </Button>

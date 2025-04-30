@@ -117,7 +117,7 @@ function MealCard({ meal }) {
                 </div>
                 <hr className="my-2 border-surface" />
                 <div className="flex flex-row mt-4">
-                    <Button className="flex w-fit items-center gap-2" variant="outline" onClick={() => setRecipeOpen(true)}>
+                    <Button className="flex w-fit items-center gap-2 cursor-pointer" variant="outline" onClick={() => setRecipeOpen(true)}>
                         <IconGrillFork />
                         Se opskrift
                     </Button>
