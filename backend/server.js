@@ -107,6 +107,7 @@ async function formatMealReponse(mealplan, mealId=null) {
     }
     
     resp.stats = getStatsFromMealplan(mealObjects)
+    resp.mealplanId = mealplan._id;
 
     return resp
 }
@@ -361,12 +362,15 @@ const handleMealplanRequest = async (req) => {
                     meal.chatGPTAnswer = JSON.stringify(priceGuess);
                     await meal.save();
 
+                } else {
+                    meal.chatGPTAnswer = null;
                 }
             })
         }
 
         return {
             msg: "Mealplan created successfully",
+            mealplanId: mealplan._id,
             meals,
             stats: getStatsFromMealplan(meals)
         };
@@ -393,6 +397,25 @@ app.post("/api/diet/mealplan", verifyToken, async (req, res) => {
     } catch (err) {
         console.log(err)
         res.status(500).json({ error: err.message });
+    }
+});
+
+app.get("/api/diet/mealplan/isDone/:mealPlanId", verifyToken, async (req, res) => {
+    const mealplanId = req.params.mealPlanId;
+
+    try {
+        const mealplan = await Mealplan.findById(mealplanId);
+        if (!mealplan) return res.status(400).json({ msg: "Mealplan not found" });
+        console.log(meaĺplan)
+        res.status(200).json({
+            msg: "Mealplan found",
+            isDone: mealplan.inactive
+        });
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            msg: "Server error"
+        });
     }
 });
 
