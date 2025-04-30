@@ -9,6 +9,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthProvider';
 
 import { useThemeColors } from '../../hooks/useThemeColors.jsx';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const round = number => {
     return Math.round(number * 10) / 10
@@ -19,7 +20,7 @@ const addOrRemoveCalories = async (calorieCount) => {
     console.log('Changing calories: ', calorieCount);
 
     const date = Date.now();
-    return await axios.post(`http://localhost:8080/api/diet/supply_calories/${date}`, {
+    return await axios.post(`${API_BASE_URL}/api/diet/supply_calories/${date}`, {
         calories: calorieCount
     }, {
         headers: {
@@ -34,7 +35,7 @@ const changeUserWeight = async (newWeight) => {
     let token = localStorage.getItem('token');
     console.log('New weight set: ', newWeight)
 
-    return await axios.post('http://localhost:8080/api/auth/register_details', {
+    return await axios.post(`${API_BASE_URL}/api/auth/register_details`, {
         weight: newWeight
     }, {
         headers: {
@@ -59,7 +60,7 @@ export default function MainPageProgress({ calories, protein, fat, carbs, dailyC
 
     const fetchUserWeight = () => {
         const token = localStorage.getItem('token');
-        return axios.get('http://localhost:8080/api/user', {
+        return axios.get(`${API_BASE_URL}/api/user`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

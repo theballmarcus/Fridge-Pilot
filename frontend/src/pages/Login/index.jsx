@@ -2,10 +2,11 @@ import { Card, Button, Input, Typography } from '@material-tailwind/react';
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const loginUser = async({ email, password }) => {
     try {
-        const response = await axios.post('http://localhost:8080/api/auth/login', {
+        const response = await axios.post(`${API_BASE_URL}/api/auth/login`, {
             mail: email,
             password
         });

@@ -3,6 +3,7 @@ import { List, Card, Typography } from '@material-tailwind/react';
 import header from '../../assets/cheatmeal-header.jpg';
 import axios from 'axios';
 import { getToken } from '../../utils/Session.jsx';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function CalorieBuffer({ currentCalories, maxCalories, onAdd }) {
     const [cheatMeals, setCheatMeals] = useState([]);
@@ -13,7 +14,7 @@ export default function CalorieBuffer({ currentCalories, maxCalories, onAdd }) {
     async function postSnack(snackId) {
         const token = getToken();
         try {
-            const response = await axios.post(`http://localhost:8080/api/diet/snacks`, {
+            const response = await axios.post(`${API_BASE_URL}/api/diet/snacks`, {
                 snackId: snackId,
                 date: Date.now()
             }, {
@@ -34,7 +35,7 @@ export default function CalorieBuffer({ currentCalories, maxCalories, onAdd }) {
         const fetchCheatMeals = async () => {
             const token = getToken();
             try {
-                const response = await axios.get(`http://localhost:8080/api/diet/snacks/${maxCalories - currentCalories}/4`, {
+                const response = await axios.get(`${API_BASE_URL}/api/diet/snacks/${maxCalories - currentCalories}/4`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     }

@@ -4,6 +4,7 @@ import CalorieBuffer from '../../components/CalorieBuffer';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthProvider';
 import axios from 'axios';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function Today() {
     const { getToken } = useAuth();
@@ -29,7 +30,7 @@ export default function Today() {
 
         const date = Date.now();
         try {
-            const response = await axios.get(`http://localhost:8080/api/diet/stats/${date}`, {
+            const response = await axios.get(`${API_BASE_URL}/api/diet/stats/${date}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -50,7 +51,7 @@ export default function Today() {
 
             return statsResponse.data;
         } else {
-            const mealplanResponse = await axios.post(`http://localhost:8080/api/diet/mealplan`, {
+            const mealplanResponse = await axios.post(`${API_BASE_URL}/api/diet/mealplan`, {
                 date: date
             }, {
                 headers: {

@@ -5,6 +5,7 @@ import { IconShoppingCart, IconWeight, IconChartPie, IconFlame } from '@tabler/i
 import axios from 'axios';
 import { useThemeColors } from '../../hooks/useThemeColors.jsx';
 import { useAuth } from '../../context/AuthProvider/index.jsx';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function LineChartCard({ title, description, data, categories, unit, children: icon }) {
     const { firstColor: chartColor } = useThemeColors();
@@ -125,7 +126,7 @@ function NutritionPieChart() {
         const token = getToken();
         if(!token) return;
         const date = Date.now();
-        axios.get(`http://localhost:8080/api/diet/stats/${date}`, {
+        axios.get(`${API_BASE_URL}/api/diet/stats/${date}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -215,7 +216,7 @@ export default function History() {
     useEffect(() => {
         const token = getToken();
         if(!token) return;
-        axios.get('http://localhost:8080/api/advancements', {
+        axios.get(`${API_BASE_URL}/api/advancements`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
