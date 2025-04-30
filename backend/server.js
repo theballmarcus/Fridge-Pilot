@@ -67,6 +67,7 @@ async function formatMealReponse(mealplan, mealId=null) {
             chatGPTAnswer = JSON.parse(meals[j].chatGPTAnswer);
             instructions = chatGPTAnswer.instructions;
             ingredients = chatGPTAnswer.products;
+            meal.recipe = chatGPTAnswer.dish_name;
 
         } else {
             for (let i = 0; i < 10; i++) {
