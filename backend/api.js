@@ -294,53 +294,57 @@ if(process.env.OPENAI_ENABLED === 'true') {
 /* CHATGPT */
 async function getMealTranslationAndGuess(meal, curGroceries, callback) {
     try {
-        let products = ""
-        let instructions = "";
-        for (let i = 0; i < 10; i++) {
-            if(meal[`ingredient_${i+1}`] != null) {
-                products += meal[`measurement_${i+1}`] + ";" + meal[`ingredient_${i+1}`] + "\n"
-            }
-            if(meal[`directions_step_${i+1}`] != null) {
-                instructions += meal[`directions_step_${i+1}`] + "\n"
-            }
+        let products = '';
+        let instructions = '';
+        const ingredientKeys = Object.keys(meal).filter(key => key.startsWith('ingredient_') && meal[key] !== null);
+
+        // Ingredients are 1-indexed
+        for (let i = 1; i < ingredientKeys.length + 1; i++) {
+            const ingredient = meal['ingredient_' + i];
+            const measurement = meal['measurement_' + i];
+            products += `${ meal[measurement] || '' }${ meal[measurement] !== null ? ' ' : '' }${ingredient}\n`;
         }
+
+        const directionKeys = Object.keys(meal).filter(key => key.startsWith('directions_step_') && meal[key] !== null);
+        for (const key of directionKeys) {
+            instructions += meal[key] + '\n';
+        }
+
         if(openai !== null) {
-//             const prompt  = `I have this list of ingredients I need: 
-// ${products}.
-// I have these in my fridge:
-// ${curGroceries}
-// And I have cooking instructions:
-// ${instructions}.
-// Translate the names to danish, recalculate the units to metric. Also translate the cooking instructions to danish.
-// I need to know the estimated price of each ingredient in DKK - presume I'm buying them cheap - always write as an integer (0 if unknown or if I already have it). Lastly, set \`buy\` true (as a boolen, not a string) if I need to buy it, false if I already have it in my fridge. Make the instructions short and seperate with \\n for every new instruction. Also write the name of the dish in danish with the first letter capitalized in the "dish_name".
-// Respond ONLY with following JSON format so it can be parsed:
-// {"products" : [["product_name", "product_quantity", "product_unit", "estimated_price in DKK", buy?], ["product_name", "product_quantity", "product_unit", "estimated_price in DKK", buy?]], "instructions" : "instructions", "dish_name" : "dish_name"}`;
             const prompt = `Inputs:
-- Ingredients I need:
- ${products}
-- Ingredients I already have:
-${curGroceries}
-- Cooking steps / instructions:
-${instructions}
+{INGREDIENTS_FOR_RECIPE}
+ ${ products }
+
+{USER_AVALIABLE_INGREDIENTS} (danish)
+${ curGroceries.join('\n') }
+
+{RECIPE_COOKING_STEPS}
+${ instructions }
+
+{DISH_NAME}
+${ meal.recipe }
 
 Task:
-1. Translate ingredient names to Danish.
-2. Convert all quantities to metric units (g, ml, etc.).
-3. For each product, return:
-   ["translated_name", quantity_in_metric, unit, estimated_price_DKK (int, 0 if unknown or already in fridge), buy (true/false)]
-4. Translate and simplify instructions to Danish, use \\n between steps.
-5. Translate the dish name to Danish, capitalize first letter.
+1. For each recipe ingredient:
+  a. Translate to Danish -> {NAME}
+  b. Convert quantity to metric shorthand (g, ml). If missing infer int from name. Int must > 0.
+  c. Estimate price in DKK (int). Use 0 if in {USER_AVAILABLE_INGREDIENTS}
+  d. Mark {NOT_AVALIABLE}=true if not in {USER_AVAILABLE_INGREDIENTS}. (very strict match, no substitutions)
+2. Return each product as [NAME (string), QUANTITY (int), UNIT (string), PRICE (int), BUY (bool)]
+3. Translate {RECIPE_COOKING_STEPS} to Danish, join with \\n
+4. Translate {DISH_NAME} to Danish, capitalize first letter
 
-Output ONLY this JSON format:
+Output ONLY JSON format:
 {
-  "products": [
-    ["product_name", quantity, unit, price_DKK, buy],
+  "products: [
+    [<NAME>, <QUANITITY>, <UNIT>, <PRICE>, <BUY>],
     ...
   ],
-  "instructions": "translated steps",
-  "dish_name": "Danish dish name"
+  "instructions": "<DANISH_STEPS>";
+  "dish_name": "<DANISH_NAME>"
 }`
 
+            console.log(prompt);
             const gptResponse = await openai.chat.completions.create({
                 model: 'gpt-4o-mini',
                 messages: [
