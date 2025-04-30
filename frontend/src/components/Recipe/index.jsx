@@ -8,7 +8,7 @@ function Ingredient({ needsIngredient, weight, unit, ingredient }) {
     const [markedDone, setMarkedDone] = useState(false);
 
     return (
-        <List.Item onClick={() => setMarkedDone(!markedDone)}>
+        <List.Item onClick={() => setMarkedDone(!markedDone)} className="cursor-pointer">
             <List.ItemStart>
                 <Typography color={needsIngredient ? 'error' : 'success'}>{needsIngredient ? <IconX/> : <IconCheck />}</Typography>
             </List.ItemStart>

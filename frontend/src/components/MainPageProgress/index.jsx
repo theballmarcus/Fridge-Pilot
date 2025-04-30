@@ -140,7 +140,7 @@ export default function MainPageProgress({ calories, protein, fat, carbs, dailyC
                     setCaloriesChanging(true);
                     addOrRemoveCalories(addRemoveCalories).then(() => setCaloriesChanging(false));
                 }} />
-                <Breadcrumb className="gap-0.5 mt-6">
+                <Breadcrumb className="gap-0.5 mt-2">
                     <Breadcrumb.Link className="flex justify-center rounded-lg border border-surface px-2 py-1 text-secondary-foreground hover:text-secondary-foreground">
                         <div className="grid grid-rows-2 grid-cols-[auto_auto] items-center p-2">
                             <div className="w-fit col-span-1 row-span-1">

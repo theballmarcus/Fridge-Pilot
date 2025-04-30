@@ -14,7 +14,7 @@ export default function ChangeUserWeight({ value, disabled, onChange, onSubmit }
     };
 
     return (
-        <div className="items-center w-[500px] flex flex-row justify-between mt-6 mx-auto">
+        <div className="items-center w-[500px] flex flex-row justify-between mt-4 mx-auto">
             <Typography type="span" className="text-foreground">Log din daglige vægt</Typography>
             <div className="flex flex-row">
                 <div className="relative w-[150px]">
