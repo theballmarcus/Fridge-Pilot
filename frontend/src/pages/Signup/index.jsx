@@ -57,11 +57,11 @@ function SignupProgress(props) {
 function handleSignupSubmit(email, password) {
     return new Promise((resolve, reject) => {
         try {
-            // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            // const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
-            // if (!(emailRegex.test(email))) throw 'Indtast gyldig e-mail'
-            // if (!(passwordRegex).test(password))
-            //     throw 'Adgangskoden skal indeholde et ciffer fra 1 til 9, et lille bogstav, et stort bogstav, et specialtegn, ingen mellemrum, og skal være mellem 8-16 tegn langt'
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
+            if (!(emailRegex.test(email))) throw 'Indtast gyldig e-mail'
+            if (!(passwordRegex).test(password))
+                throw 'Adgangskoden skal indeholde et ciffer fra 1 til 9, et lille bogstav, et stort bogstav, et specialtegn, ingen mellemrum, og skal være mellem 8-16 tegn langt'
 
             axios.post(`${API_BASE_URL}/api/auth/register`, {
                 mail: email,
