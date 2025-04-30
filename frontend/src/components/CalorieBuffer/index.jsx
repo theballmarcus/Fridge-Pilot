@@ -57,7 +57,9 @@ export default function CalorieBuffer({ currentCalories, maxCalories }) {
             <Card.Header as="img" src={header} alt="Foto af bestik med skriften keto diet" />
             <Card.Body>
                 <Typography type="h6">Cheat Meals</Typography>
-                <Typography>I dag har du et kalorieunderskud på <b>{maxCalories - currentCalories} kcal</b>! Du har buffer til ekstra snacks i dag.</Typography>
+                { maxCalories - currentCalories === 0 && <Typography>Du har nået dit kalorieindtag for i dag. Du kan ikke tilføje flere snacks.</Typography>}
+                { maxCalories - currentCalories < 0 && <Typography>Du har overskredet dit kalorieindtag for i dag med <b>{currentCalories - maxCalories} kalorier</b>. Du kan ikke tilføje flere snacks.</Typography>}
+                { maxCalories - currentCalories > 0 && <Typography>I dag har du et kalorieunderskud på <b>{maxCalories - currentCalories} kcal</b>! Du har buffer til ekstra snacks i dag. Tryk på en snack for at tilføje en snack!</Typography>}
                 <List>
                     {/* FIXME: snack can be null */}
                     {cheatMeals.map((snack, index) => (
