@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useThemeColors } from '../../hooks/useThemeColors.jsx';
 import Recipe from '../Recipe';
 import { useAuth } from '../../context/AuthProvider/index.jsx';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function SkeletonText({ type, as, variant, className, textClassName }) {
     if (!type) throw new Error('No type set for SkeletonText')
@@ -138,7 +139,7 @@ export default function MealCardDay({ date }) {
 
             return new Promise((resolve, reject) => {
                 if (token) {
-                    axios.get(`http://localhost:8080/api/diet/mealplan/${date}`, {
+                    axios.get(`${API_BASE_URL}/api/diet/mealplan/${date}`, {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
@@ -157,7 +158,7 @@ export default function MealCardDay({ date }) {
             return new Promise((resolve, reject) => {
                 const token = getToken();
                 if (token) {
-                    axios.post(`http://localhost:8080/api/diet/mealplan`, {
+                    axios.post(`${API_BASE_URL}/api/diet/mealplan`, {
                         date: date
                     }, {
                         headers: {
@@ -179,7 +180,7 @@ export default function MealCardDay({ date }) {
 
             const checkStatus = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:8080/api/diet/mealplan/isDone/${mealplanId}`, {
+                    const response = await axios.get(`${API_BASE_URL}/api/diet/mealplan/isDone/${mealplanId}`, {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }

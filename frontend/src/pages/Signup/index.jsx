@@ -12,6 +12,7 @@ import intro4 from '../../assets/intro/3.png';
 import intro5 from '../../assets/intro/4.png';
 import intro6 from '../../assets/intro/5.png';
 import intro7 from '../../assets/intro/6.png';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function SignupProgress(props) {
     return (
@@ -62,7 +63,7 @@ function handleSignupSubmit(email, password) {
             // if (!(passwordRegex).test(password))
             //     throw 'Adgangskoden skal indeholde et ciffer fra 1 til 9, et lille bogstav, et stort bogstav, et specialtegn, ingen mellemrum, og skal være mellem 8-16 tegn langt'
 
-            axios.post('http://localhost:8080/api/auth/register', {
+            axios.post(`${API_BASE_URL}/api/auth/register`, {
                 mail: email,
                 password: password
             }).then(response => {
@@ -595,7 +596,7 @@ function handleDetailsSubmit(height, gender, year, month, day, weight, weightLos
             if (!weightLossKgPrMonth) throw 'Indtast ønsket vægttab pr. måned';
             if (!activityLevel) throw 'Vælg dit aktivitetsniveau';
             const birthday = new Date(year, month, day).getTime();
-            axios.post('http://localhost:8080/api/auth/register_details', {
+            axios.post(`${API_BASE_URL}/api/auth/register_details`, {
                 birthday: birthday,
                 gender: gender === 'male' ? 0 : 1,
                 height: height,

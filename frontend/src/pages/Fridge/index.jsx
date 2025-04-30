@@ -5,10 +5,11 @@ import { matchSorter } from 'match-sorter';
 import axios from 'axios';
 import { getToken } from '../../utils/Session.jsx';
 import { useAuth } from '../../context/AuthProvider/index.jsx';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const groceryPost = (groceryList) => {
     const token = getToken();
-    axios.post(`http://localhost:8080/api/diet/groceries`, {
+    axios.post(`${API_BASE_URL}/api/diet/groceries`, {
         groceries: groceryList
     }, {
         headers: {
@@ -95,7 +96,7 @@ export default function FridgePage() {
         const token = getToken();
         if (!token) return;
 
-        axios.get('http://localhost:8080/api/diet/groceries', {
+        axios.get(`${API_BASE_URL}/api/diet/groceries`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
