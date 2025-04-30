@@ -328,7 +328,7 @@ Task:
 2. Convert all quantities to metric units (g, ml, etc.).
 3. For each product, return:
    ["translated_name", quantity_in_metric, unit, estimated_price_DKK (int, 0 if unknown or already in fridge), buy (true/false)]
-4. Translate and simplify instructions to Danish, use \n between steps.
+4. Translate and simplify instructions to Danish, use \\n between steps.
 5. Translate the dish name to Danish, capitalize first letter.
 
 Output ONLY this JSON format:
@@ -349,7 +349,7 @@ Output ONLY this JSON format:
                         content: prompt
                     }
                 ],
-                max_tokens: 600,
+                max_tokens: 1000,
             });
             
             message = gptResponse.choices[0].message.content.trim();                
